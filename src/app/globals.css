@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
+/* Mangabey font placeholder - replace with actual font files */
+@font-face {
+  font-family: 'Mangabey';
+  src: url('/fonts/mangabey-regular.woff2') format('woff2'),
+       url('/fonts/mangabey-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  /* Fallback to web-safe fonts */
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #1f1311;
+
+  /* Kona Brand Colors */
+  --kona-brown: #b87a4b;
+  --kona-espresso: #1f1311;
+  --kona-white: #ffffff;
+  --kona-taupe: #c7bab6;
+  --kona-teal: #11c9c8;
+
+  /* Hawaiian script font placeholder */
+  --font-hawaiian: 'Brush Script MT', cursive;
 }
 
 @theme inline {
@@ -14,13 +35,70 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1f1311;
+    --foreground: #ffffff;
   }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Mangabey', 'Rubik', 'Nunito', system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hawaiian wave animation */
+@keyframes hawaiian-wave {
+  0%, 100% { transform: translateX(0) scaleX(1); }
+  50% { transform: translateX(-10px) scaleX(1.05); }
+}
+
+.wave-animation {
+  animation: hawaiian-wave 4s ease-in-out infinite;
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus styles for accessibility */
+.focus-visible:focus {
+  outline: 2px solid var(--kona-teal);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--kona-taupe);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--kona-brown);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--kona-teal);
 }
