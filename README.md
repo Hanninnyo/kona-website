@@ -202,6 +202,143 @@ npm run start    # Start production server
 npm run lint     # ESLint check
 ```
 
+## 🛒 Order Flow (Mock)
+
+The website includes a complete online ordering system powered by a mock POS provider for local development and testing.
+
+### Flow Overview
+
+The ordering flow follows these steps:
+
+1. **Browse Menu** (`/menu`) - View all items with real-time availability
+2. **Customize Items** - Select modifiers (size, milk, extras, etc.)
+3. **Add to Cart** - Items stored in session with quantities and notes
+4. **Review Cart** (`/order`) - Adjust quantities, add special instructions, set tip
+5. **Checkout** (`/checkout`) - Enter customer info, apply gift cards
+6. **Place Order** - Order pushed to mock POS via API
+7. **Track Order** (`/track/[id]`) - Real-time status updates via SSE
+
+### Testing Locally
+
+1. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+2. **Navigate to the menu:**
+   Open [http://localhost:3000/menu](http://localhost:3000/menu)
+
+3. **Add items to cart:**
+   - Click "Customize & Add" to select modifiers
+   - Or use "Quick Add" for default options
+   - Cart badge updates in header
+
+4. **Review your cart:**
+   Click the cart icon or navigate to `/order`
+   - Adjust quantities with +/- buttons
+   - Set tip percentage or custom amount
+   - Add special instructions
+
+5. **Proceed to checkout:**
+   Click "Proceed to Checkout"
+   - Fill in customer information
+   - Select payment method (dummy UI)
+   - Optional: Apply gift card code (e.g., `KONA-TEST-123`)
+   - Click "Place Order"
+
+6. **Track your order:**
+   Automatically redirected to `/track/[orderId]`
+   - See real-time status updates
+   - Status cycles: CONFIRMED → PREPARING → READY → COMPLETED
+   - SSE stream provides live updates (with polling fallback)
+
+### Mock POS Behavior
+
+The mock provider simulates a real POS system:
+
+- **Order Status Progression:**
+  - **Confirmed** (immediate)
+  - **Preparing** (after 10 seconds)
+  - **Ready** (after 20 seconds)
+  - **Completed** (after 30 seconds)
+
+- **Gift Cards:**
+  - Any code entered is accepted
+  - Mock value: $10.00 discount
+
+- **Menu Items:**
+  - Authentic Hawaiian coffee menu with 50+ items
+  - All items marked as "in stock" by default
+  - Modifiers include size, milk type, syrup, extras
+
+- **Real-time Updates:**
+  - Server-Sent Events (SSE) via `/api/pos/stream`
+  - Automatic fallback to polling if SSE fails
+  - Heartbeat every 30 seconds
+
+### API Endpoints
+
+- **`POST /api/order/create`** - Create new order
+  - Returns: `{ order, success, message }`
+  - Pushes to POS and records loyalty points
+
+- **`GET /api/order/status/[id]`** - Check order status
+  - Returns: `{ order, status }`
+
+- **`GET /api/pos/stream`** - Real-time updates (SSE)
+  - Events: `order:update`, `inventory:update`, `menu:changed`
+
+- **`GET /api/pos/menu`** - Fetch full menu
+  - Returns: `{ menu: MenuItem[] }`
+
+### Environment Variables
+
+The mock provider is enabled by default in `.env.local`:
+
+```bash
+POS_PROVIDER=mock                        # Use mock POS
+POS_WEBHOOK_SECRET=dev-secret-...       # Webhook verification
+NEXT_PUBLIC_PLAUSIBLE_DOMAIN=localhost  # Analytics (optional)
+```
+
+### Switching to Real POS
+
+To use a real POS system (Square, Toast, Clover):
+
+1. Update `.env.local`:
+   ```bash
+   POS_PROVIDER=square
+   SQUARE_ACCESS_TOKEN=your-token
+   SQUARE_WEBHOOK_SIGNATURE_KEY=your-key
+   ```
+
+2. The system will automatically use the correct provider
+3. All API contracts remain the same
+
+### Accessibility Features
+
+- **Keyboard Navigation:**
+  - Tab through all interactive elements
+  - Enter/Space to activate buttons
+  - Arrow keys for quantity adjustment
+
+- **Reduced Motion:**
+  - Automatically detects `prefers-reduced-motion`
+  - Disables animations when enabled
+  - Maintains full functionality
+
+- **Screen Readers:**
+  - Semantic HTML throughout
+  - ARIA labels on all controls
+  - Live regions for status updates
+
+### Cart Persistence
+
+- Cart stored in `sessionStorage`
+- Persists across page reloads
+- Cleared after order placement
+- Includes all modifiers and notes
+
 ## 🌺 Mahalo!
 
 Built with aloha for the Bay Area coffee community. Experience the true taste of Hawaiian Kona coffee! ☕🏄‍♀️
