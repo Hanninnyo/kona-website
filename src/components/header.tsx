@@ -9,12 +9,10 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useOnlineOrdering } from '@/hooks/useOnlineOrdering'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useCart } from '@/contexts/cart-context'
 
-interface HeaderProps {
-  cartItemsCount?: number
-}
-
-const Header: React.FC<HeaderProps> = ({ cartItemsCount = 0 }) => {
+const Header: React.FC = () => {
+  const { itemCount } = useCart()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const { isOnlineOrderingEnabled, toggleOnlineOrdering, isLoaded } = useOnlineOrdering()
@@ -115,14 +113,14 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount = 0 }) => {
               className="relative text-kona-espresso hover:text-kona-brown"
               asChild
             >
-              <Link href="/cart">
+              <Link href="/order" aria-label={`Shopping cart with ${itemCount} items`}>
                 <ShoppingCart className="w-5 h-5" />
-                {cartItemsCount > 0 && (
+                {itemCount > 0 && (
                   <Badge
                     variant="teal"
                     className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
                   >
-                    {cartItemsCount}
+                    {itemCount}
                   </Badge>
                 )}
               </Link>
@@ -147,7 +145,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount = 0 }) => {
 
             {isLoaded && isOnlineOrderingEnabled && (
               <Button variant="aloha" asChild>
-                <Link href="/order">Order Online</Link>
+                <Link href="/menu">Order Online</Link>
               </Button>
             )}
 
@@ -166,14 +164,14 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount = 0 }) => {
               className="relative text-kona-espresso"
               asChild
             >
-              <Link href="/cart">
+              <Link href="/order" aria-label={`Shopping cart with ${itemCount} items`}>
                 <ShoppingCart className="w-5 h-5" />
-                {cartItemsCount > 0 && (
+                {itemCount > 0 && (
                   <Badge
                     variant="teal"
                     className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
                   >
-                    {cartItemsCount}
+                    {itemCount}
                   </Badge>
                 )}
               </Link>
@@ -265,7 +263,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemsCount = 0 }) => {
                       asChild
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <Link href="/order">Order Online</Link>
+                      <Link href="/menu">Order Online</Link>
                     </Button>
                   )}
 
