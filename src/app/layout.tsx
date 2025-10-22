@@ -3,6 +3,7 @@ import { League_Spartan } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { CartProvider } from "@/contexts/cart-context";
 
 const leagueSpartan = League_Spartan({
   variable: "--font-league-spartan",
@@ -108,11 +109,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-mangabey antialiased" suppressHydrationWarning>
-        <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

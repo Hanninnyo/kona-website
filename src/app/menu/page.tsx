@@ -9,9 +9,11 @@ import { Badge } from '@/components/ui/badge'
 import MenuItemCard from '@/components/menu-item-card'
 import ItemModificationModal from '@/components/item-modification-modal'
 import { VolcanoParticles, VolcanicSteam } from '@/components/volcano-effects'
+import { useCart } from '@/contexts/cart-context'
 import type { MenuItem } from '@/lib/types'
 
 const MenuPage: React.FC = () => {
+  const { addItem } = useCart()
   const [menu, setMenu] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -54,8 +56,18 @@ const MenuPage: React.FC = () => {
   })
 
   const handleAddToCart = (item: MenuItem) => {
-    console.log('Adding to cart:', item)
-    // TODO: Implement cart functionality
+    // Quick add without modifiers (default selections only)
+    const defaultModifiers: { [modifierId: string]: any[] } = {}
+
+    // Add default modifier selections if item has required modifiers
+    item.modifiers.forEach(modifier => {
+      if (modifier.required && modifier.options.length > 0) {
+        defaultModifiers[modifier.id] = [modifier.options[0]]
+      }
+    })
+
+    addItem(item, defaultModifiers, 1)
+    console.log('[Menu] Quick added to cart:', item.name)
   }
 
   const handleCustomizeItem = (item: MenuItem) => {
@@ -64,8 +76,9 @@ const MenuPage: React.FC = () => {
   }
 
   const handleModalAddToCart = (item: MenuItem, modifications: any) => {
-    console.log('Adding to cart with modifications:', item, modifications)
-    // TODO: Implement cart functionality with modifications
+    const { selectedModifiers, quantity, notes } = modifications
+    addItem(item, selectedModifiers || {}, quantity || 1, notes)
+    console.log('[Menu] Added to cart with customization:', item.name, modifications)
   }
 
   if (loading) {
