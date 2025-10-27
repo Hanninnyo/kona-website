@@ -287,3 +287,6 @@ const Header: React.FC = () => {
 }
 
 export default Header
+<Button variant="aloha" asChild>
+  <a href="/app" aria-label="Get the Kona Island Coffee app">Get the App</a>
+</Button>
