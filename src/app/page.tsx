@@ -4,13 +4,12 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Coffee, Heart, Leaf, Users, Star, ArrowRight, MapPin, Clock, Award } from 'lucide-react'
+import { Coffee, Heart, Leaf, Users, Star, ArrowRight, MapPin, Clock, Award, Download } from 'lucide-react'
 import Hero from '@/components/hero'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import MenuItemCard from '@/components/menu-item-card'
 import type { MenuItem } from '@/lib/types'
-import { useOnlineOrdering } from '@/hooks/useOnlineOrdering'
 
 // Mock data for featured items
 const featuredItems: MenuItem[] = [
@@ -80,11 +79,9 @@ const testimonials = [
 ]
 
 export default function HomePage() {
-  const { isOnlineOrderingEnabled, isLoaded } = useOnlineOrdering()
-
   const handleAddToCart = (item: MenuItem) => {
-    console.log('Adding to cart:', item)
-    // TODO: Implement cart functionality
+    console.log('Item preview:', item)
+    // No cart functionality - redirect to app download
   }
 
   return (
@@ -436,21 +433,12 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {isLoaded && isOnlineOrderingEnabled && (
-                <Button variant="teal" size="lg" className="text-lg px-8" asChild>
-                  <Link href="/order">
-                    <Coffee className="mr-2 w-5 h-5" />
-                    Order Online
-                  </Link>
-                </Button>
-              )}
-
-              {isLoaded && !isOnlineOrderingEnabled && (
-                <Button variant="outline" size="lg" className="text-lg px-8" disabled>
-                  <Coffee className="mr-2 w-5 h-5" />
-                  Ordering Offline
-                </Button>
-              )}
+              <Button variant="teal" size="lg" className="text-lg px-8" asChild>
+                <Link href="/app">
+                  <Download className="mr-2 w-5 h-5" />
+                  Get the App
+                </Link>
+              </Button>
 
               <Button variant="outline" size="lg" className="text-lg px-8 border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso" asChild>
                 <Link href="/locations">

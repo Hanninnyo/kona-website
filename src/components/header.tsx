@@ -3,19 +3,15 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ShoppingCart, MapPin, Coffee, User, ToggleLeft, ToggleRight } from 'lucide-react'
+import { Menu, X, MapPin, Coffee, User, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import { useOnlineOrdering } from '@/hooks/useOnlineOrdering'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { useCart } from '@/contexts/cart-context'
 
 const Header: React.FC = () => {
-  const { itemCount } = useCart()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const { isOnlineOrderingEnabled, toggleOnlineOrdering, isLoaded } = useOnlineOrdering()
   const prefersReducedMotion = useReducedMotion()
 
   useEffect(() => {
@@ -99,84 +95,16 @@ const Header: React.FC = () => {
 
           {/* Desktop Actions */}
           <div className="hidden lg:flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-kona-espresso hover:text-kona-brown"
-            >
-              <User className="w-5 h-5" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-kona-espresso hover:text-kona-brown"
-              asChild
-            >
-              <Link href="/order" aria-label={`Shopping cart with ${itemCount} items`}>
-                <ShoppingCart className="w-5 h-5" />
-                {itemCount > 0 && (
-                  <Badge
-                    variant="teal"
-                    className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
-                  >
-                    {itemCount}
-                  </Badge>
-                )}
+            <Button variant="aloha" asChild>
+              <Link href="/app">
+                <Download className="w-4 h-4 mr-2" />
+                Get the App
               </Link>
             </Button>
-
-            {/* Online Ordering Toggle */}
-            {isLoaded && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleOnlineOrdering}
-                className="relative text-kona-espresso hover:text-kona-brown"
-                title={isOnlineOrderingEnabled ? "Disable Online Ordering" : "Enable Online Ordering"}
-              >
-                {isOnlineOrderingEnabled ? (
-                  <ToggleRight className="w-5 h-5 text-kona-teal" />
-                ) : (
-                  <ToggleLeft className="w-5 h-5 text-kona-taupe" />
-                )}
-              </Button>
-            )}
-
-            {isLoaded && isOnlineOrderingEnabled && (
-              <Button variant="aloha" asChild>
-                <Link href="/menu">Order Online</Link>
-              </Button>
-            )}
-
-            {isLoaded && !isOnlineOrderingEnabled && (
-              <Button variant="outline" disabled>
-                Ordering Offline
-              </Button>
-            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="lg:hidden flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative text-kona-espresso"
-              asChild
-            >
-              <Link href="/order" aria-label={`Shopping cart with ${itemCount} items`}>
-                <ShoppingCart className="w-5 h-5" />
-                {itemCount > 0 && (
-                  <Badge
-                    variant="teal"
-                    className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs"
-                  >
-                    {itemCount}
-                  </Badge>
-                )}
-              </Link>
-            </Button>
-
             <Button
               variant="ghost"
               size="icon"
@@ -235,47 +163,19 @@ const Header: React.FC = () => {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: navigationItems.length * 0.1 }}
-                  className="pt-4 border-t border-kona-taupe/20 space-y-3"
+                  className="pt-4 border-t border-kona-taupe/20"
                 >
-                  {/* Online Ordering Toggle for Mobile */}
-                  {isLoaded && (
-                    <div className="flex items-center justify-between p-3 rounded-kona bg-kona-taupe/10">
-                      <span className="font-mangabey text-kona-espresso">Online Ordering</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleOnlineOrdering}
-                        className="text-kona-espresso"
-                      >
-                        {isOnlineOrderingEnabled ? (
-                          <ToggleRight className="w-6 h-6 text-kona-teal" />
-                        ) : (
-                          <ToggleLeft className="w-6 h-6 text-kona-taupe" />
-                        )}
-                      </Button>
-                    </div>
-                  )}
-
-                  {isLoaded && isOnlineOrderingEnabled && (
-                    <Button
-                      variant="aloha"
-                      className="w-full"
-                      asChild
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      <Link href="/menu">Order Online</Link>
-                    </Button>
-                  )}
-
-                  {isLoaded && !isOnlineOrderingEnabled && (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      disabled
-                    >
-                      Ordering Offline
-                    </Button>
-                  )}
+                  <Button
+                    variant="aloha"
+                    className="w-full"
+                    asChild
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Link href="/app">
+                      <Download className="w-4 h-4 mr-2" />
+                      Get the App
+                    </Link>
+                  </Button>
                 </motion.div>
               </nav>
             </div>
