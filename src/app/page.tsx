@@ -473,3 +473,31 @@ export default function HomePage() {
     </div>
   )
 }
+export default function AppComingSoon() {
+  return (
+    <main className="mx-auto max-w-4xl px-6 py-16 text-center">
+      <h1 className="text-4xl font-bold tracking-tight">Kona Island Coffee App</h1>
+      <p className="mt-4 text-lg text-neutral-600">
+        Order ahead, collect rewards, and track your favorites — launching soon on iOS & Android.
+      </p>
+
+      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+        <a
+          href="https://forms.gle/your-waitlist" // swap to your real form
+          className="rounded-2xl px-6 py-4 text-lg shadow-kona-soft ring-1 ring-neutral-200 hover:shadow-lg"
+        >
+          Join the waitlist
+        </a>
+        <div className="rounded-2xl p-4 ring-1 ring-neutral-200">
+          <p className="text-sm text-neutral-600">Prefer SMS?</p>
+          <p className="text-base font-medium">Text <strong>KONA</strong> to <strong>(xxx) xxx-xxxx</strong></p>
+        </div>
+      </div>
+
+      <div className="mt-12 opacity-80">
+        <p className="text-sm uppercase tracking-widest">Featured by</p>
+        <p className="mt-2 font-semibold">KRON 4 • Intuitive • Cisco • Asus • Valley Medical Center</p>
+      </div>
+    </main>
+  );
+}
