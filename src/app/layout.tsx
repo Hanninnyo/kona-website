@@ -120,3 +120,35 @@ export default function RootLayout({
     </html>
   );
 }
+export const metadata = {
+  title: "Kona Island Coffee — Hawaiian Coffee in the Bay Area",
+  description: "Premium Kona coffee, crêpes, and pastries. Visit us in San Jose and Mountain View (coming soon).",
+  openGraph: {
+    title: "Kona Island Coffee",
+    description: "Premium Hawaiian coffee in the Bay Area.",
+    url: "https://yourdomain.com",
+    siteName: "Kona Island Coffee",
+    images: [{ url: "/og.jpg", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
+};
+
+export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CafeOrCoffeeShop",
+    name: "Kona Island Coffee",
+    image: "https://yourdomain.com/og.jpg",
+    address: { "@type": "PostalAddress", addressLocality: "San Jose", addressRegion: "CA" },
+    url: "https://yourdomain.com",
+    telephone: "(XXX) XXX-XXXX",
+  };
+
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {/* …page content… */}
+    </>
+  );
+}
