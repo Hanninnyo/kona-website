@@ -85,3 +85,7 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
 };
 export default nextConfig;
+18:37:35.861 
+> Build error occurred
+18:37:35.869 
+Error: Turbopack build failed with 17 errors:
