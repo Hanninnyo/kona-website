@@ -501,3 +501,7 @@ export default function AppComingSoon() {
     </main>
   );
 }
+<div className="mt-8 flex gap-3">
+  <a href="/locations" className="rounded-2xl px-6 py-3 bg-[#b87a4b] text-white">Visit Us</a>
+  <a href="/app" className="rounded-2xl px-6 py-3 ring-1 ring-neutral-200">Get the App</a>
+</div>
