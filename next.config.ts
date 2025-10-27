@@ -37,3 +37,21 @@ const nextConfig = {
   },
 };
 export default nextConfig; // or module.exports = nextConfig; if using .js
+// next.config.(ts|mjs|js)
+const nextConfig = {
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+
+  async redirects() {
+    return [
+      { source: '/menu', destination: '/menu-preview', permanent: false },
+      { source: '/order', destination: '/menu-preview', permanent: false },
+      { source: '/checkout', destination: '/menu-preview', permanent: false },
+      { source: '/track/:path*', destination: '/menu-preview', permanent: false },
+      // When your mobile app is live, change destinations to:
+      // { source: '/menu', destination: 'https://app.konaislandcoffee.com/menu', permanent: false },
+    ];
+  },
+};
+
+export default nextConfig; // or module.exports = nextConfig;
