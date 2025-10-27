@@ -236,3 +236,41 @@ const MenuPage: React.FC = () => {
 }
 
 export default MenuPage
+import Image from "next/image";
+
+const items = [
+  { name: "Kona Latte", desc: "100% Kona espresso, silky microfoam.", price: "$5.50", img: "/images/menu/kona-latte.jpg" },
+  { name: "Aloha Cold Brew", desc: "Slow-steeped, naturally sweet.", price: "$5.00", img: "/images/menu/cold-brew.jpg" },
+  { name: "Crêpe de Kona", desc: "Freshly made, seasonal fillings.", price: "$8.50", img: "/images/menu/crepe.jpg" },
+];
+
+export default function MenuPreview() {
+  return (
+    <main className="mx-auto max-w-6xl px-6 py-16">
+      <header className="text-center">
+        <h1 className="text-4xl font-bold">Menu Preview</h1>
+        <p className="mt-3 text-neutral-600">A taste of what we brew & make daily. Full ordering will live in our mobile app.</p>
+      </header>
+
+      <section className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((it) => (
+          <article key={it.name} className="rounded-2xl ring-1 ring-neutral-200 overflow-hidden shadow-kona-soft">
+            <div className="relative aspect-[4/3]">
+              <Image src={it.img} alt={it.name} fill className="object-cover" />
+            </div>
+            <div className="p-5">
+              <h3 className="text-lg font-semibold">{it.name} <span className="float-right text-neutral-500">{it.price}</span></h3>
+              <p className="mt-2 text-neutral-600">{it.desc}</p>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <div className="mt-12 text-center">
+        <a href="/app" className="inline-block rounded-2xl px-6 py-3 ring-1 ring-neutral-200 shadow-kona-soft hover:shadow-lg">
+          Get the App for Ordering
+        </a>
+      </div>
+    </main>
+  );
+}
