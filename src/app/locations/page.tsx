@@ -28,13 +28,13 @@ const LocationsPage: React.FC = () => {
         lat: 37.3002,
         lng: -121.9311
       },
-      phone: '(408) 885-5030',
+      phone: '(408) 513-6455',
       hours: {
-        monday: { open: '06:30', close: '14:00' },
-        tuesday: { open: '06:30', close: '14:00' },
-        wednesday: { open: '06:30', close: '14:00' },
-        thursday: { open: '06:30', close: '14:00' },
-        friday: { open: '06:30', close: '14:00' },
+        monday: { open: '07:30', close: '16:00' },
+        tuesday: { open: '07:30', close: '16:00' },
+        wednesday: { open: '07:30', close: '64:00' },
+        thursday: { open: '07:30', close: '16:00' },
+        friday: { open: '07:30', close: '16:00' },
         saturday: { closed: true },
         sunday: { closed: true }
       },
@@ -54,14 +54,14 @@ const LocationsPage: React.FC = () => {
         lat: 37.4419,
         lng: -122.1430
       },
-      phone: '(408) 885-5030',
+      phone: '(408) 513-6455',
       hours: {
         monday: { closed: true },
         tuesday: { closed: true },
         wednesday: { closed: true },
         thursday: { closed: true },
         friday: { closed: true },
-        saturday: { open: '08:00', close: '16:00' },
+        saturday: { open: '08:00', close: '13:30' },
         sunday: { closed: true }
       },
       features: ['Mobile Truck', 'Rotating Locations', 'Community Events', 'Special Promotions'],
@@ -325,7 +325,6 @@ const LocationsPage: React.FC = () => {
   )
 }
 
-export default LocationsPage
 export default function Locations() {
   return (
     <main className="mx-auto max-w-4xl px-6 py-16">
