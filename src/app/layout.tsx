@@ -10,54 +10,6 @@ const leagueSpartan = League_Spartan({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
-
-export const metadata: Metadata = {
-  title: "Kona Island Coffee - Authentic Hawaiian Coffee in the Bay Area",
-  description: "Experience the true taste of Hawaiian Kona coffee. From the volcanic slopes of Mauna Loa to your cup. Premium coffee, pastries, and crepes with authentic island flavors.",
-  keywords: ["Hawaiian coffee", "Kona coffee", "Bay Area coffee", "premium coffee", "island coffee", "specialty coffee", "coffee shop"],
-  authors: [{ name: "Kona Island Coffee" }],
-  creator: "Kona Island Coffee",
-  publisher: "Kona Island Coffee",
-  metadataBase: new URL("https://konaislandcoffee.com"),
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://konaislandcoffee.com",
-    title: "Kona Island Coffee - Authentic Hawaiian Coffee",
-    description: "Experience the true taste of Hawaiian Kona coffee. Premium coffee, pastries, and crepes with authentic island flavors.",
-    siteName: "Kona Island Coffee",
-    images: [
-      {
-        url: "/images/og-hero.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Kona Island Coffee - Hawaiian Coffee Experience",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kona Island Coffee - Authentic Hawaiian Coffee",
-    description: "Experience the true taste of Hawaiian Kona coffee in the Bay Area.",
-    images: ["/images/og-hero.jpg"],
-    creator: "@konaislandcoffee",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  verification: {
-    google: "your-google-verification-code",
-  },
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
