@@ -1,3 +1,1 @@
-export default function Mermaid(_props: { code?: string }) {
-  return null;
-}
+export default function Mermaid(_props: { code?: string }) { return null; }
