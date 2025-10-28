@@ -2,6 +2,19 @@
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+
+  // allow remote images (optional but harmless)
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/photo-**',
+      },
+    ],
+  },
+
   async redirects() {
     return [
       { source: '/menu', destination: '/menu-preview', permanent: false },
@@ -11,4 +24,6 @@ const nextConfig = {
     ];
   },
 };
+
 export default nextConfig;
+
