@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, MapPin, Coffee, User, Download } from 'lucide-react'
+import { Menu, X, MapPin, Coffee, Download, Users, UtensilsCrossed } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const Header: React.FC = () => {
+  const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const prefersReducedMotion = useReducedMotion()
@@ -24,16 +25,19 @@ const Header: React.FC = () => {
   }, [])
 
   const navigationItems = [
-    { label: 'Menu', href: '/menu', icon: Coffee },
-    { label: 'Coffee', href: '/coffee', icon: Coffee },
-    { label: 'Pastries & Crepes', href: '/pastries', icon: Coffee },
-    { label: 'Our Story', href: '/story', icon: Coffee },
+    { label: 'About', href: '/about', icon: Users },
+    { label: 'Menu', href: '/menu-preview', icon: Coffee },
+    { label: 'Catering', href: '/catering', icon: UtensilsCrossed },
     { label: 'Locations', href: '/locations', icon: MapPin },
-    { label: 'System Map', href: '/system-map', icon: Coffee },
+    { label: 'Get App', href: '/app', icon: Download },
   ]
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const isActive = (href: string) => {
+    return pathname === href || (href === '/menu-preview' && pathname === '/menu')
   }
 
   return (
@@ -42,7 +46,7 @@ const Header: React.FC = () => {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled
           ? "bg-kona-white/95 backdrop-blur-md shadow-kona-soft"
-          : "bg-transparent"
+          : "bg-kona-white/90 backdrop-blur-sm"
       )}
       initial={prefersReducedMotion ? { opacity: 0 } : { y: -100 }}
       animate={prefersReducedMotion ? { opacity: 1 } : { y: 0 }}
@@ -51,51 +55,54 @@ const Header: React.FC = () => {
       aria-label="Main navigation"
     >
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <motion.div
-            className="flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-          >
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-kona-brown rounded-full flex items-center justify-center">
-                <Coffee className="w-6 h-6 text-kona-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-league-spartan text-xl font-bold text-kona-espresso">
-                  Kona Island
-                </span>
-                <span className="font-league-spartan text-sm text-kona-brown -mt-1">
-                  Coffee
-                </span>
-              </div>
-            </Link>
-          </motion.div>
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="w-10 h-10 bg-kona-brown rounded-full flex items-center justify-center group-hover:bg-kona-brown/90 transition-colors">
+              <Coffee className="w-6 h-6 text-kona-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-league-spartan text-xl font-bold text-kona-espresso">
+                Kona Island
+              </span>
+              <span className="font-league-spartan text-xs text-kona-brown -mt-1">
+                Coffee
+              </span>
+            </div>
+          </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8" role="navigation" aria-label="Main menu">
-            {navigationItems.map((item) => (
-              <motion.div
-                key={item.href}
-                whileHover={{ y: -2 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              >
+          <nav className="hidden lg:flex items-center space-x-6" role="navigation" aria-label="Main menu">
+            {navigationItems.map((item) => {
+              const active = isActive(item.href)
+              return (
                 <Link
+                  key={item.href}
                   href={item.href}
-                  className="font-mangabey text-kona-espresso hover:text-kona-brown transition-colors duration-200 relative group"
+                  className={cn(
+                    "text-sm font-medium transition-colors duration-200 relative py-2 px-1",
+                    active
+                      ? "text-kona-brown"
+                      : "text-kona-espresso hover:text-kona-brown"
+                  )}
                   aria-label={`Navigate to ${item.label}`}
+                  aria-current={active ? "page" : undefined}
                 >
                   {item.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-kona-teal transition-all duration-200 group-hover:w-full"></span>
+                  <span
+                    className={cn(
+                      "absolute -bottom-1 left-0 h-0.5 bg-kona-teal transition-all duration-200",
+                      active ? "w-full" : "w-0 group-hover:w-full"
+                    )}
+                  />
                 </Link>
-              </motion.div>
-            ))}
+              )
+            })}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
-            <Button variant="aloha" asChild>
+          {/* Desktop CTA */}
+          <div className="hidden lg:flex items-center">
+            <Button variant="aloha" size="sm" asChild>
               <Link href="/app">
                 <Download className="w-4 h-4 mr-2" />
                 Get the App
@@ -104,23 +111,21 @@ const Header: React.FC = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMobileMenu}
-              className="text-kona-espresso"
-              aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobileMenu}
+            className="lg:hidden text-kona-espresso"
+            aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </Button>
         </div>
       </div>
 
@@ -137,46 +142,34 @@ const Header: React.FC = () => {
             role="navigation"
             aria-label="Mobile menu"
           >
-            <div className="container mx-auto px-4 py-6">
-              <nav className="flex flex-col space-y-4">
-                {navigationItems.map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Link
-                      href={item.href}
-                      className="flex items-center space-x-3 p-3 rounded-kona hover:bg-kona-taupe/20 transition-colors"
-                      onClick={() => setIsMobileMenuOpen(false)}
+            <div className="container mx-auto px-4 py-4">
+              <nav className="flex flex-col space-y-2">
+                {navigationItems.map((item, index) => {
+                  const active = isActive(item.href)
+                  return (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
                     >
-                      <item.icon className="w-5 h-5 text-kona-brown" />
-                      <span className="font-mangabey text-kona-espresso">
-                        {item.label}
-                      </span>
-                    </Link>
-                  </motion.div>
-                ))}
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: navigationItems.length * 0.1 }}
-                  className="pt-4 border-t border-kona-taupe/20"
-                >
-                  <Button
-                    variant="aloha"
-                    className="w-full"
-                    asChild
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <Link href="/app">
-                      <Download className="w-4 h-4 mr-2" />
-                      Get the App
-                    </Link>
-                  </Button>
-                </motion.div>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center space-x-3 p-3 rounded-lg transition-colors",
+                          active
+                            ? "bg-kona-teal/10 text-kona-brown"
+                            : "hover:bg-kona-taupe/20 text-kona-espresso"
+                        )}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        aria-current={active ? "page" : undefined}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </Link>
+                    </motion.div>
+                  )
+                })}
               </nav>
             </div>
           </motion.div>

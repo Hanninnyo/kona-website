@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Kalani Patel",
+    "role": "Founder & Head Barista",
+    "photo": "/images/team/kalani.jpg",
+    "bio": "Grew up on the Big Island and learned the art of coffee roasting from local farmers. Bringing authentic Hawaiian coffee culture to the Bay Area."
+  },
+  {
+    "name": "Mia Chen",
+    "role": "Pastry Chef",
+    "photo": "/images/team/mia.jpg",
+    "bio": "Trained in Paris and Tokyo, specializing in French-Asian fusion pastries. Creates our signature crêpes and seasonal treats."
+  },
+  {
+    "name": "David Santos",
+    "role": "Operations Manager",
+    "photo": "/images/team/david.jpg",
+    "bio": "15 years in hospitality management. Passionate about creating welcoming spaces and building strong community connections."
+  },
+  {
+    "name": "Leilani Wong",
+    "role": "Barista & Coffee Educator",
+    "photo": "/images/team/leilani.jpg",
+    "bio": "Certified Q Grader and coffee competition judge. Loves teaching customers about the journey from bean to cup."
+  }
+]

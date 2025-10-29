@@ -74,6 +74,108 @@ A premium Hawaiian coffee experience brought to the Bay Area. This website featu
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+## 📝 Content Management
+
+The website uses JSON files for easy content editing and static images for photos. No database required!
+
+### Editing Team Members
+
+Team member data is stored in `src/content/team.json`:
+
+```json
+[
+  {
+    "name": "Kalani Patel",
+    "role": "Founder & Head Barista",
+    "photo": "/images/team/kalani.jpg",
+    "bio": "Grew up on the Big Island and learned the art of coffee roasting from local farmers."
+  }
+]
+```
+
+**To add/edit team members:**
+1. Open `src/content/team.json`
+2. Add or modify team member objects
+3. Ensure `photo` path matches filename in `/public/images/team/`
+4. Save and commit changes
+
+**Team photo requirements:**
+- Size: 800x800px (square, 1:1 ratio)
+- Format: JPG or PNG
+- Naming: Lowercase first name (e.g., `kalani.jpg`)
+
+### Editing Homepage Announcement
+
+Homepage announcement is controlled by `src/content/homepage.json`:
+
+```json
+{
+  "announcement": {
+    "enabled": true,
+    "title": "Our first shop opens late 2025!",
+    "subtitle": "Mountain View — San Antonio Village Center",
+    "heroImage": "/images/store/opening-hero.jpg"
+  }
+}
+```
+
+**To enable/disable or edit the announcement:**
+1. Open `src/content/homepage.json`
+2. Set `"enabled": false` to hide the announcement banner
+3. Edit `title` and `subtitle` text as needed
+4. Update `heroImage` path if you have a new photo
+5. Save and commit changes
+
+### Managing Images
+
+Images are organized in `/public/images/` with the following structure:
+
+```
+/public/images/
+├── team/        # Team member headshots (800x800px square)
+├── truck/       # Coffee truck photos (1600x1200px landscape)
+├── store/       # Store location photos (1920x1080px landscape)
+└── menu/        # Menu item photography (800x600px landscape)
+```
+
+**To add images via GitHub web interface:**
+1. Navigate to the appropriate folder in `/public/images/` on GitHub
+2. Click "Add file" → "Upload files"
+3. Drag and drop your optimized images
+4. Commit with message: `chore: add [description] images`
+
+**To add images via command line:**
+```bash
+# Copy images to correct folder
+cp ~/my-images/new-photo.jpg public/images/team/
+
+# Stage and commit
+git add public/images/
+git commit -m "chore: add new team member photo"
+git push
+```
+
+**Image optimization tips:**
+- Use JPG for photos (better compression, smaller file size)
+- Use PNG for graphics with transparency
+- Keep file sizes under 500KB when possible
+- Use descriptive filenames (e.g., `kalani.jpg` not `IMG_1234.jpg`)
+
+**Image fallback behavior:**
+- If an image is missing, Next.js will show a gray placeholder
+- The site will not break or show error messages
+- Update JSON files with correct paths after uploading images
+
+### Content Update Workflow
+
+1. **Edit JSON files** - Update text content in `src/content/*.json`
+2. **Upload images** - Add new photos to `/public/images/[folder]/`
+3. **Update references** - Ensure JSON file paths match image filenames
+4. **Commit changes** - Use descriptive commit messages
+5. **Deploy** - Push to GitHub, automatic deployment to production
+
+For detailed image specifications and guidelines, see `/public/images/README.md`
+
 ## 🎨 Design System
 
 ### Colors

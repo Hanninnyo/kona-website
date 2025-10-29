@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import MenuItemCard from '@/components/menu-item-card'
 import type { MenuItem } from '@/lib/types'
+import homepageContent from '@/content/homepage.json'
 
 // Mock data for featured items
 const featuredItems: MenuItem[] = [
@@ -88,48 +89,50 @@ export default function HomePage() {
     <div className="pt-20">
 
       {/* Storefront Launch Announcement */}
-      <section className="py-6 relative overflow-hidden" style={{ backgroundColor: '#c7bab6' }}>
-        <div className="absolute inset-0 bg-black/5"></div>
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center"
-          >
-            <div className="flex items-center justify-center space-x-2 mb-2">
-              <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
-              <span className="font-league-spartan text-lg font-bold text-kona-espresso">EXCITING NEWS!</span>
-              <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
-            </div>
-            <h2 className="font-league-spartan text-xl md:text-2xl font-bold mb-2 text-kona-espresso">
-              Our First Brick-and-Mortar Shop Opening End of 2025!
-            </h2>
-            <p className="text-kona-espresso/80 mb-4">
-              Mountain View San Antonio Village Center - Bringing our mobile aloha to a permanent home
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
-              <Button
-                variant="secondary"
-                size="sm"
-                className="bg-kona-espresso/10 backdrop-blur-sm border-kona-espresso/30 text-kona-espresso hover:bg-kona-espresso hover:text-white"
-                asChild
-              >
-                <Link href="/story">
-                  Learn More About Our Journey
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
+      {homepageContent.announcement.enabled && (
+        <section className="py-6 relative overflow-hidden" style={{ backgroundColor: '#c7bab6' }}>
+          <div className="absolute inset-0 bg-black/5"></div>
+          <div className="container mx-auto px-4 lg:px-8 relative z-10">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center"
+            >
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
+                <span className="font-league-spartan text-lg font-bold text-kona-espresso">EXCITING NEWS!</span>
+                <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
+              </div>
+              <h2 className="font-league-spartan text-xl md:text-2xl font-bold mb-2 text-kona-espresso">
+                {homepageContent.announcement.title}
+              </h2>
+              <p className="text-kona-espresso/80 mb-4">
+                {homepageContent.announcement.subtitle} - Bringing our mobile aloha to a permanent home
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-kona-espresso/10 backdrop-blur-sm border-kona-espresso/30 text-kona-espresso hover:bg-kona-espresso hover:text-white"
+                  asChild
+                >
+                  <Link href="/about">
+                    Learn More About Our Journey
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+          </div>
 
-        {/* Decorative Elements */}
-        <div className="absolute top-2 left-4 text-2xl animate-bounce" style={{ animationDelay: '0s' }}>🏪</div>
-        <div className="absolute top-4 right-8 text-xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌺</div>
-        <div className="absolute bottom-2 left-8 text-lg animate-bounce" style={{ animationDelay: '1s' }}>☕</div>
-        <div className="absolute bottom-4 right-4 text-2xl animate-bounce" style={{ animationDelay: '1.5s' }}>🎉</div>
-      </section>
+          {/* Decorative Elements */}
+          <div className="absolute top-2 left-4 text-2xl animate-bounce" style={{ animationDelay: '0s' }}>🏪</div>
+          <div className="absolute top-4 right-8 text-xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌺</div>
+          <div className="absolute bottom-2 left-8 text-lg animate-bounce" style={{ animationDelay: '1s' }}>☕</div>
+          <div className="absolute bottom-4 right-4 text-2xl animate-bounce" style={{ animationDelay: '1.5s' }}>🎉</div>
+        </section>
+      )}
 
       {/* Hero Section */}
       <Hero />
@@ -177,7 +180,7 @@ export default function HomePage() {
             className="text-center"
           >
             <Button variant="aloha" size="lg" asChild>
-              <Link href="/menu">
+              <Link href="/menu-preview">
                 View Full Menu
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
@@ -268,7 +271,7 @@ export default function HomePage() {
               </div>
 
               <Button variant="outline" size="lg" asChild>
-                <Link href="/story">
+                <Link href="/about">
                   Learn Our Story
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
