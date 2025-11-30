@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, MapPin, Coffee, Download, Users, UtensilsCrossed } from 'lucide-react'
+import { Menu, X, MapPin, Coffee, Download, Users, UtensilsCrossed, Home, ShoppingBag } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -25,11 +25,12 @@ const Header: React.FC = () => {
   }, [])
 
   const navigationItems = [
-    { label: 'About', href: '/about', icon: Users },
+    { label: 'Home', href: '/', icon: Home },
+    { label: 'Our Story', href: '/story', icon: Users },
     { label: 'Menu', href: '/menu-preview', icon: Coffee },
     { label: 'Catering', href: '/catering', icon: UtensilsCrossed },
     { label: 'Locations', href: '/locations', icon: MapPin },
-    { label: 'Get App', href: '/app', icon: Download },
+    { label: 'Order Online', href: 'https://kona-island-coffee-llc.square.site/', icon: ShoppingBag, external: true },
   ]
 
   const toggleMobileMenu = () => {
@@ -75,16 +76,39 @@ const Header: React.FC = () => {
           <nav className="hidden lg:flex items-center space-x-6" role="navigation" aria-label="Main menu">
             {navigationItems.map((item) => {
               const active = isActive(item.href)
+              const commonClasses = cn(
+                "text-sm font-medium transition-colors duration-200 relative py-2 px-1",
+                active
+                  ? "text-kona-brown"
+                  : "text-kona-espresso hover:text-kona-brown"
+              )
+
+              if (item.external) {
+                return (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={commonClasses}
+                    aria-label={`Navigate to ${item.label} (opens in new tab)`}
+                  >
+                    {item.label}
+                    <span
+                      className={cn(
+                        "absolute -bottom-1 left-0 h-0.5 bg-kona-teal transition-all duration-200",
+                        "w-0 group-hover:w-full"
+                      )}
+                    />
+                  </a>
+                )
+              }
+
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={cn(
-                    "text-sm font-medium transition-colors duration-200 relative py-2 px-1",
-                    active
-                      ? "text-kona-brown"
-                      : "text-kona-espresso hover:text-kona-brown"
-                  )}
+                  className={commonClasses}
                   aria-label={`Navigate to ${item.label}`}
                   aria-current={active ? "page" : undefined}
                 >
@@ -146,6 +170,13 @@ const Header: React.FC = () => {
               <nav className="flex flex-col space-y-2">
                 {navigationItems.map((item, index) => {
                   const active = isActive(item.href)
+                  const commonClasses = cn(
+                    "flex items-center space-x-3 p-3 rounded-lg transition-colors",
+                    active
+                      ? "bg-kona-teal/10 text-kona-brown"
+                      : "hover:bg-kona-taupe/20 text-kona-espresso"
+                  )
+
                   return (
                     <motion.div
                       key={item.href}
@@ -153,20 +184,28 @@ const Header: React.FC = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          "flex items-center space-x-3 p-3 rounded-lg transition-colors",
-                          active
-                            ? "bg-kona-teal/10 text-kona-brown"
-                            : "hover:bg-kona-taupe/20 text-kona-espresso"
-                        )}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        aria-current={active ? "page" : undefined}
-                      >
-                        <item.icon className="w-5 h-5" />
-                        <span className="font-medium">{item.label}</span>
-                      </Link>
+                      {item.external ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={commonClasses}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                        >
+                          <item.icon className="w-5 h-5" />
+                          <span className="font-medium">{item.label}</span>
+                        </a>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          className={commonClasses}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          aria-current={active ? "page" : undefined}
+                        >
+                          <item.icon className="w-5 h-5" />
+                          <span className="font-medium">{item.label}</span>
+                        </Link>
+                      )}
                     </motion.div>
                   )
                 })}

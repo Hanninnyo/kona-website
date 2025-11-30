@@ -9,7 +9,8 @@ This folder contains all static images for the Kona Island Coffee website.
 ├── team/        # Team member headshots
 ├── truck/       # Coffee truck photos
 ├── store/       # Store location photos
-└── menu/        # Menu item photography
+├── menu/        # Menu item photography
+└── farmers/     # Farmer partner photos ("Our Farming ʻOhana" section)
 ```
 
 ## Image Specifications
@@ -37,6 +38,12 @@ This folder contains all static images for the Kona Island Coffee website.
 - **Size**: 800x600px (landscape, 4:3 ratio)
 - **Naming**: Match menu item slugs (e.g., `kona-espresso.jpg`, `lilikoi-crepe.jpg`)
 - **Usage**: Referenced in Menu Preview page
+
+### Farmer Photos (`/farmers/`)
+- **Format**: JPG or PNG
+- **Size**: 800x800px (square, 1:1 ratio)
+- **Naming**: Descriptive names (e.g., `farming-ohana-1.jpg`, `keoni-nakamura.jpg`)
+- **Usage**: Referenced in Our Story page ("Our Farming ʻOhana" section)
 
 ## Uploading Images
 

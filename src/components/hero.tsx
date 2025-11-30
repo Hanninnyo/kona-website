@@ -141,9 +141,13 @@ const Hero: React.FC<HeroProps> = ({
                 className="text-lg px-8 py-3 bg-kona-white/10 backdrop-blur-sm border-kona-white/30 text-kona-white hover:bg-kona-white hover:text-kona-espresso"
                 asChild
               >
-                <Link href="/menu">
-                  View Menu
-                </Link>
+                <a
+                  href="https://kona-island-coffee-llc.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Order Online
+                </a>
               </Button>
             </motion.div>
           )}

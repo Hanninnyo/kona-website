@@ -180,10 +180,14 @@ export default function HomePage() {
             className="text-center"
           >
             <Button variant="aloha" size="lg" asChild>
-              <Link href="/menu-preview">
-                View Full Menu
+              <a
+                href="https://kona-island-coffee-llc.square.site/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Order Online
                 <ArrowRight className="ml-2 w-5 h-5" />
-              </Link>
+              </a>
             </Button>
           </motion.div>
         </div>
