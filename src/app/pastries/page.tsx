@@ -380,7 +380,13 @@ const PastriesPage: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="teal" size="lg" asChild>
-                <a href="/menu">View Full Menu</a>
+                <a
+                  href="https://kona-island-coffee-llc.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Order Online
+                </a>
               </Button>
               <Button variant="outline" size="lg" className="border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso" asChild>
                 <a href="/locations">Visit Us Today</a>

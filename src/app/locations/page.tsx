@@ -315,7 +315,13 @@ const LocationsPage: React.FC = () => {
                 Find Nearest Location
               </Button>
               <Button variant="outline" size="lg" className="border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso" asChild>
-                <a href="/menu">View Menu</a>
+                <a
+                  href="https://kona-island-coffee-llc.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Order Online
+                </a>
               </Button>
             </div>
           </motion.div>
