@@ -268,9 +268,13 @@ const AppPage: React.FC = () => {
                 className="text-lg px-8 border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso"
                 asChild
               >
-                <Link href="/menu-preview">
-                  View Menu
-                </Link>
+                <a
+                  href="https://kona-island-coffee-llc.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Order Online
+                </a>
               </Button>
             </div>
           </motion.div>
