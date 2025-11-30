@@ -28,13 +28,13 @@ const LocationsPage: React.FC = () => {
         lat: 37.3002,
         lng: -121.9311
       },
-      phone: '(408) 885-5030',
+      phone: '(408) 513-6455',
       hours: {
-        monday: { open: '06:30', close: '14:00' },
-        tuesday: { open: '06:30', close: '14:00' },
-        wednesday: { open: '06:30', close: '14:00' },
-        thursday: { open: '06:30', close: '14:00' },
-        friday: { open: '06:30', close: '14:00' },
+        monday: { open: '07:30', close: '16:00' },
+        tuesday: { open: '07:30', close: '16:00' },
+        wednesday: { open: '07:30', close: '64:00' },
+        thursday: { open: '07:30', close: '16:00' },
+        friday: { open: '07:30', close: '16:00' },
         saturday: { closed: true },
         sunday: { closed: true }
       },
@@ -54,14 +54,14 @@ const LocationsPage: React.FC = () => {
         lat: 37.4419,
         lng: -122.1430
       },
-      phone: '(408) 885-5030',
+      phone: '(408) 513-6455',
       hours: {
         monday: { closed: true },
         tuesday: { closed: true },
         wednesday: { closed: true },
         thursday: { closed: true },
         friday: { closed: true },
-        saturday: { open: '08:00', close: '16:00' },
+        saturday: { open: '08:00', close: '13:30' },
         sunday: { closed: true }
       },
       features: ['Mobile Truck', 'Rotating Locations', 'Community Events', 'Special Promotions'],
@@ -325,4 +325,24 @@ const LocationsPage: React.FC = () => {
   )
 }
 
-export default LocationsPage
+export default function Locations() {
+  return (
+    <main className="mx-auto max-w-4xl px-6 py-16">
+      <h1 className="text-4xl font-bold">Locations & Hours</h1>
+      <div className="mt-8 space-y-6">
+        <section className="rounded-2xl ring-1 ring-neutral-200 p-5 shadow-kona-soft">
+          <h2 className="text-xl font-semibold">Valley Medical Center (San Jose)</h2>
+          <p className="text-neutral-600">751 S Bascom Ave, San Jose, CA</p>
+          <p className="mt-1">Mon–Fri · 7:30am–4:00pm</p>
+        </section>
+        <section className="rounded-2xl ring-1 ring-neutral-200 p-5 shadow-kona-soft">
+          <h2 className="text-xl font-semibold">Mountain View (Flagship) — Coming Soon</h2>
+          <p className="text-neutral-600">Downtown Mountain View</p>
+        </section>
+      </div>
+      <div className="mt-10">
+        <a href="/catering" className="underline">Book our trailer for private events →</a>
+      </div>
+    </main>
+  );
+}
