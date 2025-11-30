@@ -1,0 +1,14 @@
+{
+  "announcement": {
+    "enabled": true,
+    "title": "Our first shop opens late 2025!",
+    "subtitle": "Mountain View — San Antonio Village Center",
+    "heroImage": "/images/store/opening-hero.jpg"
+  },
+  "hero": {
+    "headline": "Aloha from Kona Island Coffee",
+    "subheadline": "Premium Hawaiian coffee, handcrafted crêpes, and artisan pastries in the heart of the Bay Area.",
+    "ctaText": "Get the App",
+    "ctaLink": "/app"
+  }
+}

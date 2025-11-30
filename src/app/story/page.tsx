@@ -69,13 +69,24 @@ const StoryPage: React.FC = () => {
     }
   ]
 
+  // 📸 IMAGE INSTRUCTIONS:
+  // To change farmer photos, upload your images to /public/images/farmers/ folder
+  // and update the "image" paths below. Images should be:
+  // - Square format (1:1 ratio, recommended 800x800px)
+  // - JPG or PNG format
+  // - Named descriptively (e.g., "keoni-nakamura.jpg")
+  //
+  // Example: To replace Keoni's photo:
+  // 1. Upload your new photo to: /public/images/farmers/keoni-nakamura.jpg
+  // 2. The path below ("/images/farmers/farming-ohana-1.jpg") will automatically load it
+  //
   const farmers = [
     {
       name: "Keoni Nakamura",
       farm: "Nakamura Family Farm",
       generations: "4th Generation",
       specialty: "Traditional Natural Process",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+      image: "/images/farmers/farming-ohana-1.jpg", // Replace with your farmer photo
       quote: "Our family has been growing coffee on these slopes for over 100 years. The partnership with Kona Island Coffee allows us to continue our tradition while reaching coffee lovers around the world."
     },
     {
@@ -83,7 +94,7 @@ const StoryPage: React.FC = () => {
       farm: "Mauka Coffee Estate",
       generations: "3rd Generation",
       specialty: "Organic Cultivation",
-      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+      image: "/images/farmers/farming-ohana-2.jpg", // Replace with your farmer photo
       quote: "Sustainability isn&apos;t just a practice for us—it&apos;s our kuleana (responsibility) to the land that has provided for our ʻohana for generations."
     },
     {
@@ -91,7 +102,7 @@ const StoryPage: React.FC = () => {
       farm: "Silva Heritage Farm",
       generations: "5th Generation",
       specialty: "Honey Process Innovation",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+      image: "/images/farmers/farming-ohana-3.jpg", // Replace with your farmer photo
       quote: "Innovation and tradition can work together. We honor our ancestors while finding new ways to bring out the best in every bean."
     }
   ]
