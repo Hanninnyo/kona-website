@@ -75,11 +75,11 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-6" role="navigation" aria-label="Main menu">
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6" role="navigation" aria-label="Main menu">
             {navigationItems.map((item) => {
               const active = isActive(item.href)
               const commonClasses = cn(
-                "text-sm font-medium transition-colors duration-200 relative py-2 px-1",
+                "text-sm lg:text-base font-semibold transition-colors duration-200 relative py-2 px-1",
                 active
                   ? "text-kona-brown"
                   : "text-kona-espresso hover:text-kona-brown"
@@ -127,7 +127,7 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden md:flex items-center">
             <Button variant="aloha" size="sm" asChild>
               <Link href="/app">
                 <Download className="w-4 h-4 mr-2" />
@@ -141,7 +141,7 @@ const Header: React.FC = () => {
             variant="ghost"
             size="icon"
             onClick={toggleMobileMenu}
-            className="lg:hidden text-kona-espresso"
+            className="md:hidden text-kona-espresso"
             aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
@@ -160,7 +160,7 @@ const Header: React.FC = () => {
         {isMobileMenuOpen && (
           <motion.div
             id="mobile-menu"
-            className="lg:hidden bg-kona-white border-t border-kona-taupe/20"
+            className="md:hidden bg-kona-white border-t border-kona-taupe/20"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
