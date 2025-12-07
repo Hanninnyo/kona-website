@@ -112,7 +112,7 @@ Homepage announcement is controlled by `src/content/homepage.json`:
 {
   "announcement": {
     "enabled": true,
-    "title": "Our first shop opens late 2025!",
+    "title": "Storefront opening spring 2026!",
     "subtitle": "Mountain View — San Antonio Village Center",
     "heroImage": "/images/store/opening-hero.jpg"
   }
