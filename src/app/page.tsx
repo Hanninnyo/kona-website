@@ -50,7 +50,7 @@ const featuredItems: MenuItem[] = [
       "Hawaiian-style banana bread with purple ube swirl, perfectly moist and naturally sweet",
     price: { amount: 4.50, currency: "USD" },
     category: "pastries",
-    image: "/images/menu/ube-banana-bread.jpg",
+    image: "/images/menu/ube-banana-bread",
     tags: ["banana", "ube", "hawaiian", "sweet"],
     modifiers: [],
     inStock: true,
@@ -64,7 +64,7 @@ const testimonials = [
     location: "Valley Medical Center",
     rating: 5,
     text: "Having Kona Island Coffee at our hospital brightens everyone's day! Their Kona Island Latte gives me the energy to care for patients.",
-    avatar: "/images/avatar-sarah.jpg",
+    avatar: "/images/avatar-sarah",
   },
   {
     name: "Marcus Rodriguez",
@@ -147,10 +147,10 @@ export default function HomePage() {
     </div>
 
     {/* Decorative Elements */}
-    <div className="absolute top-2 left-4 text-2xl animate-bounce" style={{ animationDelay: '0s' }}>🏪</div>
+    <div className="absolute top-2 left-4 text-2xl animate-bounce" style={{ animationDelay: '0s' }}>🌺</div>
     <div className="absolute top-4 right-8 text-xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌺</div>
-    <div className="absolute bottom-2 left-8 text-lg animate-bounce" style={{ animationDelay: '1s' }}>☕</div>
-    <div className="absolute bottom-4 right-4 text-2xl animate-bounce" style={{ animationDelay: '1.5s' }}>🎉</div>
+    <div className="absolute bottom-2 left-8 text-lg animate-bounce" style={{ animationDelay: '1s' }}>🌺</div>
+    <div className="absolute bottom-4 right-4 text-2xl animate-bounce" style={{ animationDelay: '1.5s' }}>🌺</div>
   </section>
 )}
       {/* Hero Section */}
@@ -381,7 +381,7 @@ export default function HomePage() {
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 text-6xl">🌺</div>
           <div className="absolute top-20 right-20 text-4xl">🌴</div>
-          <div className="absolute bottom-20 left-20 text-5xl">☕</div>
+          <div className="absolute bottom-20 left-20 text-5xl">🌺</div>
           <div className="absolute bottom-10 right-10 text-3xl">🏄‍♀️</div>
         </div>
 
