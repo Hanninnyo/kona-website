@@ -99,32 +99,21 @@ const StoryPage: React.FC = () => {
   // 1. Upload your new photo to: /public/images/farmers/keoni-nakamura.jpg
   // 2. The path below ("/images/farmers/farming-ohana-1.jpg") will automatically load it
   //
-  const farmers = [
-    {
-      name: "Keoni Nakamura",
-      farm: "Nakamura Family Farm",
-      generations: "4th Generation",
-      specialty: "Traditional Natural Process",
-      image: "/images/farmers/farming-ohana-1.jpg", // Replace with your farmer photo
-      quote: "Our family has been growing coffee on these slopes for over 100 years. The partnership with Kona Island Coffee allows us to continue our tradition while reaching coffee lovers around the world."
-    },
-    {
-      name: "Lei Tanaka",
-      farm: "Mauka Coffee Estate",
-      generations: "3rd Generation",
-      specialty: "Organic Cultivation",
-      image: "/images/farmers/farming-ohana-2.jpg", // Replace with your farmer photo
-      quote: "Sustainability isn&apos;t just a practice for us—it&apos;s our kuleana (responsibility) to the land that has provided for our ʻohana for generations."
-    },
-    {
-      name: "Paulo Silva",
-      farm: "Silva Heritage Farm",
-      generations: "5th Generation",
-      specialty: "Honey Process Innovation",
-      image: "/images/farmers/farming-ohana-3.jpg", // Replace with your farmer photo
-      quote: "Innovation and tradition can work together. We honor our ancestors while finding new ways to bring out the best in every bean."
-    }
-  ]
+ const farmers = [
+  {
+    name: 'Kona Premium Coffee Company',
+    farm: 'Kona, Hawaiʻi',
+    quote:
+      'Our signature coffees start on the volcanic slopes of Kona, where skilled farmers nurture each tree with care. Through our partnership with Kona Premium Coffee Company, we’re able to bring you authentic Kona coffee that’s hand-harvested and roasted to highlight its naturally smooth, rich flavor.',
+  },
+  {
+    name: 'Kauaʻi Coffee Company',
+    farm: 'Swiss Water® Decaf – 100% Hawaiian',
+    quote:
+      'For guests who prefer to sip without the caffeine, we serve a 100% Hawaiian Swiss Water® decaf from Kauaʻi Coffee Company. This gentle, chemical-free decaffeination process keeps the integrity of the beans and the taste of the islands, so you can enjoy a late-day cup with full flavor and zero jitters.',
+  },
+];
+
 
   return (
     <div className="pt-20 min-h-screen bg-kona-white relative overflow-hidden">
