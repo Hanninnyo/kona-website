@@ -173,25 +173,27 @@ const StoryPage: React.FC = () => {
               className="space-y-6"
             >
               <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso">
-                It Started with a Mobile Dream
+                Our Journey
               </h2>
 
               <p className="text-kona-espresso/80 text-lg leading-relaxed">
-                Our coffee truck story began with a shared love for two things: exceptional coffee and the enchanting spirit of Hawaii.
-                It was during a trip to the Big Island that we first tasted the rich, smooth flavors of Kona coffee,
-                and it was love at first sip.
+                Our coffee journey began with a shared love for two things: exceptional coffee and the enchanting spirit of Hawaiʻi. On a trip to the Big Island, we tasted 100% Kona coffee for the very first time — rich, smooth, and full of warmth — and it was love at first sip.
               </p>
 
               <p className="text-kona-espresso/80 text-lg leading-relaxed">
-                &ldquo;We knew we had to bring this incredible coffee experience back home,&rdquo; we decided.
-                &ldquo;But we wanted to do it in a way that captured the mobile, community-focused spirit of Hawaiian culture—
-                so we chose the coffee truck route to literally bring aloha to people wherever they are.&rdquo;
+                On the flight home, we couldn't stop talking about it. What if we could bottle up that feeling of sunshine, ocean breeze, and aloha, and share it with our community in the Bay Area? That's where the dream of Kona Island Coffee was born.
               </p>
 
               <p className="text-kona-espresso/80 text-lg leading-relaxed">
-                From our flagship weekday spot at Valley Medical Center to our Saturday routes throughout the Bay Area,
-                we&apos;ve built a mobile ʻohana that brings authentic Hawaiian coffee culture directly to our community,
-                one cup and one smile at a time.
+                We're Hanna Mejia Hans and Jorge Mejia, the husband-and-wife team behind Kona Island Coffee. With a lot of heart and a little bit of courage, we turned that dream into a mobile coffee ʻohana on wheels. We spent months researching, designing our trailer, partnering with local Kona farmers, and crafting a menu that celebrates both authentic Hawaiian flavors and the diverse tastes of our Bay Area community.
+              </p>
+
+              <p className="text-kona-espresso/80 text-lg leading-relaxed">
+                Every cup we serve is our way of saying "e komo mai" — welcome. From our weekday spot at Valley Medical Center to weekend events and future storefront in Mountain View, our goal is to bring a moment of island calm into your busy day.
+              </p>
+
+              <p className="text-kona-espresso/80 text-lg leading-relaxed">
+                When you visit Kona Island Coffee, you're not just grabbing a drink. You're supporting small family farms in Hawaiʻi, a local family business here in California, and a vision built on love, resilience, and the spirit of aloha. We're so grateful you're here, and we can't wait to share a cup with you.
               </p>
             </motion.div>
           </div>

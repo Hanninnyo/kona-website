@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
           zipCode: '94102'
         },
         coordinates: { lat: 37.7749, lng: -122.4194 },
-        phone: '(555) KONA-123',
+        phone: '(408) 513-6455',
         hours: {},
         features: []
       },

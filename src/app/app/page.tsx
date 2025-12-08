@@ -15,7 +15,7 @@ const AppPage: React.FC = () => {
   const features = [
     {
       icon: Coffee,
-      title: 'Order Ahead',
+      title: 'Order Ahead (Coming Soon)',
       description: 'Skip the line and have your favorite drink ready when you arrive'
     },
     {
@@ -58,14 +58,14 @@ const AppPage: React.FC = () => {
               transition={{ duration: 0.6 }}
             >
               <h1 className="font-league-spartan text-4xl md:text-5xl lg:text-6xl font-bold text-kona-espresso mb-4">
-                Aloha in Your Pocket
+                App Coming Soon
               </h1>
               <p className="text-lg md:text-xl text-kona-espresso/70 mb-8 leading-relaxed">
-                Download the Kona Island Coffee app and experience the convenience of mobile ordering,
-                real-time tracking, and exclusive rewards. Your favorite Hawaiian coffee, just a tap away.
+                We're working on bringing you an amazing mobile app experience with real-time tracking,
+                exclusive rewards, and more. In the meantime, enjoy convenient online ordering through Square!
               </p>
 
-              {/* Download Buttons */}
+              {/* Order Online Button */}
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 <Button
                   variant="aloha"
@@ -73,38 +73,24 @@ const AppPage: React.FC = () => {
                   className="text-lg px-8"
                   asChild
                 >
-                  <a href="#" aria-label="Download on the App Store">
-                    <Download className="mr-2 w-5 h-5" />
-                    App Store
-                  </a>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="text-lg px-8 border-kona-brown text-kona-brown hover:bg-kona-brown hover:text-white"
-                  asChild
-                >
-                  <a href="#" aria-label="Get it on Google Play">
-                    <Download className="mr-2 w-5 h-5" />
-                    Google Play
+                  <a
+                    href="https://kona-island-coffee-llc.square.site/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Order online via Square"
+                  >
+                    <Coffee className="mr-2 w-5 h-5" />
+                    Order Online Now
                   </a>
                 </Button>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center">
-                  <div className="font-league-spartan text-3xl font-bold text-kona-brown">50K+</div>
-                  <div className="text-sm text-kona-espresso/60">Downloads</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-league-spartan text-3xl font-bold text-kona-teal">4.9</div>
-                  <div className="text-sm text-kona-espresso/60">Rating</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-league-spartan text-3xl font-bold text-kona-brown">100K+</div>
-                  <div className="text-sm text-kona-espresso/60">Orders</div>
-                </div>
+              {/* Message */}
+              <div className="p-6 bg-kona-teal/10 rounded-kona">
+                <p className="text-kona-espresso/80 leading-relaxed">
+                  Stay tuned for updates on our mobile app launch! For now, order your favorite drinks
+                  online through our Square ordering page.
+                </p>
               </div>
             </motion.div>
 
@@ -147,10 +133,10 @@ const AppPage: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-4">
-              Everything You Need
+              Future App Features
             </h2>
             <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              The Kona Island Coffee app brings the full aloha experience to your fingertips
+              Here's what we're planning for the Kona Island Coffee app
             </p>
           </motion.div>
 
@@ -244,10 +230,10 @@ const AppPage: React.FC = () => {
             className="text-center max-w-3xl mx-auto"
           >
             <h2 className="font-league-spartan text-3xl md:text-4xl font-bold mb-4">
-              Ready to Experience Mobile Aloha?
+              Order Online Today
             </h2>
             <p className="text-lg text-kona-white/90 mb-8">
-              Join thousands of coffee lovers who order their daily dose of Hawaiian sunshine through our app
+              While we work on our mobile app, enjoy convenient online ordering through Square
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -257,23 +243,13 @@ const AppPage: React.FC = () => {
                 className="text-lg px-8"
                 asChild
               >
-                <a href="#" aria-label="Download on the App Store">
-                  <Download className="mr-2 w-5 h-5" />
-                  Download Now
-                </a>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="text-lg px-8 border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso"
-                asChild
-              >
                 <a
                   href="https://kona-island-coffee-llc.square.site/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Order Online
+                  <Coffee className="mr-2 w-5 h-5" />
+                  Order Online Now
                 </a>
               </Button>
             </div>
