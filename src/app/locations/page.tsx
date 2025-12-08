@@ -78,11 +78,5 @@ export default function Locations() {
           Book our trailer for private events →
         </a>
       </div>
-
-      {/* Copyright */}
-      <footer className="mt-12 text-center text-xs text-kona-white/60">
-        © 2025 Kona Island Coffee — All Rights Reserved.
-      </footer>
-    </main>
   );
 }
