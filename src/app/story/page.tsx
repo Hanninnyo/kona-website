@@ -113,8 +113,6 @@ const StoryPage: React.FC = () => {
       'For guests who prefer to sip without the caffeine, we serve a 100% Hawaiian Swiss Water® decaf from Kauaʻi Coffee Company. This gentle, chemical-free decaffeination process keeps the integrity of the beans and the taste of the islands, so you can enjoy a late-day cup with full flavor and zero jitters.',
   },
 ];
-
-
   return (
     <div className="pt-20 min-h-screen bg-kona-white relative overflow-hidden">
       <CoffeeBeanParticles />
