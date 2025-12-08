@@ -234,8 +234,8 @@ export default function HomePage() {
             >
               <div className="relative h-96 lg:h-[500px] rounded-kona overflow-hidden">
                 <Image
-                  src="/images/coffee-farm-mauna-loa.jpg"
-                  alt="Kona coffee farm on Mauna Loa slopes"
+                  src="/images/coffee-truck.jpg"
+                  alt="Our Kona Island Coffee truck in the Bay Area"
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
