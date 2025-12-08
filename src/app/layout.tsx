@@ -8,16 +8,17 @@ export const metadata: Metadata = {
     "Premium Kona coffee, crêpes, and pastries. Visit us in San Jose and Mountain View (coming soon).",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-kona-white text-kona-espresso">
+      <body>
         <Header />
-        <main className="pt-16">{children}</main>
+        {children}
+
+        {/* GLOBAL COPYRIGHT FOOTER */}
+        <footer className="py-6 text-center text-kona-espresso/60 text-sm">
+          © {new Date().getFullYear()} Kona Island Coffee — All Rights Reserved.
+        </footer>
       </body>
     </html>
   );
