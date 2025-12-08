@@ -1,51 +1,42 @@
-"use client"
+"use client";
 
-import React from 'react'
-import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { Plus, Leaf, Flame, Snowflake } from 'lucide-react'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { formatPrice } from '@/lib/utils'
-import type { MenuItem } from '@/lib/types'
+import React from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Leaf, Flame, Snowflake } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { formatPrice } from "@/lib/utils";
+import type { MenuItem } from "@/lib/types";
 
 interface MenuItemCardProps {
-  item: MenuItem
-  onAddToCart: (item: MenuItem) => void
-  onCustomize?: (item: MenuItem) => void
-  className?: string
+  item: MenuItem;
+  onAddToCart: (item: MenuItem) => void; // still in the type so callers don’t break, but unused
+  onCustomize?: (item: MenuItem) => void;
+  className?: string;
 }
 
 const MenuItemCard: React.FC<MenuItemCardProps> = ({
   item,
-  onAddToCart,
-  onCustomize,
-  className = ""
+  onAddToCart, // unused for now
+  onCustomize,  // unused for now
+  className = "",
 }) => {
   const getDietaryIcon = (tag: string) => {
     switch (tag.toLowerCase()) {
-      case 'vegan':
-      case 'organic':
-        return <Leaf className="w-3 h-3" />
-      case 'hot':
-      case 'spicy':
-        return <Flame className="w-3 h-3" />
-      case 'iced':
-      case 'cold':
-        return <Snowflake className="w-3 h-3" />
+      case "vegan":
+      case "organic":
+        return <Leaf className="w-3 h-3" />;
+      case "hot":
+      case "spicy":
+        return <Flame className="w-3 h-3" />;
+      case "iced":
+      case "cold":
+        return <Snowflake className="w-3 h-3" />;
       default:
-        return null
+        return null;
     }
-  }
-
-  // Unused for now but may be needed for future badge logic
-  // const getBadgeVariant = (tag: string) => {
-  //   if (item.isNew) return 'new'
-  //   if (item.isPopular) return 'popular'
-  //   if (item.isSeasonal) return 'seasonal'
-  //   return 'secondary'
-  // }
+  };
 
   return (
     <motion.div
@@ -56,11 +47,11 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
       transition={{ duration: 0.3 }}
       className={className}
     >
-      <Card className="h-full overflow-hidden group cursor-pointer">
+      <Card className="h-full overflow-hidden group">
         {/* Image Container */}
         <div className="relative h-48 overflow-hidden">
           <Image
-            src={item.image || '/images/placeholder-drink.jpg'}
+            src={item.image || "/images/placeholder-drink.jpg"}
             alt={item.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-110"
@@ -88,7 +79,10 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
           {/* Stock Status */}
           <div className="absolute top-3 right-3">
-            <Badge variant={item.inStock ? "in-stock" : "sold-out"} className="text-xs">
+            <Badge
+              variant={item.inStock ? "in-stock" : "sold-out"}
+              className="text-xs"
+            >
               {item.inStock ? "In Stock" : "Sold Out"}
             </Badge>
           </div>
@@ -135,38 +129,19 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
 
           {/* Nutrition Info (if available) */}
           {item.nutritionInfo && (
-            <div className="text-xs text-kona-espresso/60 mb-3">
+            <div className="text-xs text-kona-espresso/60">
               <span>{item.nutritionInfo.calories} cal</span>
               {item.nutritionInfo.caffeine && (
-                <span className="ml-2">• {item.nutritionInfo.caffeine}mg caffeine</span>
+                <span className="ml-2">
+                  • {item.nutritionInfo.caffeine}mg caffeine
+                </span>
               )}
             </div>
           )}
         </CardContent>
-
-        <CardFooter className="p-4 pt-0">
-          {item.inStock ? (
-            <div className="w-full space-y-2">
-              <Button
-                variant="aloha"
-                className="w-full group-hover:shadow-kona-medium transition-shadow"
-                onClick={() => onCustomize ? onCustomize(item) : onAddToCart(item)}
-              >
-              )}
-            </div>
-          ) : (
-            <Button
-              variant="secondary"
-              className="w-full"
-              disabled
-            >
-              Currently Unavailable
-            </Button>
-          )}
-        </CardFooter>
       </Card>
     </motion.div>
-  )
-}
+  );
+};
 
-export default MenuItemCard
+export default MenuItemCard;
