@@ -28,8 +28,6 @@ const Header: React.FC = () => {
     { label: 'Home', href: '/', icon: Home },
     { label: 'Our Story', href: '/story', icon: Users },
     { label: 'Coffee', href: '/coffee', icon: Coffee },
-    { label: 'Pastries', href: '/pastries', icon: Croissant },
-    { label: 'Menu', href: '/menu-preview', icon: BookOpen },
     { label: 'Catering', href: '/catering', icon: UtensilsCrossed },
     { label: 'Locations', href: '/locations', icon: MapPin },
     { label: 'Order Online', href: 'https://kona-island-coffee-llc.square.site/', icon: ShoppingBag, external: true },

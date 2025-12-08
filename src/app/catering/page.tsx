@@ -37,25 +37,25 @@ const CateringPage: React.FC = () => {
   const packages = [
     {
       name: 'Essential',
-      price: 'Starting at $250',
+      price: 'Starting at $500',
       features: [
-        'Mobile coffee truck on-site',
-        'Up to 50 servings',
-        '3 signature drink options',
+        'Get our mobile coffee truck on-site',
+        'Dedicated barista team',
         'Basic setup and cleanup',
-        '2-hour service window'
+        'Customers pay out of pocket',
+        'Minimum guarantee of 100 paying customers'
       ]
     },
     {
       name: 'Premium',
-      price: 'Starting at $500',
+      price: 'Starting at $1000',
       features: [
         'Mobile coffee truck on-site',
-        'Up to 100 servings',
+        'Up to 100 servings included',
         '5 signature drink options',
-        'Premium pastries included',
         '4-hour service window',
-        'Custom branded signage'
+        'Custom branded signage',
+        'Dedicated barista team'
       ],
       popular: true
     },
@@ -66,7 +66,7 @@ const CateringPage: React.FC = () => {
         'Mobile coffee truck on-site',
         'Unlimited servings',
         'Full menu access',
-        'Premium pastries & food',
+        'Premium pastries & food options',
         'Full-day service',
         'Custom branded cups',
         'Dedicated barista team'
@@ -107,9 +107,9 @@ const CateringPage: React.FC = () => {
                   </a>
                 </Button>
                 <Button variant="outline" size="lg" asChild>
-                  <a href="tel:555-KONA-123">
+                  <a href="tel:+14085136455">
                     <Phone className="mr-2 w-5 h-5" />
-                    (555) KONA-123
+                    (408) 513-6455
                   </a>
                 </Button>
               </div>
@@ -320,8 +320,8 @@ const CateringPage: React.FC = () => {
                 <CardContent className="p-6">
                   <Phone className="w-8 h-8 mx-auto mb-3 text-kona-teal" />
                   <h3 className="font-semibold mb-2">Call Us</h3>
-                  <a href="tel:555-KONA-123" className="text-kona-white/90 hover:text-kona-teal transition-colors">
-                    (555) KONA-123
+                  <a href="tel:+14085136455" className="text-kona-white/90 hover:text-kona-teal transition-colors">
+                    (408) 513-6455
                   </a>
                 </CardContent>
               </Card>
@@ -330,8 +330,8 @@ const CateringPage: React.FC = () => {
                 <CardContent className="p-6">
                   <Mail className="w-8 h-8 mx-auto mb-3 text-kona-teal" />
                   <h3 className="font-semibold mb-2">Email Us</h3>
-                  <a href="mailto:catering@konaislandcoffee.com" className="text-kona-white/90 hover:text-kona-teal transition-colors">
-                    catering@konaislandcoffee.com
+                  <a href="mailto:contact@konaislandcoffee.com" className="text-kona-white/90 hover:text-kona-teal transition-colors">
+                    contact@konaislandcoffee.com
                   </a>
                 </CardContent>
               </Card>
@@ -348,7 +348,7 @@ const CateringPage: React.FC = () => {
             </div>
 
             <Button variant="teal" size="lg" className="text-lg px-8" asChild>
-              <a href="mailto:catering@konaislandcoffee.com">
+              <a href="mailto:contact@konaislandcoffee.com">
                 <Mail className="mr-2 w-5 h-5" />
                 Request a Quote
               </a>

@@ -16,12 +16,11 @@ const Footer: React.FC = () => {
   ]
 
   const quickLinks = [
-    { label: 'Menu', href: '/menu' },
     { label: 'Coffee', href: '/coffee' },
-    { label: 'Pastries & Crepes', href: '/pastries' },
     { label: 'Our Story', href: '/story' },
+    { label: 'Catering', href: '/catering' },
     { label: 'Locations', href: '/locations' },
-    { label: 'Order Online', href: '/order' },
+    { label: 'Order Online', href: 'https://kona-island-coffee-llc.square.site/' },
   ]
 
   const supportLinks = [
@@ -193,20 +192,20 @@ const Footer: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-kona-teal flex-shrink-0" />
                 <a
-                  href="tel:+1-555-KONA-123"
+                  href="tel:+14085136455"
                   className="text-kona-white/80 hover:text-kona-teal transition-colors"
                 >
-                  (555) KONA-123
+                  (408) 513-6455
                 </a>
               </div>
 
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-kona-teal flex-shrink-0" />
                 <a
-                  href="mailto:aloha@konaislandcoffee.com"
+                  href="mailto:contact@konaislandcoffee.com"
                   className="text-kona-white/80 hover:text-kona-teal transition-colors"
                 >
-                  aloha@konaislandcoffee.com
+                  contact@konaislandcoffee.com
                 </a>
               </div>
             </div>
