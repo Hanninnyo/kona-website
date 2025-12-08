@@ -233,9 +233,9 @@ const LocationsPage: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-1 text-sm">
-                  <div>Mon-Thu: 6:00 AM - 8:00 PM</div>
-                  <div>Fri-Sat: 6:00 AM - 9:00 PM</div>
-                  <div>Sunday: 7:00 AM - 7:00 PM</div>
+                  <div>Mon-Fri: 7:30 AM - 4:00 PM</div>
+                  <div>Sat: 8:30 AM - 1:30 PM</div>
+                  <div>Sunday: closed</div>
                 </div>
                 <p className="text-xs text-kona-espresso/60 mt-3">
                   *Hours may vary by location
