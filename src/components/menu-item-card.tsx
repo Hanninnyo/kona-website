@@ -152,18 +152,6 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
                 className="w-full group-hover:shadow-kona-medium transition-shadow"
                 onClick={() => onCustomize ? onCustomize(item) : onAddToCart(item)}
               >
-                <Plus className="w-4 h-4 mr-2" />
-                {onCustomize ? 'Customize & Add' : 'Add to Cart'}
-              </Button>
-              {onCustomize && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs"
-                  onClick={() => onAddToCart(item)}
-                >
-                  Quick Add (No Customization)
-                </Button>
               )}
             </div>
           ) : (
