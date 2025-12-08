@@ -58,19 +58,25 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-kona-brown rounded-full flex items-center justify-center group-hover:bg-kona-brown/90 transition-colors">
-              <Coffee className="w-6 h-6 text-kona-white" />
-            </div>
-            <div className="flex flex-col">
-              <span className="font-league-spartan text-xl font-bold text-kona-espresso">
-                Kona Island
-              </span>
-              <span className="font-league-spartan text-xs text-kona-brown -mt-1">
-                Coffee
-              </span>
-            </div>
-          </Link>
+          <Link href="/" className="flex items-center space-x-3 group">
+  <div className="relative w-10 h-10">
+    <Image
+      src="/images/logo-mark.png"
+      alt="Kona Island Coffee Logo"
+      fill
+      className="object-contain"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <span className="font-league-spartan text-xl font-bold text-kona-espresso">
+      Kona Island
+    </span>
+    <span className="font-league-spartan text-xs text-kona-brown -mt-1">
+      Coffee
+    </span>
+  </div>
+</Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-4 lg:space-x-6" role="navigation" aria-label="Main menu">
