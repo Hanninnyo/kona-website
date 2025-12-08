@@ -101,16 +101,22 @@ const StoryPage: React.FC = () => {
   //
  const farmers = [
   {
-    name: 'Kona Premium Coffee Company',
-    farm: 'Kona, Hawaiʻi',
+    name: "Kona Premium Coffee Company",
+    farm: "Kona, Hawaiʻi",
+    generations: "Partner Farm",
+    specialty: "Authentic Kona coffee",
+    image: "/images/kona-premium-farm.jpg",
     quote:
-      'Our signature coffees start on the volcanic slopes of Kona, where skilled farmers nurture each tree with care. Through our partnership with Kona Premium Coffee Company, we’re able to bring you authentic Kona coffee that’s hand-harvested and roasted to highlight its naturally smooth, rich flavor.',
+      "Our signature coffees start on the volcanic slopes of Kona, where skilled farmers nurture each tree with care. Through our partnership with Kona Premium Coffee Company, we’re able to bring you authentic Kona coffee that’s hand-harvested and roasted to highlight its naturally smooth, rich flavor.",
   },
   {
-    name: 'Kauaʻi Coffee Company',
-    farm: 'Swiss Water® Decaf – 100% Hawaiian',
+    name: "Kauaʻi Coffee Company",
+    farm: "Swiss Water® Decaf – 100% Hawaiian",
+    generations: "Partner Farm",
+    specialty: "Swiss Water® Decaf",
+    image: "/images/kauai-coffee-farm.jpg",
     quote:
-      'For guests who prefer to sip without the caffeine, we serve a 100% Hawaiian Swiss Water® decaf from Kauaʻi Coffee Company. This gentle, chemical-free decaffeination process keeps the integrity of the beans and the taste of the islands, so you can enjoy a late-day cup with full flavor and zero jitters.',
+      "For guests who prefer to sip without the caffeine, we serve a 100% Hawaiian Swiss Water® decaf from Kauaʻi Coffee Company. This gentle, chemical-free decaffeination process keeps the integrity of the beans and the taste of the islands, so you can enjoy a late-day cup with full flavor and zero jitters.",
   },
 ];
   return (
@@ -319,7 +325,7 @@ const StoryPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Farmer Partners */}
+            {/* Farmer Partners */}
       <section className="py-16 bg-kona-taupe/10">
         <div className="container mx-auto px-4 lg:px-8">
           <motion.div
@@ -333,11 +339,12 @@ const StoryPage: React.FC = () => {
               Our Farming ʻOhana
             </h2>
             <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              Meet the multi-generational families who grow our coffee with passion and tradition
+              Behind every cup of Kona Island Coffee is a network of growers in Hawaiʻi that we&apos;re proud to call part of our ʻohana. We partner with trusted farms who care for the land, the trees, and the people just as much as we do.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Two wider cards with photos on top */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
             {farmers.map((farmer, index) => (
               <motion.div
                 key={farmer.name}
@@ -347,22 +354,24 @@ const StoryPage: React.FC = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <Card className="overflow-hidden border-0 shadow-kona-soft hover:shadow-kona-medium transition-shadow h-full">
-                  <div className="relative h-64">
+                  {/* Image on top */}
+                  <div className="relative h-48 md:h-56 lg:h-64">
                     <Image
                       src={farmer.image}
                       alt={farmer.name}
                       fill
                       className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 50vw"
                     />
                   </div>
+
                   <CardHeader>
-                    <CardTitle className="text-xl text-kona-espresso">
+                    <CardTitle className="text-xl md:text-2xl text-kona-espresso">
                       {farmer.name}
                     </CardTitle>
                     <p className="text-kona-brown font-medium">{farmer.farm}</p>
-                    <p className="text-kona-espresso/70 text-sm">{farmer.generations} • {farmer.specialty}</p>
                   </CardHeader>
+
                   <CardContent>
                     <blockquote className="text-kona-espresso/80 italic border-l-4 border-kona-teal pl-4">
                       &ldquo;{farmer.quote}&rdquo;
