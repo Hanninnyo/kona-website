@@ -104,6 +104,19 @@ export default function HomePage() {
               <div className="flex items-center justify-center space-x-2 mb-2">
                 <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
                 <span className="font-league-spartan text-lg font-bold text-kona-espresso">EXCITING NEWS!</span>
+                {/* Photo Under the Announcement */}
+<div className="mt-6 flex justify-center">
+  <div className="relative w-full max-w-3xl h-64 md:h-80 lg:h-96 rounded-kona overflow-hidden shadow-kona-medium">
+    <Image 
+      src="/images/storefront-2026.jpg"
+      alt="Kona Island Coffee storefront opening in Mountain View spring 2026"
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+    />
+  </div>
+</div>
+
                 <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
               </div>
               <h2 className="font-league-spartan text-xl md:text-2xl font-bold mb-2 text-kona-espresso">
