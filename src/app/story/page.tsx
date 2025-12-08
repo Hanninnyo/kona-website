@@ -1,7 +1,25 @@
 "use client"
 
 import React from 'react'
-import Image from 'next/image'
+import Image from "next/image";
+
+// inside the JSX:
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+  <div className="relative h-80 lg:h-[420px] rounded-kona overflow-hidden">
+    <Image
+      src="/images/founders-hawaii.jpg"
+      alt="Hanna and Jorge in Hawaiʻi"
+      fill
+      className="object-cover"
+      sizes="(max-width: 1024px) 100vw, 50vw"
+    />
+  </div>
+
+  <div className="space-y-4">
+    {/* your about text here */}
+  </div>
+</div>
+
 import { motion } from 'framer-motion'
 import { Heart, Leaf, Users, Award, Globe, Coffee } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
