@@ -134,7 +134,7 @@ const CoffeePage: React.FC = () => {
             </div>
             {/* Photo under the hero badges */}
 <div className="mt-8 flex justify-center">
-  <div className="relative w-full max-w-4xl h-64 md:h-80 lg:h-96 rounded-kona overflow-hidden shadow-kona-medium">
+  <div className="relative w-full max-w-4xl h-80 md:h-[420px] lg:h-[500px] rounded-kona overflow-hidden shadow-kona-medium">
     <Image
       src="/images/kona-coffee-hero.jpg"
       alt="Kona coffee beans and farm in Hawaiʻi"
