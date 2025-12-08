@@ -99,10 +99,7 @@ const CoffeePage: React.FC = () => {
         <div className="absolute inset-0">
           <Image
             src="/images/kona-coffee-plantation.jpg"
-            alt="Kona Coffee Plantation"
-            fill
-            className="object-cover opacity-20"
-            sizes="100vw"
+            alt=""   // ← changed from "Hawaiian Kona Coffee"
           />
         </div>
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
