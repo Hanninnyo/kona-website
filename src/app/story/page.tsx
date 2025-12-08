@@ -42,6 +42,7 @@ const StoryPage: React.FC = () => {
       year: "2023",
       title: "First Coffee Truck Launch",
       description: "Launched our first Kona Island Coffee truck, starting with a single route and a mission to share authentic Hawaiian coffee with our community."
+      image: "/images/2023-first-coffee-truck-launch.jpg",
     },
     {
       year: "2023",
