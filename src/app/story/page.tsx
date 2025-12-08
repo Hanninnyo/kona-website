@@ -212,16 +212,15 @@ const StoryPage: React.FC = () => {
         </div>
       </section>
 
-                 {/* Timeline */}
-      <section className="py-20 bg-kona-taupe/15">
+                       {/* Timeline */}
+      <section className="py-16 bg-kona-taupe/10">
         <div className="container mx-auto px-4 lg:px-8">
-          {/* Section header */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-14"
+            className="text-center mb-12"
           >
             <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-3">
               Our Journey Through Time
@@ -231,63 +230,45 @@ const StoryPage: React.FC = () => {
             </p>
           </motion.div>
 
-          <div className="relative max-w-5xl mx-auto">
-            {/* Vertical timeline line */}
-            <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-[3px] bg-gradient-to-b from-kona-teal via-kona-brown to-kona-teal md:-translate-x-1/2 rounded-full" />
+          <div className="relative max-w-4xl mx-auto">
+            {/* Vertical line */}
+            <div className="absolute left-4 top-0 bottom-0 w-[2px] bg-kona-teal/70 rounded-full md:left-6" />
 
-            <div className="space-y-12 md:space-y-16">
-              {timeline.map((event, index) => {
-                const isLeft = index % 2 === 0
+            <div className="space-y-10">
+              {timeline.map((event, index) => (
+                <motion.div
+                  key={`${event.year}-${event.title}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="relative flex items-start gap-4 pl-8 md:pl-10"
+                >
+                  {/* Dot */}
+                  <div className="absolute left-0 md:left-2 mt-1">
+                    <div className="w-4 h-4 rounded-full border-2 border-kona-white bg-kona-teal shadow-kona-soft" />
+                  </div>
 
-                return (
-                  <motion.div
-                    key={`${event.year}-${event.title}`}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.05 }}
-                    className="relative flex flex-col md:flex-row"
-                  >
-                    {/* Dot on the line */}
-                    <div className="absolute left-4 md:left-1/2 top-4 md:top-6 -translate-x-1/2">
-                      <div className="w-6 h-6 rounded-full border-4 border-kona-white bg-kona-teal shadow-kona-medium flex items-center justify-center">
-                        <div className="w-2 h-2 rounded-full bg-kona-white" />
-                      </div>
-                    </div>
-
-                    {/* Spacer column (for alternating layout on desktop) */}
-                    <div
-                      className={`hidden md:block md:w-1/2 ${
-                        isLeft ? "md:pr-10" : "md:pl-10"
-                      }`}
-                    />
-
-                    {/* Card column */}
-                    <div
-                      className={`
-                        md:w-1/2 mt-8 md:mt-0
-                        ${isLeft ? "md:pl-10 md:text-right" : "md:pr-10 md:text-left"}
-                      `}
-                    >
-                      <Card className="border-0 shadow-kona-soft bg-kona-white/95 backdrop-blur-sm">
-                        <CardHeader className={isLeft ? "items-end text-right" : "items-start text-left"}>
-                          <span className="text-xs tracking-[0.2em] uppercase text-kona-espresso/60 mb-1">
-                            {event.year}
-                          </span>
-                          <CardTitle className="text-xl md:text-2xl text-kona-espresso">
-                            {event.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className={isLeft ? "text-right" : "text-left"}>
-                          <p className="text-kona-espresso/80 leading-relaxed">
-                            {event.description}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </motion.div>
-                )
-              })}
+                  {/* Card */}
+                  <div className="flex-1">
+                    <Card className="border-0 shadow-kona-soft bg-kona-white/95">
+                      <CardHeader className="pb-2">
+                        <span className="text-xs tracking-[0.2em] uppercase text-kona-espresso/60">
+                          {event.year}
+                        </span>
+                        <CardTitle className="text-xl md:text-2xl text-kona-espresso mt-1">
+                          {event.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-kona-espresso/80 leading-relaxed">
+                          {event.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
