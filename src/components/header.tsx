@@ -127,14 +127,12 @@ const Header: React.FC = () => {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center">
-            <Button variant="aloha" size="sm" asChild>
-              <Link href="/app">
-                <Download className="w-4 h-4 mr-2" />
-                Get the App
-              </Link>
-            </Button>
-          </div>
+<div className="hidden md:flex items-center">
+  <Button variant="outline" size="sm" disabled>
+    App Coming Soon
+  </Button>
+</div>
+
 
           {/* Mobile Menu Button */}
           <Button
