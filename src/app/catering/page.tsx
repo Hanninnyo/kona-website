@@ -155,7 +155,7 @@ const CateringPage: React.FC = () => {
               className="relative h-96 rounded-kona overflow-hidden shadow-kona-medium"
             >
               <Image
-                src="/images/coffee-truck-event.jpg"
+                src="/images/catering-event.jpg"
                 alt="Kona Island Coffee truck at an event"
                 fill
                 className="object-cover"
