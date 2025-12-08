@@ -129,10 +129,7 @@ const StoryPage: React.FC = () => {
         <div className="absolute inset-0">
           <Image
             src="/images/hawaiian-sunrise.jpg"
-            alt="Hawaiian Coffee Farm at Sunrise"
-            fill
-            className="object-cover opacity-20"
-            sizes="100vw"
+            alt=""// ← changed from Hawaiian Coffee Farm at Sunrise"
           />
         </div>
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
