@@ -78,5 +78,5 @@ export default function Locations() {
           Book our trailer for private events →
         </a>
       </div>
-  );
+  )
 }
