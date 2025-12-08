@@ -20,7 +20,7 @@ const featuredItems: MenuItem[] = [
     name: "Kona Island Latte",
     description:
       "Our signature espresso latte with authentic Kona coffee and a hint of tropical vanilla",
-    price: { amount: 6.5, currency: "USD" },
+    price: { amount: 6.49, currency: "USD" },
     category: "espresso",
     image: "/images/menu/kona-island-latte-hot.jpg",
     tags: ["signature", "espresso", "macadamia", "kona"],
@@ -34,7 +34,7 @@ const featuredItems: MenuItem[] = [
     name: "Oʻahu Crepe",
     description:
       "Delicate French crepe filled with fresh tropical fruits and topped with coconut whipped cream",
-    price: { amount: 8.95, currency: "USD" },
+    price: { amount: 14.49, currency: "USD" },
     category: "pastries",
     image: "/images//menu/oahu-nutella-crepe.jpg",
     tags: ["crepe", "tropical", "macadamia", "fresh"],
@@ -48,7 +48,7 @@ const featuredItems: MenuItem[] = [
     name: "Ube-Banana Bread",
     description:
       "Hawaiian-style banana bread with purple ube swirl, perfectly moist and naturally sweet",
-    price: { amount: 4.75, currency: "USD" },
+    price: { amount: 4.50, currency: "USD" },
     category: "pastries",
     image: "/images/menu/ube-banana-bread.jpg",
     tags: ["banana", "ube", "hawaiian", "sweet"],
