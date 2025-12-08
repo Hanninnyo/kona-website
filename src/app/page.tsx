@@ -388,12 +388,16 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button variant="teal" size="lg" className="text-lg px-8" asChild>
-                <Link href="/app">
-                  <Download className="mr-2 w-5 h-5" />
-                  Get the App
-                </Link>
-              </Button>
+              <Button
+  variant="outline"
+  size="lg"
+  className="text-lg px-8 border-kona-white text-kona-white/80 cursor-default"
+  disabled
+>
+  <Download className="mr-2 w-5 h-5" />
+  App Coming Soon
+</Button>
+
 
               <Button
                 variant="outline"
