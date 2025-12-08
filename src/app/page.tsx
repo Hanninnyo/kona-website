@@ -50,7 +50,7 @@ const featuredItems: MenuItem[] = [
       "Hawaiian-style banana bread with purple ube swirl, perfectly moist and naturally sweet",
     price: { amount: 4.50, currency: "USD" },
     category: "pastries",
-    image: "/images/menu/ube-banana-bread",
+    image: "/images/menu/ube-banana-bread.jpg",
     tags: ["banana", "ube", "hawaiian", "sweet"],
     modifiers: [],
     inStock: true,
