@@ -132,6 +132,18 @@ const CoffeePage: React.FC = () => {
                 Single Origin
               </Badge>
             </div>
+            {/* Photo under the hero badges */}
+<div className="mt-8 flex justify-center">
+  <div className="relative w-full max-w-4xl h-64 md:h-80 lg:h-96 rounded-kona overflow-hidden shadow-kona-medium">
+    <Image
+      src="/images/kona-coffee-hero.jpg"
+      alt="Kona coffee beans and farm in Hawaiʻi"
+      fill
+      className="object-cover"
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+    />
+  </div>
+</div>
           </motion.div>
         </div>
       </section>
