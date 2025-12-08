@@ -1,13 +1,27 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, MapPin, Coffee, Download, Users, UtensilsCrossed, Home, ShoppingBag, BookOpen, Croissant } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import { useReducedMotion } from '@/hooks/useReducedMotion'
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Menu,
+  X,
+  MapPin,
+  Coffee,
+  Download,
+  Users,
+  UtensilsCrossed,
+  Home,
+  ShoppingBag,
+  BookOpen,
+  Croissant,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+
 
 const Header: React.FC = () => {
   const pathname = usePathname()
