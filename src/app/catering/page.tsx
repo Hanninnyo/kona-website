@@ -114,6 +114,30 @@ const CateringPage: React.FC = () => {
                 </Button>
               </div>
             </motion.div>
+            import Image from "next/image";
+
+// inside your Catering page JSX:
+<section className="py-16 bg-kona-white">
+  <div className="container mx-auto px-4 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <div>
+      <h1 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-4">
+        Catering & Events
+      </h1>
+      {/* existing catering intro text here */}
+    </div>
+
+    <div className="relative h-64 lg:h-80 rounded-kona overflow-hidden shadow-kona-soft">
+      <Image
+        src="/images/catering-event.jpg"
+        alt="Kona Island Coffee catering trailer at an event"
+        fill
+        className="object-cover"
+        sizes="(max-width: 1024px) 100vw, 50vw"
+      />
+    </div>
+  </div>
+</section>
+
 
             <motion.div
               initial={prefersReducedMotion ? {} : { opacity: 0, x: 30 }}
