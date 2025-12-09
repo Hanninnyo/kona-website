@@ -153,12 +153,15 @@ export default function AboutPage() {
                 >
                   <div className="relative w-32 h-32 rounded-full overflow-hidden mb-4 bg-kona-taupe/20">
                     <Image
-                      src={member.photo}
-                      alt={`${member.name} - ${member.role}`}
-                      fill
-                      className="object-cover"
-                      sizes="128px"
-                    />
+  src={member.photo}
+  alt={`${member.name} - ${member.role}`}
+  fill
+  quality={100}
+  priority    // loads at full quality
+  className="object-cover"
+  sizes="160px"
+/>
+
                   </div>
                   <h3 className="font-league-spartan text-xl font-bold text-kona-espresso mb-1">
                     {member.name}
