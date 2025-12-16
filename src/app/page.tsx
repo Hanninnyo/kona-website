@@ -4,7 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { Coffee, Heart, Leaf, Users, Star, ArrowRight, MapPin, Clock, Award, Download } from 'lucide-react'
+import { Coffee, Heart, Leaf, Users, Star, ArrowRight, MapPin, Clock, Award, Download, Gift } from 'lucide-react'
 import Hero from '@/components/hero'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -372,6 +372,77 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Gift Cards Section */}
+      <section className="py-16 bg-gradient-to-br from-kona-teal/10 to-kona-brown/10">
+        <div className="container mx-auto px-4 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="max-w-4xl mx-auto"
+          >
+            <Card className="border-0 shadow-kona-medium overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                {/* Left Side - Content */}
+                <div className="p-8 md:p-10 bg-kona-white flex flex-col justify-center">
+                  <div className="flex items-center mb-4">
+                    <Gift className="w-10 h-10 text-kona-teal mr-3" />
+                    <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso">
+                      Gift Cards
+                    </h2>
+                  </div>
+                  <p className="text-kona-espresso/80 text-lg leading-relaxed mb-6">
+                    Share the aloha spirit with someone special! Our gift cards are the perfect way to
+                    brighten someone's day with authentic Hawaiian coffee and island-inspired treats.
+                    Whether it's a mahalo, celebration, or just because — give the gift of aloha. 🌺
+                  </p>
+                  <p className="text-kona-espresso/70 text-base leading-relaxed mb-6">
+                    Gift cards can be used at our mobile coffee truck, weekend events, and our upcoming
+                    Mountain View storefront. Valid for all menu items and redeemable through our Square
+                    ordering system.
+                  </p>
+                  <div>
+                    <Button
+                      variant="aloha"
+                      size="lg"
+                      className="text-lg px-8"
+                      asChild
+                    >
+                      <a
+                        href="https://app.squareup.com/gift/MLJAP1MDQXKAP/order"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Gift className="mr-2 w-5 h-5" />
+                        Buy Gift Cards
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Right Side - Decorative */}
+                <div className="relative h-64 md:h-auto bg-gradient-to-br from-kona-brown to-kona-teal flex items-center justify-center p-8">
+                  <div className="text-center">
+                    <div className="text-6xl mb-4">🎁</div>
+                    <p className="font-hawaiian-script text-3xl text-white mb-2">
+                      Mahalo nui loa
+                    </p>
+                    <p className="text-white/90 text-sm">
+                      Thank you for spreading aloha
+                    </p>
+                  </div>
+                  {/* Decorative coffee beans */}
+                  <div className="absolute top-4 left-4 text-3xl opacity-50">☕</div>
+                  <div className="absolute bottom-4 right-4 text-3xl opacity-50">🌺</div>
+                  <div className="absolute top-1/2 right-8 text-2xl opacity-30">🌴</div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       </section>
 
