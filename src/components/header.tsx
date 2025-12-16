@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, MapPin, Coffee, Download, Users, UtensilsCrossed, Home, ShoppingBag, BookOpen, Croissant } from 'lucide-react'
+import { Menu, X, MapPin, Coffee, Download, Users, UtensilsCrossed, Home, ShoppingBag, BookOpen, Croissant, Gift } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -29,6 +29,7 @@ const Header: React.FC = () => {
     { label: 'Our Story', href: '/story', icon: Users },
     { label: 'Coffee', href: '/coffee', icon: Coffee },
     { label: 'Catering', href: '/catering', icon: UtensilsCrossed },
+    { label: 'Gift Cards', href: '/gift-cards', icon: Gift },
     { label: 'Locations', href: '/locations', icon: MapPin },
     { label: 'Order Online', href: 'https://kona-island-coffee-llc.square.site/', icon: ShoppingBag, external: true },
   ]
