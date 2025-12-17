@@ -17,43 +17,49 @@ import {
   ShoppingBag,
   BookOpen,
   Croissant,
+  Gift,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-
 const Header: React.FC = () => {
-  const pathname = usePathname()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isScrolled, setIsScrolled] = useState(false)
-  const prefersReducedMotion = useReducedMotion()
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
-    }
+      setIsScrolled(window.scrollY > 20);
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navigationItems = [
-    { label: 'Home', href: '/', icon: Home },
-    { label: 'Our Story', href: '/story', icon: Users },
-    { label: 'Coffee', href: '/coffee', icon: Coffee },
-    { label: 'Catering', href: '/catering', icon: UtensilsCrossed },
-    { label: 'Locations', href: '/locations', icon: MapPin },
-    { label: 'Order Online', href: 'https://kona-island-coffee-llc.square.site/', icon: ShoppingBag, external: true },
-  ]
+    { label: "Home", href: "/", icon: Home },
+    { label: "Our Story", href: "/story", icon: Users },
+    { label: "Coffee", href: "/coffee", icon: Coffee },
+    { label: "Catering", href: "/catering", icon: UtensilsCrossed },
+    { label: "Gift Cards", href: "/gift-cards", icon: Gift },
+    { label: "Locations", href: "/locations", icon: MapPin },
+    {
+      label: "Order Online",
+      href: "https://kona-island-coffee-llc.square.site/",
+      icon: ShoppingBag,
+      external: true,
+    },
+  ];
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   const isActive = (href: string) => {
-    return pathname === href || (href === '/menu-preview' && pathname === '/menu')
-  }
+    return pathname === href || (href === "/menu-preview" && pathname === "/menu");
+  };
 
   return (
     <motion.header
@@ -72,36 +78,34 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-  <div className="relative w-10 h-10">
-    <Image
-      src="/images/logo-mark.png"
-      alt="Kona Island Coffee Logo"
-      fill
-      className="object-contain"
-    />
-  </div>
-
-  <div className="flex flex-col">
-    <span className="font-league-spartan text-xl font-bold text-kona-espresso">
-      Kona Island
-    </span>
-    <span className="font-league-spartan text-xs text-kona-brown -mt-1">
-      Coffee
-    </span>
-  </div>
-</Link>
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="w-10 h-10 bg-kona-brown rounded-full flex items-center justify-center group-hover:bg-kona-brown/90 transition-colors">
+              <Coffee className="w-6 h-6 text-kona-white" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-league-spartan text-xl font-bold text-kona-espresso">
+                Kona Island
+              </span>
+              <span className="font-league-spartan text-xs text-kona-brown -mt-1">
+                Coffee
+              </span>
+            </div>
+          </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-6" role="navigation" aria-label="Main menu">
+          <nav
+            className="hidden md:flex items-center space-x-4 lg:space-x-6"
+            role="navigation"
+            aria-label="Main menu"
+          >
             {navigationItems.map((item) => {
-              const active = isActive(item.href)
+              const active = isActive(item.href);
               const commonClasses = cn(
                 "text-sm lg:text-base font-semibold transition-colors duration-200 relative py-2 px-1",
                 active
                   ? "text-kona-brown"
                   : "text-kona-espresso hover:text-kona-brown"
-              )
+              );
 
               if (item.external) {
                 return (
@@ -121,7 +125,7 @@ const Header: React.FC = () => {
                       )}
                     />
                   </a>
-                )
+                );
               }
 
               return (
@@ -140,17 +144,16 @@ const Header: React.FC = () => {
                     )}
                   />
                 </Link>
-              )
+              );
             })}
           </nav>
 
           {/* Desktop CTA */}
-<div className="hidden md:flex items-center">
-  <Button variant="outline" size="sm" disabled>
-    App Coming Soon
-  </Button>
-</div>
-
+          <div className="hidden md:flex items-center">
+            <Button variant="outline" size="sm" disabled>
+              App Coming Soon
+            </Button>
+          </div>
 
           {/* Mobile Menu Button */}
           <Button
@@ -178,7 +181,7 @@ const Header: React.FC = () => {
             id="mobile-menu"
             className="md:hidden bg-kona-white border-t border-kona-taupe/20"
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
+            animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
             role="navigation"
@@ -187,13 +190,13 @@ const Header: React.FC = () => {
             <div className="container mx-auto px-4 py-4">
               <nav className="flex flex-col space-y-2">
                 {navigationItems.map((item, index) => {
-                  const active = isActive(item.href)
+                  const active = isActive(item.href);
                   const commonClasses = cn(
                     "flex items-center space-x-3 p-3 rounded-lg transition-colors",
                     active
                       ? "bg-kona-teal/10 text-kona-brown"
                       : "hover:bg-kona-taupe/20 text-kona-espresso"
-                  )
+                  );
 
                   return (
                     <motion.div
@@ -225,7 +228,7 @@ const Header: React.FC = () => {
                         </Link>
                       )}
                     </motion.div>
-                  )
+                  );
                 })}
               </nav>
             </div>
@@ -233,7 +236,7 @@ const Header: React.FC = () => {
         )}
       </AnimatePresence>
     </motion.header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;
