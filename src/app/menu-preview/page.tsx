@@ -13,7 +13,7 @@ const MenuPreviewPage: React.FC = () => {
   // Redirect to Square ordering page after a brief delay
   useEffect(() => {
     const timer = setTimeout(() => {
-      window.location.href = 'https://kona-island-coffee-llc.square.site/'
+      window.location.href = 'https://kona-island-coffee.square.site/'
     }, 3000)
 
     return () => clearTimeout(timer)
@@ -59,7 +59,7 @@ const MenuPreviewPage: React.FC = () => {
               variant="aloha"
               size="lg"
               className="text-lg px-8"
-              onClick={() => window.location.href = 'https://kona-island-coffee-llc.square.site/'}
+              onClick={() => window.location.href = 'https://kona-island-coffee.square.site/'}
             >
               <ExternalLink className="mr-2 w-5 h-5" />
               Order Online Now
