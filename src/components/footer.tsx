@@ -20,7 +20,7 @@ const Footer: React.FC = () => {
     { label: 'Our Story', href: '/story' },
     { label: 'Catering', href: '/catering' },
     { label: 'Locations', href: '/locations' },
-    { label: 'Order Online', href: 'https://kona-island-coffee-llc.square.site/' },
+    { label: 'Order Online', href: 'https://kona-island-coffee.square.site/' },
   ]
 
   const supportLinks = [
