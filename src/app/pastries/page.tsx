@@ -381,7 +381,7 @@ const PastriesPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="teal" size="lg" asChild>
                 <a
-                  href="https://kona-island-coffee-llc.square.site/"
+                  href="https://kona-island-coffee.square.site/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
