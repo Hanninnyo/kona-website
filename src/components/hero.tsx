@@ -142,7 +142,7 @@ const Hero: React.FC<HeroProps> = ({
                 asChild
               >
                 <a
-                  href="https://kona-island-coffee-llc.square.site/"
+                  href="https://kona-island-coffee.square.site/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
