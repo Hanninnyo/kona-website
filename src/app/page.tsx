@@ -198,7 +198,7 @@ export default function HomePage() {
           >
             <Button variant="aloha" size="lg" asChild>
               <a
-                href="https://kona-island-coffee-llc.square.site/"
+                href="https://kona-island-coffee.square.site/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
