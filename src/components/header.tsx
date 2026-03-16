@@ -47,7 +47,7 @@ const Header: React.FC = () => {
     { label: "Locations", href: "/locations", icon: MapPin },
     {
       label: "Order Online",
-      href: "https://kona-island-coffee-llc.square.site/",
+      href: "https://kona-island-coffee.square.site/",
       icon: ShoppingBag,
       external: true,
     },
