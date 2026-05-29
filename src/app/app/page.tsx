@@ -74,7 +74,7 @@ const AppPage: React.FC = () => {
                   asChild
                 >
                   <a
-                    href="https://kona-island-coffee.square.site/"
+                    href="https://kona-island-coffee-102495.square.site/"
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label="Order online via Square"
@@ -244,7 +244,7 @@ const AppPage: React.FC = () => {
                 asChild
               >
                 <a
-                  href="https://kona-island-coffee.square.site/"
+                  href="https://kona-island-coffee-102495.square.site/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

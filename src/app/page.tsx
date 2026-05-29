@@ -122,12 +122,9 @@ export default function HomePage() {
         className="w-full max-w-md"
       >
         <div
-          className="rounded-3xl border border-white/15 p-8 md:p-10 text-center"
+          className="rounded-3xl border border-white/20 bg-black/30 p-8 backdrop-blur-lg md:p-10 text-center"
           style={{
-            background: 'rgba(20, 12, 10, 0.22)',
-            backdropFilter: 'blur(32px)',
-            WebkitBackdropFilter: 'blur(32px)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.12)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
           }}
         >
           {/* Badge */}
@@ -185,7 +182,7 @@ export default function HomePage() {
                 asChild
               >
                 <a
-                  href="https://kona-island-coffee-102495.square.site"
+                  href="https://kona-island-coffee-102495.square.site/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -264,7 +261,7 @@ export default function HomePage() {
           >
             <Button variant="aloha" size="lg" asChild>
               <a
-                href="https://kona-island-coffee.square.site/"
+                href="https://kona-island-coffee-102495.square.site/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
