@@ -135,7 +135,7 @@ export default function HomePage() {
         <div className="mt-6 flex justify-center">
           <div className="relative w-full max-w-3xl h-64 md:h-80 lg:h-96 rounded-kona overflow-hidden shadow-kona-medium">
             <Image
-              src="/images/storefront-2026.jpg"
+              src="/images/storefront-open.jpg"
               alt="Kona Island Coffee storefront opening in Mountain View spring 2026"
               fill
               className="object-cover"
