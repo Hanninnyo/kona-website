@@ -90,94 +90,109 @@ export default function HomePage() {
 
   return (
     <div className="pt-20">
-      {/* Storefront Now Open Announcement */}
+      {/* Storefront Now Open — Premium Hero */}
 {homepageContent.announcement.enabled && (
-  <section className="py-10 relative overflow-hidden" style={{ backgroundColor: '#c7bab6' }}>
-    <div className="absolute inset-0 bg-black/5"></div>
-    <div className="container mx-auto px-4 lg:px-8 relative z-10">
+  <section
+    className="relative overflow-hidden bg-kona-espresso"
+    style={{ minHeight: '88vh' }}
+  >
+    {/* Full-bleed storefront photo — object-contain so nothing is cropped */}
+    <div className="absolute inset-0">
+      <Image
+        src="/images/storefront-open.jpg"
+        alt="Kona Island Coffee storefront now open in Mountain View"
+        fill
+        className="object-contain"
+        priority
+        sizes="100vw"
+      />
+      {/* Bottom fade — merges photo into card zone */}
+      <div className="absolute inset-0 bg-gradient-to-t from-kona-espresso via-kona-espresso/40 to-transparent" />
+      {/* Subtle side vignettes */}
+      <div className="absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-kona-espresso/50 to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-kona-espresso/50 to-transparent" />
+    </div>
+
+    {/* Glassmorphism card — floats over the lower image */}
+    <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-10 md:pb-14">
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center"
+        transition={{ duration: 0.9, ease: 'easeOut' }}
+        className="w-full max-w-md"
       >
-        <div className="flex items-center justify-center space-x-2 mb-2">
-          <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
-          <span className="font-league-spartan text-lg font-bold text-kona-espresso">
-            NOW OPEN!
-          </span>
-          <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
-        </div>
+        <div
+          className="rounded-3xl border border-white/10 p-8 md:p-10 text-center"
+          style={{
+            background: 'rgba(31, 19, 17, 0.58)',
+            backdropFilter: 'blur(28px)',
+            WebkitBackdropFilter: 'blur(28px)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)',
+          }}
+        >
+          {/* Badge */}
+          <div className="mb-5 inline-flex items-center gap-1.5 rounded-full bg-kona-teal px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-teal-glow">
+            Now Open ✨
+          </div>
 
-        <h2 className="font-league-spartan text-2xl md:text-3xl font-bold mb-3 text-kona-espresso">
-          Now Open in Mountain View
-        </h2>
+          {/* Headline */}
+          <h2 className="mb-1 font-league-spartan text-3xl font-bold text-kona-white md:text-4xl">
+            Now Open in Mountain View
+          </h2>
 
-        <p className="text-kona-espresso/90 font-medium mb-2 max-w-2xl mx-auto">
-          Kona Island Coffee has officially opened our first storefront at San Antonio Village Center.
-        </p>
-        <p className="text-kona-espresso/80 mb-4 max-w-2xl mx-auto">
-          Visit us for 100% Hawaiian coffee, island-inspired drinks, fresh crêpes, pastries, and aloha all week long.
-        </p>
+          {/* Address */}
+          <p className="mb-6 text-sm leading-relaxed text-white/50">
+            2565 California Street STE 84<br />Mountain View, CA 94040
+          </p>
 
-        {/* Hours */}
-        <div className="inline-block bg-kona-espresso/10 rounded-kona px-6 py-3 mb-5 text-sm text-kona-espresso/80">
-          <p>Mon–Thu: 6:30am–5:00pm &nbsp;·&nbsp; Fri: 6:30am–6:00pm</p>
-          <p>Sat: 7:30am–6:00pm &nbsp;·&nbsp; Sun: 7:30am–5:00pm</p>
-        </div>
+          {/* Hairline divider */}
+          <div className="mb-5 h-px w-full bg-white/10" />
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-6">
-          <Button
-            size="sm"
-            className="bg-kona-espresso text-white hover:bg-kona-espresso/90"
-            asChild
-          >
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=2565+California+Street+STE+84+Mountain+View+CA+94040"
-              target="_blank"
-              rel="noopener noreferrer"
+          {/* Hours — two-column label / value grid */}
+          <div className="mb-7 mx-auto grid max-w-[230px] grid-cols-[auto_1fr] gap-x-5 gap-y-1.5 text-sm">
+            <span className="text-right font-medium text-white/40">Mon–Thu</span>
+            <span className="text-white/80">6:30am–5:00pm</span>
+            <span className="text-right font-medium text-white/40">Fri</span>
+            <span className="text-white/80">6:30am–6:00pm</span>
+            <span className="text-right font-medium text-white/40">Sat</span>
+            <span className="text-white/80">7:30am–6:00pm</span>
+            <span className="text-right font-medium text-white/40">Sun</span>
+            <span className="text-white/80">7:30am–5:00pm</span>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button
+              variant="teal"
+              className="rounded-xl px-6 shadow-teal-glow hover:opacity-90"
+              asChild
             >
-              <MapPin className="mr-2 w-4 h-4" />
-              Get Directions
-            </a>
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="bg-kona-espresso/10 backdrop-blur-sm border-kona-espresso/30 text-kona-espresso hover:bg-kona-espresso hover:text-white"
-            asChild
-          >
-            <a
-              href="https://kona-island-coffee.square.site/"
-              target="_blank"
-              rel="noopener noreferrer"
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=2565+California+Street+STE+84+Mountain+View+CA+94040"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MapPin className="mr-2 w-4 h-4" />
+                Get Directions
+              </a>
+            </Button>
+            <Button
+              className="rounded-xl border border-white/20 bg-white/10 px-6 text-kona-white shadow-none hover:bg-white/20 hover:text-kona-white"
+              asChild
             >
-              Order Online
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </a>
-          </Button>
-        </div>
-
-        {/* Photo */}
-        <div className="flex justify-center">
-          <div className="relative w-full max-w-3xl h-64 md:h-80 lg:h-96 rounded-kona overflow-hidden shadow-kona-medium">
-            <Image
-              src="/images/storefront-open.jpg"
-              alt="Kona Island Coffee storefront now open in Mountain View"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
-            />
+              <a
+                href="https://kona-island-coffee.square.site/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Order Online
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </a>
+            </Button>
           </div>
         </div>
       </motion.div>
     </div>
-
-    {/* Decorative Elements */}
-    <div className="absolute top-2 left-4 text-2xl animate-bounce" style={{ animationDelay: '0s' }}>🌺</div>
-    <div className="absolute top-4 right-8 text-xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌺</div>
-    <div className="absolute bottom-2 left-8 text-lg animate-bounce" style={{ animationDelay: '1s' }}>🌺</div>
-    <div className="absolute bottom-4 right-4 text-2xl animate-bounce" style={{ animationDelay: '1.5s' }}>🌺</div>
   </section>
 )}
       {/* Hero Section */}
