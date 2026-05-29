@@ -107,10 +107,10 @@ export default function HomePage() {
         sizes="100vw"
       />
       {/* Bottom fade — merges photo into card zone */}
-      <div className="absolute inset-0 bg-gradient-to-t from-kona-espresso via-kona-espresso/40 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-kona-espresso/80 via-kona-espresso/15 to-transparent" />
       {/* Subtle side vignettes */}
-      <div className="absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-kona-espresso/50 to-transparent" />
-      <div className="absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-kona-espresso/50 to-transparent" />
+      <div className="absolute inset-y-0 left-0 w-1/5 bg-gradient-to-r from-kona-espresso/30 to-transparent" />
+      <div className="absolute inset-y-0 right-0 w-1/5 bg-gradient-to-l from-kona-espresso/30 to-transparent" />
     </div>
 
     {/* Glassmorphism card — floats over the lower image */}
@@ -122,12 +122,12 @@ export default function HomePage() {
         className="w-full max-w-md"
       >
         <div
-          className="rounded-3xl border border-white/10 p-8 md:p-10 text-center"
+          className="rounded-3xl border border-white/15 p-8 md:p-10 text-center"
           style={{
-            background: 'rgba(31, 19, 17, 0.58)',
-            backdropFilter: 'blur(28px)',
-            WebkitBackdropFilter: 'blur(28px)',
-            boxShadow: '0 32px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08)',
+            background: 'rgba(20, 12, 10, 0.22)',
+            backdropFilter: 'blur(32px)',
+            WebkitBackdropFilter: 'blur(32px)',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.12)',
           }}
         >
           {/* Badge */}
@@ -161,10 +161,11 @@ export default function HomePage() {
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <div className="flex flex-col gap-3">
+            {/* Get Directions — full width on its own row */}
             <Button
               variant="teal"
-              className="rounded-xl px-6 shadow-teal-glow hover:opacity-90"
+              className="w-full rounded-xl px-6 shadow-teal-glow hover:opacity-90"
               asChild
             >
               <a
@@ -176,19 +177,42 @@ export default function HomePage() {
                 Get Directions
               </a>
             </Button>
-            <Button
-              className="rounded-xl border border-white/20 bg-white/10 px-6 text-kona-white shadow-none hover:bg-white/20 hover:text-kona-white"
-              asChild
-            >
-              <a
-                href="https://kona-island-coffee.square.site/"
-                target="_blank"
-                rel="noopener noreferrer"
+
+            {/* Order Online — two locations side by side */}
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button
+                className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 text-kona-white shadow-none hover:bg-white/20 hover:text-kona-white"
+                asChild
               >
-                Order Online
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </a>
-            </Button>
+                <a
+                  href="https://kona-island-coffee-102495.square.site"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex flex-col items-center leading-tight">
+                    <span className="text-[10px] font-medium uppercase tracking-widest text-white/50">Order Online</span>
+                    <span className="text-sm font-semibold">Mountain View</span>
+                  </div>
+                  <ArrowRight className="ml-2 w-3.5 h-3.5 shrink-0" />
+                </a>
+              </Button>
+              <Button
+                className="flex-1 rounded-xl border border-white/20 bg-white/10 px-4 text-kona-white shadow-none hover:bg-white/20 hover:text-kona-white"
+                asChild
+              >
+                <a
+                  href="https://kona-island-coffee.square.site/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="flex flex-col items-center leading-tight">
+                    <span className="text-[10px] font-medium uppercase tracking-widest text-white/50">Order Online</span>
+                    <span className="text-sm font-semibold">Coffee Truck</span>
+                  </div>
+                  <ArrowRight className="ml-2 w-3.5 h-3.5 shrink-0" />
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </motion.div>
