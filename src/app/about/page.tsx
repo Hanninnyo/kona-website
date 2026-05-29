@@ -179,7 +179,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Store Opening Section */}
+      {/* Storefront Now Open Section */}
       <section className="py-16 lg:py-24 relative overflow-hidden">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="max-w-6xl mx-auto">
@@ -187,8 +187,8 @@ export default function AboutPage() {
               {/* Background Image */}
               <div className="absolute inset-0 bg-kona-espresso">
                 <Image
-                  src="/images/store/opening-hero.jpg"
-                  alt="Kona Island Coffee store opening in Mountain View"
+                  src="/images/storefront-open.jpg"
+                  alt="Kona Island Coffee storefront now open in Mountain View"
                   fill
                   className="object-cover opacity-30"
                   sizes="100vw"
@@ -200,17 +200,33 @@ export default function AboutPage() {
               <div className="relative z-10 px-8 py-16 lg:px-16 lg:py-24 text-center">
                 <MapPin className="w-16 h-16 mx-auto mb-6 text-kona-teal" />
                 <h2 className="font-league-spartan text-4xl lg:text-6xl font-bold text-kona-white mb-6">
-                  Our First Shop Opens Spring 2026!
+                  Now Open in Mountain View!
                 </h2>
                 <p className="text-xl lg:text-2xl text-kona-white/90 mb-4 font-medium">
-                  Mountain View — San Antonio Village Center
+                  San Antonio Village Center · 2565 California St STE 84
                 </p>
-                <p className="text-lg text-kona-white/80 max-w-2xl mx-auto mb-8">
-                  We&apos;re so excited to bring our mobile aloha to a permanent home. Soon you&apos;ll be
-                  able to enjoy Hawaiian coffee, fresh crêpes, and island-inspired pastries in a cozy,
-                  welcoming space built for connection.
+                <p className="text-lg text-kona-white/80 max-w-2xl mx-auto mb-4">
+                  Our dream of a permanent home is here. Come enjoy Hawaiian coffee, fresh crêpes,
+                  and island-inspired pastries in a cozy, welcoming space built for connection.
+                </p>
+                <p className="text-base text-kona-white/70 max-w-xl mx-auto mb-8">
+                  Mon–Thu 6:30am–5:00pm &nbsp;·&nbsp; Fri 6:30am–6:00pm &nbsp;·&nbsp; Sat 7:30am–6:00pm &nbsp;·&nbsp; Sun 7:30am–5:00pm
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    size="lg"
+                    asChild
+                    className="bg-kona-teal text-white hover:bg-kona-teal/90"
+                  >
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=2565+California+Street+STE+84+Mountain+View+CA+94040"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MapPin className="w-5 h-5 mr-2" />
+                      Get Directions
+                    </a>
+                  </Button>
                   <Button
                     variant="outline"
                     size="lg"
@@ -218,8 +234,7 @@ export default function AboutPage() {
                     className="bg-kona-white/10 text-kona-white border-kona-white/30 hover:bg-kona-white/20"
                   >
                     <Link href="/locations">
-                      <MapPin className="w-5 h-5 mr-2" />
-                      View Our Current Locations
+                      View All Locations
                     </Link>
                   </Button>
                 </div>

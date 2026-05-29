@@ -5,7 +5,7 @@ import Header from "@/components/header";
 export const metadata: Metadata = {
   title: "Kona Island Coffee — Hawaiian Coffee in the Bay Area",
   description:
-    "Premium Kona coffee, crêpes, and pastries. Visit us in San Jose and Mountain View (coming soon).",
+    "Premium Kona coffee, crêpes, and pastries. Now open in Mountain View and serving San Jose.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -45,17 +45,36 @@ export default function Locations() {
           </p>
         </section>
 
-        {/* Future shop */}
-        <section className="rounded-2xl ring-1 ring-neutral-700/60 bg-black/10 p-5 shadow-kona-soft">
-          <h2 className="text-2xl font-semibold text-kona-taupe">
-            Mountain View (Flagship) — Coming Soon
-          </h2>
+        {/* Flagship storefront */}
+        <section className="rounded-2xl ring-1 ring-kona-teal/60 bg-black/10 p-5 shadow-kona-soft">
+          <div className="flex items-center gap-2 mb-1">
+            <h2 className="text-2xl font-semibold text-kona-taupe">
+              Mountain View Storefront
+            </h2>
+            <span className="text-xs font-bold uppercase tracking-wide bg-kona-teal text-white px-2 py-0.5 rounded-full">
+              Now Open
+            </span>
+          </div>
           <p className="text-sm text-kona-white/85 mt-1">
-            San Antonio Village Center · Mountain View
+            2565 California Street STE 84, Mountain View, CA 94040
           </p>
-          <p className="mt-2 text-sm text-kona-white/85">
-            Our first brick-and-mortar shop is opening in Spring 2026.
+          <p className="text-sm text-kona-white/70 mt-0.5">
+            San Antonio Village Center
           </p>
+          <div className="mt-3 text-sm text-kona-white/85 space-y-0.5">
+            <p>Monday–Thursday: 6:30am–5:00pm</p>
+            <p>Friday: 6:30am–6:00pm</p>
+            <p>Saturday: 7:30am–6:00pm</p>
+            <p>Sunday: 7:30am–5:00pm</p>
+          </div>
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=2565+California+Street+STE+84+Mountain+View+CA+94040"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-3 text-sm text-kona-teal underline underline-offset-2"
+          >
+            Get Directions →
+          </a>
         </section>
       </div>
 

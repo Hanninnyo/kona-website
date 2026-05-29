@@ -90,9 +90,9 @@ export default function HomePage() {
 
   return (
     <div className="pt-20">
-      {/* Storefront Launch Announcement */}
+      {/* Storefront Now Open Announcement */}
 {homepageContent.announcement.enabled && (
-  <section className="py-6 relative overflow-hidden" style={{ backgroundColor: '#c7bab6' }}>
+  <section className="py-10 relative overflow-hidden" style={{ backgroundColor: '#c7bab6' }}>
     <div className="absolute inset-0 bg-black/5"></div>
     <div className="container mx-auto px-4 lg:px-8 relative z-10">
       <motion.div
@@ -104,39 +104,66 @@ export default function HomePage() {
         <div className="flex items-center justify-center space-x-2 mb-2">
           <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
           <span className="font-league-spartan text-lg font-bold text-kona-espresso">
-            EXCITING NEWS!
+            NOW OPEN!
           </span>
           <Star className="w-5 h-5 text-yellow-600 animate-pulse" />
         </div>
 
-        <h2 className="font-league-spartan text-xl md:text-2xl font-bold mb-2 text-kona-espresso">
-          {homepageContent.announcement.title}
+        <h2 className="font-league-spartan text-2xl md:text-3xl font-bold mb-3 text-kona-espresso">
+          Now Open in Mountain View
         </h2>
 
-        <p className="text-kona-espresso/80 mb-4">
-          {homepageContent.announcement.subtitle} - Bringing our mobile aloha to a permanent home
+        <p className="text-kona-espresso/90 font-medium mb-2 max-w-2xl mx-auto">
+          Kona Island Coffee has officially opened our first storefront at San Antonio Village Center.
+        </p>
+        <p className="text-kona-espresso/80 mb-4 max-w-2xl mx-auto">
+          Visit us for 100% Hawaiian coffee, island-inspired drinks, fresh crêpes, pastries, and aloha all week long.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+        {/* Hours */}
+        <div className="inline-block bg-kona-espresso/10 rounded-kona px-6 py-3 mb-5 text-sm text-kona-espresso/80">
+          <p>Mon–Thu: 6:30am–5:00pm &nbsp;·&nbsp; Fri: 6:30am–6:00pm</p>
+          <p>Sat: 7:30am–6:00pm &nbsp;·&nbsp; Sun: 7:30am–5:00pm</p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-6">
+          <Button
+            size="sm"
+            className="bg-kona-espresso text-white hover:bg-kona-espresso/90"
+            asChild
+          >
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=2565+California+Street+STE+84+Mountain+View+CA+94040"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <MapPin className="mr-2 w-4 h-4" />
+              Get Directions
+            </a>
+          </Button>
           <Button
             variant="secondary"
             size="sm"
             className="bg-kona-espresso/10 backdrop-blur-sm border-kona-espresso/30 text-kona-espresso hover:bg-kona-espresso hover:text-white"
             asChild
           >
-            <Link href="/about">
-              Learn More About Our Journey
+            <a
+              href="https://kona-island-coffee.square.site/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Order Online
               <ArrowRight className="ml-2 w-4 h-4" />
-            </Link>
+            </a>
           </Button>
         </div>
 
-        {/* Photo Under the Announcement */}
-        <div className="mt-6 flex justify-center">
+        {/* Photo */}
+        <div className="flex justify-center">
           <div className="relative w-full max-w-3xl h-64 md:h-80 lg:h-96 rounded-kona overflow-hidden shadow-kona-medium">
             <Image
               src="/images/storefront-open.jpg"
-              alt="Kona Island Coffee storefront opening in Mountain View spring 2026"
+              alt="Kona Island Coffee storefront now open in Mountain View"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
