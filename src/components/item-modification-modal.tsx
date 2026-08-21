@@ -12,7 +12,7 @@ interface ItemModificationModalProps {
   item: MenuItem | null
   isOpen: boolean
   onClose: () => void
-  onAddToCart: (item: MenuItem, modifications: any) => void
+  onAddToCart: (item: MenuItem, modifications: Record<string, string[]>) => void
 }
 
 interface Modification {

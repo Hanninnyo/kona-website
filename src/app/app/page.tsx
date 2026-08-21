@@ -61,7 +61,7 @@ const AppPage: React.FC = () => {
                 App Coming Soon
               </h1>
               <p className="text-lg md:text-xl text-kona-espresso/70 mb-8 leading-relaxed">
-                We're working on bringing you an amazing mobile app experience with real-time tracking,
+                We&apos;re working on bringing you an amazing mobile app experience with real-time tracking,
                 exclusive rewards, and more. In the meantime, enjoy convenient online ordering through Square!
               </p>
 
@@ -136,7 +136,7 @@ const AppPage: React.FC = () => {
               Future App Features
             </h2>
             <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              Here's what we're planning for the Kona Island Coffee app
+              Here&apos;s what we&apos;re planning for the Kona Island Coffee app
             </p>
           </motion.div>
 

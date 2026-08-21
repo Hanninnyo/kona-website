@@ -25,7 +25,12 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
   className = ""
 }) => {
   const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<google.maps.Map | null>(null)
+  // Minimal local stand-in for the Google Maps instance type. This component is
+  // currently orphaned and loads no Maps SDK, so referencing the `google` global
+  // namespace would require @types/google.maps for no benefit. `unknown` keeps the
+  // ref type-safe; replace with the real type if the integration is completed.
+  type GoogleMapInstance = unknown
+  const mapInstanceRef = useRef<GoogleMapInstance | null>(null)
 
   // Default map configuration for Valley Medical Center
   const valleyMedicalCenter = {

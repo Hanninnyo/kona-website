@@ -279,6 +279,10 @@ interface CartProviderProps {
 // Storage key
 const CART_STORAGE_KEY = 'kona-cart-state'
 
+// JSON.parse yields dates as strings; this is the on-disk shape before rehydration.
+type PersistedCartItem = Omit<CartItemWithMeta, 'updatedAt'> & { updatedAt: string }
+type PersistedCartState = Omit<CartState, 'items'> & { items: PersistedCartItem[] }
+
 // Provider component
 export function CartProvider({ children }: CartProviderProps) {
   const [state, dispatch] = useReducer(cartReducer, initialState)
@@ -289,13 +293,16 @@ export function CartProvider({ children }: CartProviderProps) {
       try {
         const storedCart = sessionStorage.getItem(CART_STORAGE_KEY)
         if (storedCart) {
-          const parsedCart = JSON.parse(storedCart)
+          const persisted = JSON.parse(storedCart) as PersistedCartState
           // Convert date strings back to Date objects
-          parsedCart.items = parsedCart.items.map((item: any) => ({
-            ...item,
-            updatedAt: new Date(item.updatedAt),
-          }))
-          dispatch({ type: 'HYDRATE_CART', payload: parsedCart })
+          const hydrated: CartState = {
+            ...persisted,
+            items: persisted.items.map((item) => ({
+              ...item,
+              updatedAt: new Date(item.updatedAt),
+            })),
+          }
+          dispatch({ type: 'HYDRATE_CART', payload: hydrated })
         }
       } catch (error) {
         console.error('[Cart] Failed to hydrate cart from storage:', error)

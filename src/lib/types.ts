@@ -24,7 +24,7 @@ export interface MenuItem {
 export interface Modifier {
   id: string
   name: string
-  type: 'size' | 'milk' | 'syrup' | 'extra' | 'preparation'
+  type: 'size' | 'milk' | 'syrup' | 'extra' | 'preparation' | 'choice'
   options: ModifierOption[]
   required: boolean
   maxSelections?: number
@@ -45,15 +45,17 @@ export interface NutritionInfo {
   caffeine?: number
 }
 
+// Mirrors the categories actually present in the Square-derived dataset
+// (src/lib/pos/authentic-menu-data.ts) plus the two used by page-level data.
 export type MenuCategory =
-  | 'coffee'
+  | 'hot-coffee'
+  | 'hot-specialties'
+  | 'cold-coffee'
+  | 'non-coffee'
+  | 'smoothies'
+  | 'food'
   | 'espresso'
-  | 'cold-brew'
-  | 'tea'
-  | 'seasonal'
   | 'pastries'
-  | 'sweet-crepes'
-  | 'savory-crepes'
 
 export interface CartItem {
   id: string

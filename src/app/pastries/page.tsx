@@ -7,7 +7,7 @@ import { Coffee, Heart, Leaf, ChefHat } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { SparkleEffect, VolcanicSteam } from '@/components/volcano-effects'
+import { VolcanicSteam } from '@/components/volcano-effects'
 
 const PastriesPage: React.FC = () => {
   const pastries = [
@@ -120,7 +120,6 @@ const PastriesPage: React.FC = () => {
 
   return (
     <div className="pt-20 min-h-screen bg-kona-white relative overflow-hidden">
-      <SparkleEffect />
       <VolcanicSteam />
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-kona-brown/20 to-kona-teal/20 relative overflow-hidden">

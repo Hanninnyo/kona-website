@@ -38,7 +38,7 @@ const MenuPreviewPage: React.FC = () => {
 
             <p className="text-kona-espresso/70 text-lg mb-8">
               Our complete menu with online ordering is now available through Square.
-              You'll be automatically redirected in a moment, or click the button below to go there now.
+              You&apos;ll be automatically redirected in a moment, or click the button below to go there now.
             </p>
 
             <Card className="mb-8 border-0 shadow-kona-soft">

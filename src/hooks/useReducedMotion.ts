@@ -1,28 +1,24 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 
-export const useReducedMotion = () => {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+const QUERY = '(prefers-reduced-motion: reduce)'
 
-  useEffect(() => {
-    // Check if window is defined (client-side)
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-      setPrefersReducedMotion(mediaQuery.matches)
-
-      // Listen for changes
-      const handleChange = (e: MediaQueryListEvent) => {
-        setPrefersReducedMotion(e.matches)
-      }
-
-      mediaQuery.addEventListener('change', handleChange)
-
-      return () => {
-        mediaQuery.removeEventListener('change', handleChange)
-      }
-    }
-  }, [])
-
-  return prefersReducedMotion
+function subscribe(onStoreChange: () => void) {
+  const mediaQuery = window.matchMedia(QUERY)
+  mediaQuery.addEventListener('change', onStoreChange)
+  return () => mediaQuery.removeEventListener('change', onStoreChange)
 }
+
+function getSnapshot() {
+  return window.matchMedia(QUERY).matches
+}
+
+// The server has no media queries, so reduced motion is reported as false during
+// SSR and corrected on hydration.
+function getServerSnapshot() {
+  return false
+}
+
+export const useReducedMotion = () =>
+  useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)

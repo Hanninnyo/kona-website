@@ -60,21 +60,21 @@ export default function SystemMapPage() {
       <section>
         <h2 className="font-league-spartan text-2xl font-semibold text-kona-espresso mb-3">UI / Component Tree</h2>
         <div className="bg-white rounded-kona p-4 shadow-kona-soft overflow-auto">
-          <Mermaid chart={uiTree} />
+          <Mermaid code={uiTree} />
         </div>
       </section>
 
       <section>
         <h2 className="font-league-spartan text-2xl font-semibold text-kona-espresso mb-3">API Routes</h2>
         <div className="bg-white rounded-kona p-4 shadow-kona-soft overflow-auto">
-          <Mermaid chart={apiRoutes} />
+          <Mermaid code={apiRoutes} />
         </div>
       </section>
 
       <section>
         <h2 className="font-league-spartan text-2xl font-semibold text-kona-espresso mb-3">Data Flow</h2>
         <div className="bg-white rounded-kona p-4 shadow-kona-soft overflow-auto">
-          <Mermaid chart={dataFlow} />
+          <Mermaid code={dataFlow} />
         </div>
       </section>
     </div>

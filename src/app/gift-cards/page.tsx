@@ -48,7 +48,7 @@ const GiftCardsPage: React.FC = () => {
             </h1>
             <p className="text-lg md:text-xl text-kona-espresso/70 leading-relaxed mb-8">
               Share the warmth of Hawaiian coffee culture with someone you love. Kona Island Coffee
-              gift cards are the perfect way to brighten anyone's day with authentic island flavors.
+              gift cards are the perfect way to brighten anyone&apos;s day with authentic island flavors.
             </p>
             <Button
               variant="aloha"
@@ -82,7 +82,7 @@ const GiftCardsPage: React.FC = () => {
                     Why Gift Cards?
                   </h2>
                   <p className="text-kona-espresso/80 text-lg leading-relaxed mb-6">
-                    Our gift cards are more than just a present — they're an invitation to experience
+                    Our gift cards are more than just a present — they&apos;re an invitation to experience
                     the aloha spirit. Perfect for coffee lovers, food enthusiasts, and anyone who
                     appreciates authentic Hawaiian flavors.
                   </p>
@@ -143,7 +143,7 @@ const GiftCardsPage: React.FC = () => {
               Perfect for Any Occasion
             </h2>
             <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              Whether it's a thank you, celebration, or just because — give the gift of aloha
+              Whether it&apos;s a thank you, celebration, or just because — give the gift of aloha
             </p>
           </motion.div>
 

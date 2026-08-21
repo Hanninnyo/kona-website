@@ -1,26 +1,38 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useSyncExternalStore } from 'react'
 import { motion } from 'framer-motion'
+
+// Client-only flag without a synchronous setState in an effect: the server
+// snapshot is false and the client snapshot is true, so these purely decorative
+// layers still render only after hydration.
+const neverChanges = () => () => {}
+const clientSnapshot = () => true
+const serverSnapshot = () => false
+const useIsMounted = () =>
+  useSyncExternalStore(neverChanges, clientSnapshot, serverSnapshot)
 
 // Volcano Particles Component
 export const VolcanoParticles: React.FC<{ trigger?: boolean }> = ({ trigger = false }) => {
-  const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([])
+  const [allParticles] = useState(() =>
+    Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 20 + 80,
+      delay: Math.random() * 0.5,
+      xDrift: Math.random() * 40 - 20
+    }))
+  )
+  const [expired, setExpired] = useState(false)
 
   useEffect(() => {
-    if (trigger) {
-      const newParticles = Array.from({ length: 15 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 20 + 80,
-        delay: Math.random() * 0.5
-      }))
-      setParticles(newParticles)
-
-      // Clear particles after animation
-      setTimeout(() => setParticles([]), 3000)
-    }
+    if (!trigger) return
+    // setState inside a timeout callback is asynchronous, so render stays pure.
+    const timer = setTimeout(() => setExpired(true), 3000)
+    return () => clearTimeout(timer)
   }, [trigger])
+
+  const particles = trigger && !expired ? allParticles : []
 
   return (
     <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
@@ -37,7 +49,7 @@ export const VolcanoParticles: React.FC<{ trigger?: boolean }> = ({ trigger = fa
             opacity: [0, 1, 1, 0],
             scale: [0, 1, 0.5, 0],
             y: [-50, -100, -150, -200],
-            x: [0, Math.random() * 40 - 20],
+            x: [0, particle.xDrift],
           }}
           transition={{
             duration: 2,
@@ -52,12 +64,16 @@ export const VolcanoParticles: React.FC<{ trigger?: boolean }> = ({ trigger = fa
 
 // Floating Coffee Bean Particles
 export const CoffeeBeanParticles: React.FC = () => {
-  const beans = Array.from({ length: 8 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    delay: Math.random() * 4,
-    duration: 6 + Math.random() * 4
-  }))
+  // Generated once so the values stay stable across re-renders (and so the
+  // render pass itself stays pure).
+  const [beans] = useState(() =>
+    Array.from({ length: 8 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      delay: Math.random() * 4,
+      duration: 6 + Math.random() * 4
+    }))
+  )
 
   return (
     <div className="fixed inset-0 pointer-events-none z-5 overflow-hidden">
@@ -150,12 +166,14 @@ export const SparkleEffect: React.FC<{ children: React.ReactNode; intensity?: 'l
 
   const sparkleCount = intensity === 'low' ? 3 : intensity === 'medium' ? 5 : 8
 
-  const sparkles = Array.from({ length: sparkleCount }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    delay: Math.random() * 0.5
-  }))
+  const [sparkles] = useState(() =>
+    Array.from({ length: sparkleCount }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      delay: Math.random() * 0.5
+    }))
+  )
 
   return (
     <div
@@ -220,12 +238,14 @@ export const LavaFlowBorder: React.FC<{ className?: string }> = ({ className = "
 
 // Volcanic Steam Effect
 export const VolcanicSteam: React.FC = () => {
-  const steamPuffs = Array.from({ length: 6 }, (_, i) => ({
-    id: i,
-    x: 45 + Math.random() * 10, // Center around the crater
-    delay: i * 0.3,
-    duration: 3 + Math.random()
-  }))
+  const [steamPuffs] = useState(() =>
+    Array.from({ length: 6 }, (_, i) => ({
+      id: i,
+      x: 45 + Math.random() * 10, // Center around the crater
+      delay: i * 0.3,
+      duration: 3 + Math.random()
+    }))
+  )
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -261,12 +281,32 @@ export const PhotoRealisticVolcano: React.FC<{ scrollProgress?: number }> = ({ s
     setEruptionIntensity(0.3 + (scrollProgress * 0.7))
   }, [scrollProgress])
 
-  const lavaFlows = Array.from({ length: 5 }, (_, i) => ({
-    id: i,
-    x: 45 + (i - 2) * 8,
-    width: 3 + Math.random() * 2,
-    delay: i * 0.2
-  }))
+  const [lavaFlows] = useState(() =>
+    Array.from({ length: 5 }, (_, i) => ({
+      id: i,
+      x: 45 + (i - 2) * 8,
+      width: 3 + Math.random() * 2,
+      delay: i * 0.2,
+      // Precomputed so the animate/transition props below stay pure.
+      height: 100 + Math.random() * 100,
+      settleHeight: 80 + Math.random() * 80,
+      duration: 3 + Math.random() * 2
+    }))
+  )
+
+  const [lavaBlobs] = useState(() =>
+    Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      cx: 400 + (Math.random() - 0.5) * 40,
+      r: 2 + Math.random() * 3,
+      hue: 10 + Math.random() * 20,
+      lightness: 60 + Math.random() * 20,
+      riseTo: -60 - Math.random() * 40,
+      drift: (Math.random() - 0.5) * 30,
+      duration: 1.5 + Math.random(),
+      delay: Math.random() * 2
+    }))
+  )
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -301,23 +341,23 @@ export const PhotoRealisticVolcano: React.FC<{ scrollProgress?: number }> = ({ s
 
         {/* Lava Eruption */}
         <motion.g>
-          {Array.from({ length: 20 }).map((_, i) => (
+          {lavaBlobs.map((blob) => (
             <motion.circle
-              key={i}
-              cx={400 + (Math.random() - 0.5) * 40}
+              key={blob.id}
+              cx={blob.cx}
               cy={80}
-              r={2 + Math.random() * 3}
-              fill={`hsl(${10 + Math.random() * 20}, 100%, ${60 + Math.random() * 20}%)`}
+              r={blob.r}
+              fill={`hsl(${blob.hue}, 100%, ${blob.lightness}%)`}
               initial={{ y: 0, opacity: 1 }}
               animate={{
-                y: [-20, -60 - Math.random() * 40],
-                x: [(Math.random() - 0.5) * 30],
+                y: [-20, blob.riseTo],
+                x: [blob.drift],
                 opacity: [1, 0.8, 0],
                 scale: [1, 0.5, 0]
               }}
               transition={{
-                duration: 1.5 + Math.random(),
-                delay: Math.random() * 2,
+                duration: blob.duration,
+                delay: blob.delay,
                 repeat: Infinity,
                 ease: "easeOut"
               }}
@@ -353,11 +393,11 @@ export const PhotoRealisticVolcano: React.FC<{ scrollProgress?: number }> = ({ s
             transformOrigin: 'bottom center'
           }}
           animate={{
-            height: [`0px`, `${100 + Math.random() * 100}px`, `${80 + Math.random() * 80}px`],
+            height: [`0px`, `${flow.height}px`, `${flow.settleHeight}px`],
             opacity: [0, eruptionIntensity, eruptionIntensity * 0.8]
           }}
           transition={{
-            duration: 3 + Math.random() * 2,
+            duration: flow.duration,
             delay: flow.delay,
             repeat: Infinity,
             ease: "easeInOut"
@@ -389,11 +429,7 @@ export const PhotoRealisticVolcano: React.FC<{ scrollProgress?: number }> = ({ s
 
 // Flying Hawaiian Flowers
 export const HawaiianFlowers: React.FC = () => {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useIsMounted()
 
   // Use deterministic values to avoid hydration mismatches
   const flowers = Array.from({ length: 12 }, (_, i) => ({
@@ -442,6 +478,10 @@ export const HawaiianFlowers: React.FC = () => {
 // Photo-realistic Ocean Waves
 export const OceanWaves: React.FC<{ scrollProgress?: number }> = ({ scrollProgress = 0 }) => {
   const waveIntensity = 0.5 + (scrollProgress * 0.5)
+
+  const [droplets] = useState(() =>
+    Array.from({ length: 8 }, (_, i) => ({ id: i, duration: 2 + Math.random() }))
+  )
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -516,12 +556,12 @@ export const OceanWaves: React.FC<{ scrollProgress?: number }> = ({ scrollProgre
       </svg>
 
       {/* Water Droplets */}
-      {Array.from({ length: 8 }).map((_, i) => (
+      {droplets.map((droplet) => (
         <motion.div
-          key={i}
+          key={droplet.id}
           className="absolute w-1 h-1 bg-blue-300 rounded-full"
           style={{
-            left: `${10 + i * 12}%`,
+            left: `${10 + droplet.id * 12}%`,
             bottom: '20%'
           }}
           animate={{
@@ -530,8 +570,8 @@ export const OceanWaves: React.FC<{ scrollProgress?: number }> = ({ scrollProgre
             scale: [0.8, 1.2, 0.8]
           }}
           transition={{
-            duration: 2 + Math.random(),
-            delay: i * 0.3,
+            duration: droplet.duration,
+            delay: droplet.id * 0.3,
             repeat: Infinity,
             ease: "easeInOut"
           }}
@@ -543,11 +583,7 @@ export const OceanWaves: React.FC<{ scrollProgress?: number }> = ({ scrollProgre
 
 // Enhanced Coffee Cherries
 export const CoffeeCherries: React.FC = () => {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
+  const mounted = useIsMounted()
 
   // Use a fixed seed-based approach to avoid hydration mismatches
   const cherries = Array.from({ length: 15 }, (_, i) => {

@@ -460,8 +460,8 @@ export default function HomePage() {
                   </div>
                   <p className="text-kona-espresso/80 text-lg leading-relaxed mb-6">
                     Share the aloha spirit with someone special! Our gift cards are the perfect way to
-                    brighten someone's day with authentic Hawaiian coffee and island-inspired treats.
-                    Whether it's a mahalo, celebration, or just because — give the gift of aloha. 🌺
+                    brighten someone&apos;s day with authentic Hawaiian coffee and island-inspired treats.
+                    Whether it&apos;s a mahalo, celebration, or just because — give the gift of aloha. 🌺
                   </p>
                   <p className="text-kona-espresso/70 text-base leading-relaxed mb-6">
                     Gift cards can be used at our mobile coffee truck, weekend events, and our upcoming
