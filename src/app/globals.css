@@ -1,104 +1,222 @@
 @import "tailwindcss";
 
-/* Mangabey font placeholder - replace with actual font files */
-@font-face {
-  font-family: 'Mangabey';
-  src: url('/fonts/mangabey-regular.woff2') format('woff2'),
-       url('/fonts/mangabey-regular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  /* Fallback to web-safe fonts */
+/* ==========================================================================
+   Kona Island Coffee — design tokens
+   Tailwind CSS v4 semantic theme. Defined here in CSS, not via @config:
+   tailwind.config.ts holds the previous teal/tropical direction and is
+   deliberately not loaded.
+   ========================================================================== */
+
+@theme {
+  /* --- Palette primitives -------------------------------------------------
+     Warm, low-chroma, photography-first. Bright teal belongs to the previous
+     direction and is intentionally absent. */
+  --color-sand-50:  #FBF8F3;   /* off-white */
+  --color-sand-100: #F6F1E8;
+  --color-sand-200: #F3EDE4;   /* warm cream — core brand ground */
+  --color-sand-300: #E7DECF;
+  --color-sand-400: #D5C8B4;
+
+  --color-espresso-500: #4A362A;
+  --color-espresso-700: #33241B;
+  --color-espresso-900: #241A13;   /* deep espresso brown */
+
+  --color-charcoal-700: #3A3632;
+  --color-charcoal-900: #1B1917;   /* muted charcoal / near-black */
+
+  --color-koa-400: #A5714A;
+  --color-koa-500: #7C4A2A;        /* koa-inspired warm brown */
+  --color-koa-600: #5F371F;
+
+  --color-gold-400: #C9A96A;
+  --color-gold-500: #B08D57;       /* restrained warm gold */
+
+  --color-palm-500: #4B5D4E;       /* natural tropical green, photo-supported only */
+  --color-palm-600: #3A4A3D;
+
+  /* --- Semantic roles -----------------------------------------------------
+     Components should reference these, not the primitives above. */
+  --color-surface:          var(--color-sand-200);
+  --color-surface-raised:   var(--color-sand-50);
+  --color-surface-sunken:   var(--color-sand-300);
+  --color-surface-inverse:  var(--color-espresso-900);
+
+  --color-ink:              var(--color-charcoal-900);
+  --color-ink-soft:         var(--color-espresso-500);
+  --color-ink-muted:        #6E6259;
+  --color-ink-inverse:      var(--color-sand-100);
+  --color-ink-inverse-soft: #C9BEB0;
+
+  --color-line:             #DED3C3;
+  --color-line-strong:      var(--color-sand-400);
+  --color-line-inverse:     #4A3A2E;
+
+  --color-accent:           var(--color-koa-500);
+  --color-accent-hover:     var(--color-koa-600);
+  --color-accent-soft:      var(--color-koa-400);
+  --color-highlight:        var(--color-gold-500);
+  --color-botanical:        var(--color-palm-500);
+
+  /* --- Typography ---------------------------------------------------------
+     Display: high-contrast editorial serif, used large and sparingly.
+     Body: humanist sans, optimised for long-form readability. */
+  --font-display: var(--font-cormorant), "Iowan Old Style", Georgia, serif;
+  --font-body: var(--font-source-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.18em;
+
+  --text-display-sm: clamp(1.75rem, 1.2rem + 2.4vw, 2.75rem);
+  --text-display-sm--line-height: 1.15;
+  --text-display-md: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+  --text-display-md--line-height: 1.08;
+  --text-display-lg: clamp(2.75rem, 1.5rem + 5.4vw, 5.5rem);
+  --text-display-lg--line-height: 1.02;
+  --text-display-lg--letter-spacing: -0.015em;
+
+  --text-lede: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+  --text-lede--line-height: 1.6;
+
+  /* --- Layout -------------------------------------------------------------
+     --container-* generates max-w-* utilities. */
+  --container-editorial: 46rem;   /* ~66ch of running text */
+  --container-page: 78rem;
+  --container-wide: 96rem;
+
+  /* --- Radius, borders, elevation ----------------------------------------
+     Restrained: no heavy drop shadows, no pervasive rounding. */
+  --radius-subtle: 2px;
+  --radius-panel: 4px;
+  --radius-frame: 6px;
+
+  --shadow-lift: 0 1px 2px rgba(36, 26, 19, 0.05), 0 8px 24px -12px rgba(36, 26, 19, 0.14);
+  --shadow-panel: 0 1px 3px rgba(36, 26, 19, 0.06), 0 18px 44px -24px rgba(36, 26, 19, 0.22);
+
+  /* --- Motion -------------------------------------------------------------
+     Calm easing, short distances. Every use must degrade under
+     prefers-reduced-motion. */
+  --ease-calm: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-quick: 200ms;
+  --duration-calm: 520ms;
+  --duration-slow: 900ms;
 }
 
-:root {
-  --background: #ffffff;
-  --foreground: #1f1311;
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
-  /* Kona Brand Colors */
-  --kona-brown: #b87a4b;
-  --kona-espresso: #1f1311;
-  --kona-white: #ffffff;
-  --kona-taupe: #c7bab6;
-  --kona-teal: #11c9c8;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
 
-  /* Hawaiian script font placeholder */
-  --font-hawaiian: 'Brush Script MT', cursive;
-}
+  html {
+    scroll-behavior: smooth;
+    /* Offset in-page anchors so the fixed header never covers a heading. */
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1f1311;
-    --foreground: #ffffff;
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Visible, consistent keyboard focus everywhere. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-subtle);
+  }
+
+  /* Only remove the outline for pointer users who did not tab here. */
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
-* {
-  box-sizing: border-box;
+@layer components {
+  /* --- Scroll reveal -------------------------------------------------------
+     Progressive enhancement. Server-rendered markup carries no reveal state, so
+     content is fully visible without JavaScript and before hydration. The
+     client only marks elements that are below the fold at mount, which means
+     nothing above the fold ever flashes. */
+  [data-reveal='pending'] {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  [data-reveal='in'] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--duration-calm) var(--ease-enter),
+      transform var(--duration-calm) var(--ease-enter);
+  }
+
+  /* Keyboard-only skip link: visually hidden until focused. */
+  .skip-link {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 100;
+    transform: translateY(-200%);
+    background-color: var(--color-surface-raised);
+    color: var(--color-ink);
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--color-line-strong);
+    border-radius: var(--radius-panel);
+    font-size: 0.875rem;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* ==========================================================================
+   Reduced motion
+   Applies to CSS animation, transitions and smooth scrolling. Framer Motion
+   is handled separately in JS via the useReducedMotion hook.
+   ========================================================================== */
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Mangabey', 'Rubik', 'Nunito', system-ui, sans-serif;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Hawaiian wave animation */
-@keyframes hawaiian-wave {
-  0%, 100% { transform: translateX(0) scaleX(1); }
-  50% { transform: translateX(-10px) scaleX(1.05); }
-}
-
-.wave-animation {
-  animation: hawaiian-wave 4s ease-in-out infinite;
-}
-
-/* Accessibility: Respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
-}
 
-/* Focus styles for accessibility */
-.focus-visible:focus {
-  outline: 2px solid var(--kona-teal);
-  outline-offset: 2px;
-}
+  .skip-link {
+    transition: none;
+  }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--kona-taupe);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--kona-brown);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--kona-teal);
+  /* Reveal never hides content for reduced-motion visitors. */
+  [data-reveal='pending'],
+  [data-reveal='in'] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
