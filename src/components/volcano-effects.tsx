@@ -12,27 +12,94 @@ const serverSnapshot = () => false
 const useIsMounted = () =>
   useSyncExternalStore(neverChanges, clientSnapshot, serverSnapshot)
 
+// Deterministic pseudo-random number in [0, 1) derived from an integer seed
+// (mulberry32). Every operation is a 32-bit integer op, so the result is
+// bit-identical on every JS engine — server and client render the same markup.
+// This replaces Math.random(), which produced different values per environment
+// and per render.
+function seededRandom(seed: number): number {
+  let t = (seed + 0x6d2b79f5) | 0
+  t = Math.imul(t ^ (t >>> 15), t | 1)
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+}
+
+// Distinct salts keep each decorative layer's pattern visually different while
+// remaining fully deterministic.
+const SALT = {
+  volcanoParticles: 1000,
+  coffeeBeans: 2000,
+  sparkles: 3000,
+  steam: 4000,
+  lavaFlows: 5000,
+  lavaBlobs: 6000,
+  droplets: 7000,
+} as const
+
+// Every table below is computed once at module load from stable indices, so it
+// is referentially stable, render-pure, and identical across server and client.
+const VOLCANO_PARTICLES = Array.from({ length: 15 }, (_, i) => ({
+  id: i,
+  x: seededRandom(SALT.volcanoParticles + i * 4) * 100,
+  y: seededRandom(SALT.volcanoParticles + i * 4 + 1) * 20 + 80,
+  delay: seededRandom(SALT.volcanoParticles + i * 4 + 2) * 0.5,
+  xDrift: seededRandom(SALT.volcanoParticles + i * 4 + 3) * 40 - 20,
+}))
+
+const COFFEE_BEANS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  x: seededRandom(SALT.coffeeBeans + i * 3) * 100,
+  delay: seededRandom(SALT.coffeeBeans + i * 3 + 1) * 4,
+  duration: 6 + seededRandom(SALT.coffeeBeans + i * 3 + 2) * 4,
+}))
+
+const SPARKLES = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  x: seededRandom(SALT.sparkles + i * 3) * 100,
+  y: seededRandom(SALT.sparkles + i * 3 + 1) * 100,
+  delay: seededRandom(SALT.sparkles + i * 3 + 2) * 0.5,
+}))
+
+const STEAM_PUFFS = Array.from({ length: 6 }, (_, i) => ({
+  id: i,
+  x: 45 + seededRandom(SALT.steam + i * 2) * 10, // Center around the crater
+  delay: i * 0.3,
+  duration: 3 + seededRandom(SALT.steam + i * 2 + 1),
+}))
+
+const LAVA_FLOWS = Array.from({ length: 5 }, (_, i) => ({
+  id: i,
+  x: 45 + (i - 2) * 8,
+  width: 3 + seededRandom(SALT.lavaFlows + i * 4) * 2,
+  delay: i * 0.2,
+  height: 100 + seededRandom(SALT.lavaFlows + i * 4 + 1) * 100,
+  settleHeight: 80 + seededRandom(SALT.lavaFlows + i * 4 + 2) * 80,
+  duration: 3 + seededRandom(SALT.lavaFlows + i * 4 + 3) * 2,
+}))
+
+const LAVA_BLOBS = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  cx: 400 + (seededRandom(SALT.lavaBlobs + i * 8) - 0.5) * 40,
+  r: 2 + seededRandom(SALT.lavaBlobs + i * 8 + 1) * 3,
+  hue: 10 + seededRandom(SALT.lavaBlobs + i * 8 + 2) * 20,
+  lightness: 60 + seededRandom(SALT.lavaBlobs + i * 8 + 3) * 20,
+  riseTo: -60 - seededRandom(SALT.lavaBlobs + i * 8 + 4) * 40,
+  drift: (seededRandom(SALT.lavaBlobs + i * 8 + 5) - 0.5) * 30,
+  duration: 1.5 + seededRandom(SALT.lavaBlobs + i * 8 + 6),
+  delay: seededRandom(SALT.lavaBlobs + i * 8 + 7) * 2,
+}))
+
+const WATER_DROPLETS = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  duration: 2 + seededRandom(SALT.droplets + i),
+}))
+
 // Volcano Particles Component
 export const VolcanoParticles: React.FC<{ trigger?: boolean }> = ({ trigger = false }) => {
-  const [allParticles] = useState(() =>
-    Array.from({ length: 15 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 20 + 80,
-      delay: Math.random() * 0.5,
-      xDrift: Math.random() * 40 - 20
-    }))
-  )
-  const [expired, setExpired] = useState(false)
-
-  useEffect(() => {
-    if (!trigger) return
-    // setState inside a timeout callback is asynchronous, so render stays pure.
-    const timer = setTimeout(() => setExpired(true), 3000)
-    return () => clearTimeout(timer)
-  }, [trigger])
-
-  const particles = trigger && !expired ? allParticles : []
+  // Mounted while `trigger` is true and unmounted when it goes false, so every
+  // false -> true cycle mounts a fresh set that animates again. The animation
+  // itself ends at opacity 0, so no timer or expiry state is needed.
+  const particles = trigger ? VOLCANO_PARTICLES : []
 
   return (
     <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
@@ -64,16 +131,7 @@ export const VolcanoParticles: React.FC<{ trigger?: boolean }> = ({ trigger = fa
 
 // Floating Coffee Bean Particles
 export const CoffeeBeanParticles: React.FC = () => {
-  // Generated once so the values stay stable across re-renders (and so the
-  // render pass itself stays pure).
-  const [beans] = useState(() =>
-    Array.from({ length: 8 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      delay: Math.random() * 4,
-      duration: 6 + Math.random() * 4
-    }))
-  )
+  const beans = COFFEE_BEANS
 
   return (
     <div className="fixed inset-0 pointer-events-none z-5 overflow-hidden">
@@ -166,14 +224,7 @@ export const SparkleEffect: React.FC<{ children: React.ReactNode; intensity?: 'l
 
   const sparkleCount = intensity === 'low' ? 3 : intensity === 'medium' ? 5 : 8
 
-  const [sparkles] = useState(() =>
-    Array.from({ length: sparkleCount }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      delay: Math.random() * 0.5
-    }))
-  )
+  const sparkles = SPARKLES.slice(0, sparkleCount)
 
   return (
     <div
@@ -238,14 +289,7 @@ export const LavaFlowBorder: React.FC<{ className?: string }> = ({ className = "
 
 // Volcanic Steam Effect
 export const VolcanicSteam: React.FC = () => {
-  const [steamPuffs] = useState(() =>
-    Array.from({ length: 6 }, (_, i) => ({
-      id: i,
-      x: 45 + Math.random() * 10, // Center around the crater
-      delay: i * 0.3,
-      duration: 3 + Math.random()
-    }))
-  )
+  const steamPuffs = STEAM_PUFFS
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -281,32 +325,8 @@ export const PhotoRealisticVolcano: React.FC<{ scrollProgress?: number }> = ({ s
     setEruptionIntensity(0.3 + (scrollProgress * 0.7))
   }, [scrollProgress])
 
-  const [lavaFlows] = useState(() =>
-    Array.from({ length: 5 }, (_, i) => ({
-      id: i,
-      x: 45 + (i - 2) * 8,
-      width: 3 + Math.random() * 2,
-      delay: i * 0.2,
-      // Precomputed so the animate/transition props below stay pure.
-      height: 100 + Math.random() * 100,
-      settleHeight: 80 + Math.random() * 80,
-      duration: 3 + Math.random() * 2
-    }))
-  )
-
-  const [lavaBlobs] = useState(() =>
-    Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      cx: 400 + (Math.random() - 0.5) * 40,
-      r: 2 + Math.random() * 3,
-      hue: 10 + Math.random() * 20,
-      lightness: 60 + Math.random() * 20,
-      riseTo: -60 - Math.random() * 40,
-      drift: (Math.random() - 0.5) * 30,
-      duration: 1.5 + Math.random(),
-      delay: Math.random() * 2
-    }))
-  )
+  const lavaFlows = LAVA_FLOWS
+  const lavaBlobs = LAVA_BLOBS
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -479,9 +499,7 @@ export const HawaiianFlowers: React.FC = () => {
 export const OceanWaves: React.FC<{ scrollProgress?: number }> = ({ scrollProgress = 0 }) => {
   const waveIntensity = 0.5 + (scrollProgress * 0.5)
 
-  const [droplets] = useState(() =>
-    Array.from({ length: 8 }, (_, i) => ({ id: i, duration: 2 + Math.random() }))
-  )
+  const droplets = WATER_DROPLETS
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
