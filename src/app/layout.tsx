@@ -52,7 +52,17 @@ export default function RootLayout({
           Skip to content
         </a>
         <SiteHeader />
-        <main id="content">{children}</main>
+        {/*
+          A neutral wrapper, not a landmark. Legacy routes such as /locations
+          render their own <main>, and a global <main> here would nest them.
+          Each route is responsible for its own <main>; the homepage provides
+          one. Some legacy routes still have none — that is tracked for the
+          later route audit rather than fixed here.
+          tabIndex={-1} makes this a valid skip-link target.
+        */}
+        <div id="content" tabIndex={-1}>
+          {children}
+        </div>
         <SiteFooter />
       </body>
     </html>

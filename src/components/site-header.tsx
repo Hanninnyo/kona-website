@@ -10,9 +10,13 @@ import { site } from '@/content/site'
  * Global site header.
  *
  * Transparent over the hero on the homepage, and a readable solid surface once
- * scrolled or on any other route. The mobile menu is a proper dialog: focus is
- * trapped, Escape closes it, focus returns to the trigger, and background
- * content is inert to assistive technology.
+ * scrolled or on any other route.
+ *
+ * The mobile menu applies, precisely: role="dialog" with aria-modal, a Tab
+ * focus trap scoped to the panel, Escape to close, focus return to the trigger,
+ * and a body scroll lock. It does NOT mark background content inert or
+ * aria-hidden, so assistive technology can still reach the page behind it via
+ * virtual cursor. Adding that is a follow-up, not part of this correction.
  */
 export function SiteHeader() {
   const pathname = usePathname()

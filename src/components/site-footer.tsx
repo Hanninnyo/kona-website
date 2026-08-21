@@ -120,11 +120,9 @@ export function SiteFooter() {
           </p>
           {/*
             Hours, phone, email and social profiles are intentionally absent
-            until the owner confirms them. See src/content/site.ts.
+            until the owner confirms both the values and how they should be
+            managed. Nothing stands in for them. See src/content/site.ts.
           */}
-          <p className="font-body text-xs text-ink-inverse-soft">
-            Current hours are listed on each location&apos;s Google listing.
-          </p>
         </div>
       </div>
     </footer>

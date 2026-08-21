@@ -45,14 +45,14 @@ export const homepage: HomepageContent = {
         title: 'Authentic',
         statement: '100% Kona Coffee. Never blended.',
         detail:
-          'Kona coffee is grown in a narrow strip of the Big Island and nowhere else on earth. We serve it as it is, without blending it into something cheaper.',
+          'Grown in Kona\u2019s celebrated coffee belt on Hawai\u02BBi Island, our 100% Kona coffee is served without blending it with coffee from other origins.',
       },
       {
         id: 'crafted',
         title: 'Crafted',
         statement: 'Every cup prepared with intention.',
         detail:
-          'Drinks are made one at a time, by hand, by someone paying attention. Nothing is batched to save a minute.',
+          'Each drink is prepared to order with care, balance, and attention to detail.',
       },
       {
         id: 'escape',

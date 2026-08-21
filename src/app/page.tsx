@@ -13,10 +13,10 @@ import { SpaceEditorial } from '@/components/home/space-editorial'
  */
 export default function HomePage() {
   return (
-    <>
+    <main>
       <CinematicHero />
       <KonaPrinciples />
       <SpaceEditorial />
-    </>
+    </main>
   )
 }
