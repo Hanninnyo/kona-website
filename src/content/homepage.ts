@@ -13,7 +13,7 @@ import { site } from './site'
  * reviewable, and replaceable by dropping in a file and setting one path.
  */
 
-const mountainView = site.locations[0]
+const [mountainView, coffeeTruck] = site.locations
 
 export const homepage: HomepageContent = {
   hero: {
@@ -83,6 +83,84 @@ export const homepage: HomepageContent = {
         awaiting:
           'Interior detail — a table, seating texture, or the counter. Portrait crop, shallow depth of field.',
         aspect: 'portrait',
+      },
+    ],
+  },
+
+  /**
+   * Two ways to visit, given equal weight.
+   *
+   * Addresses come from `site.locations`, so they cannot drift from the rest of
+   * the site. No hours and no truck schedule appear here: the café hours are
+   * marked `needs-owner-confirmation` in content, and no verified current truck
+   * schedule exists. Both primary actions therefore lead to directions rather
+   * than to a timetable.
+   *
+   * Photography: both images are authentic photographs already in the
+   * repository. Three other truck images in `public/images` are AI-generated
+   * (visible generator watermark, garbled signage, invented customers) and are
+   * deliberately not used.
+   */
+  visit: {
+    eyebrow: 'Visit Kona',
+    heading: 'One brand. Two ways to visit.',
+    intro:
+      'The café in Mountain View, and the coffee truck the business began with. Wherever you find us, it is the same Kona.',
+    destinations: [
+      {
+        id: mountainView.id,
+        label: 'Mountain View Café',
+        description:
+          'A calm, modern island escape for handcrafted drinks, bakery favorites and chimney cakes.',
+        place: `${mountainView.address.street}, ${mountainView.address.unit} · ${mountainView.address.city}`,
+        primary: {
+          label: 'Visit the Café',
+          href: mountainView.directionsUrl,
+          external: true,
+          description: 'Directions to the Mountain View café',
+        },
+        secondary: {
+          label: 'Order Café Pickup',
+          href: mountainView.ordering.url,
+          external: true,
+          description: 'Order ahead from the Mountain View café',
+        },
+        image: {
+          // The real storefront at The Village at San Antonio Center.
+          src: '/images/storefront-open.jpg',
+          alt: 'The Kona Island Coffee storefront in Mountain View, its round 100% Kona sign above the entrance.',
+          awaiting: '',
+          aspect: 'landscape',
+        },
+      },
+      {
+        id: coffeeTruck.id,
+        label: 'Kona Coffee Truck',
+        description:
+          'Find our original mobile coffee experience at Valley Medical Center and selected community stops.',
+        place: `${coffeeTruck.address.street}, ${coffeeTruck.address.unit} · ${coffeeTruck.address.city}`,
+        primary: {
+          // Names the destination rather than promising a live locator: the
+          // truck also serves community stops, and no verified current
+          // schedule exists to send anyone to.
+          label: 'Directions to VMC',
+          href: coffeeTruck.directionsUrl,
+          external: true,
+          description: 'Directions to the truck at Valley Medical Center',
+        },
+        secondary: {
+          label: 'Order from the Truck',
+          href: coffeeTruck.ordering.url,
+          external: true,
+          description: 'Order ahead from the coffee truck',
+        },
+        image: {
+          // The actual Kona trailer, photographed at the 2023 launch.
+          src: '/images/2023-first-coffee-truck-launch.jpg',
+          alt: 'The Kona Island Coffee trailer, wrapped in coffee beans and palm motifs, with its service window open.',
+          awaiting: '',
+          aspect: 'landscape',
+        },
       },
     ],
   },

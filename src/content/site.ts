@@ -50,10 +50,27 @@ export const site: SiteContent = {
 
   primaryAction: {
     label: 'Order Ahead',
+    // The café is the default destination, but the header offers the choice
+    // below rather than sending every visitor here silently.
     href: MOUNTAIN_VIEW_ORDERING,
     external: true,
     description: 'Order from the Mountain View café',
   },
+
+  orderDestinations: [
+    {
+      label: 'Mountain View Café',
+      href: MOUNTAIN_VIEW_ORDERING,
+      external: true,
+      description: 'Pickup from the café at San Antonio Center',
+    },
+    {
+      label: 'Kona Coffee Truck',
+      href: COFFEE_TRUCK_ORDERING,
+      external: true,
+      description: 'Valley Medical Center and community stops',
+    },
+  ],
 
   locations: [
     {

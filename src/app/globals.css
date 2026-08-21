@@ -34,6 +34,14 @@
   --color-palm-500: #4B5D4E;       /* natural tropical green, photo-supported only */
   --color-palm-600: #3A4A3D;
 
+  /* Sea glass — the colour of light bounced off water onto a warm wall.
+     Used only in the ambient layer, never as ink, a border, a fill, or a brand
+     colour. The pale tone does the work: reflected light *lightens* what it
+     falls on, so a light cool tint reads as light, where a deeper teal at the
+     same alpha only reads as a stain. */
+  --color-seaglass-200: #CFE6E1;
+  --color-seaglass-500: #7FA8A0;
+
   /* --- Semantic roles -----------------------------------------------------
      Components should reference these, not the primitives above. */
   --color-surface:          var(--color-sand-200);
@@ -137,6 +145,15 @@
     text-wrap: pretty;
   }
 
+  /* Tailwind v4 no longer sets this, and an interactive control that does not
+     change the cursor does not look interactive. Disabled controls keep the
+     default arrow, which is the correct signal for them. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  label:has(input[type='radio']) {
+    cursor: pointer;
+  }
+
   /* Visible, consistent keyboard focus everywhere. */
   :focus-visible {
     outline: 2px solid var(--color-accent);
@@ -205,6 +222,111 @@
     animation: discovery-gather var(--duration-quick) var(--ease-calm) both;
   }
 
+  /* --- Ocean light ---------------------------------------------------------
+     Sunlight reflecting off water onto a warm interior wall: two or three very
+     soft, very slow pools of sea-glass light drifting across a warm ground.
+
+     Rules this obeys:
+     - warm sand stays dominant; the tint never exceeds ~0.2 alpha at a blob
+       centre, which keeps every on-ground text colour above AA;
+     - it sits behind content and is inert to the pointer;
+     - it is decorative and aria-hidden, so it carries no meaning;
+     - movement is measured in minutes, not seconds;
+     - it is removed outright under prefers-reduced-motion, leaving the static
+       tint, which is the part that carries the atmosphere. */
+  .ocean-light {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .ocean-light__pool {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(56px);
+    will-change: transform;
+  }
+
+  /* The pool of light itself: pale, cool, and lighter than the warm ground. */
+  .ocean-light__pool--lit {
+    background: radial-gradient(
+      circle at 50% 50%,
+      var(--color-seaglass-200) 0%,
+      color-mix(in srgb, var(--color-seaglass-200) 55%, transparent) 46%,
+      transparent 74%
+    );
+  }
+
+  /* A deeper trace under it, so the light has a colour and not just a
+     brightness. Kept far fainter than the pale pool above. */
+  .ocean-light__pool--deep {
+    background: radial-gradient(
+      circle at 50% 50%,
+      var(--color-seaglass-500) 0%,
+      color-mix(in srgb, var(--color-seaglass-500) 50%, transparent) 44%,
+      transparent 72%
+    );
+  }
+
+  @keyframes ocean-drift-a {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    50%  { transform: translate3d(4%, -3%, 0) scale(1.09); }
+    100% { transform: translate3d(0, 0, 0) scale(1); }
+  }
+
+  @keyframes ocean-drift-b {
+    0%   { transform: translate3d(0, 0, 0) scale(1.04); }
+    50%  { transform: translate3d(-5%, 4%, 0) scale(1); }
+    100% { transform: translate3d(0, 0, 0) scale(1.04); }
+  }
+
+  .ocean-light__pool--a {
+    animation: ocean-drift-a 74s var(--ease-calm) infinite;
+  }
+
+  .ocean-light__pool--b {
+    animation: ocean-drift-b 96s var(--ease-calm) infinite;
+  }
+
+  /* --- Palm shadow ---------------------------------------------------------
+     A frond silhouette blurred until it reads as a shadow cast by sunlight
+     rather than as an illustration. Monochrome, very low opacity, entering
+     from one edge only. Decorative, aria-hidden, and absent below `sm`. */
+  @keyframes palm-sway {
+    0%   { transform: rotate(-1.1deg) translate3d(0, 0, 0); }
+    50%  { transform: rotate(1deg) translate3d(0, 0.8%, 0); }
+    100% { transform: rotate(-1.1deg) translate3d(0, 0, 0); }
+  }
+
+  .palm-shadow {
+    position: absolute;
+    pointer-events: none;
+    color: var(--color-espresso-900);
+    /* Enough blur to lose the edges, little enough that the gaps between the
+       leaflets survive — the gaps are what make it read as light through a
+       frond rather than as a mark on the page. */
+    filter: blur(7px);
+    opacity: 0.055;
+    transform-origin: 100% 0%;
+    animation: palm-sway 42s var(--ease-calm) infinite;
+    will-change: transform;
+  }
+
+  /* --- Find Your Kona invitation cue --------------------------------------
+     A slow halo breathing outward from the primary action. Light and movement,
+     not a flash: one cycle takes nearly four seconds and never fully resolves
+     to opaque. */
+  @keyframes begin-halo {
+    0%   { transform: scale(0.96); opacity: 0; }
+    35%  { opacity: 0.5; }
+    100% { transform: scale(1.16); opacity: 0; }
+  }
+
+  .begin-halo {
+    animation: begin-halo 3.8s var(--ease-calm) infinite;
+  }
+
   /* Keyboard-only skip link: visually hidden until focused. */
   .skip-link {
     position: absolute;
@@ -262,5 +384,23 @@
   .discovery-enter,
   .discovery-gather {
     animation: none !important;
+  }
+
+  /* Ambient atmosphere holds still. The ocean light keeps its static tint —
+     that is the part that carries the mood — while the palm shadow, whose
+     whole point is the movement of sunlight, is removed entirely. */
+  .ocean-light__pool {
+    animation: none !important;
+  }
+
+  .palm-shadow {
+    display: none !important;
+  }
+
+  /* The invitation cue is motion for its own sake; the button's own contrast
+     carries the affordance without it. */
+  .begin-halo {
+    animation: none !important;
+    opacity: 0 !important;
   }
 }

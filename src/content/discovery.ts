@@ -34,12 +34,14 @@ import type { DiscoveryContent } from './types'
  * which is a defining property of the Kauaʻi bean rather than a leaning.
  */
 export const discovery: DiscoveryContent = {
-  eyebrow: 'Find Your Kona',
-  heading: 'What are you in the mood for?',
+  eyebrow: 'A guided coffee discovery',
+  heading: 'Find Your Kona',
   intro:
-    'Tell us what sounds good. We’ll introduce you to a coffee and a café favorite that fit the moment.',
-  invitationMeta: 'Three questions. About a minute.',
-  beginLabel: 'Begin',
+    'Three quick choices. One Kona coffee and one café drink selected for you.',
+  invitationMeta: 'Takes less than a minute',
+  beginLabel: 'Begin the Experience',
+  /** Shown under the options until one is chosen, then replaced by Continue. */
+  choosePrompt: 'Choose one to continue',
 
   questions: [
     {

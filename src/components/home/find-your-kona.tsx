@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { OceanLight } from '@/components/ambient/ocean-light'
+import { PalmShadow } from '@/components/ambient/palm-shadow'
 import { CoffeeDiscovery } from '@/components/home/coffee-discovery'
 import { SectionReveal } from '@/components/section-reveal'
 import { discovery } from '@/content/discovery'
@@ -15,20 +17,29 @@ import { discovery } from '@/content/discovery'
  * panel and presents the collection itself — five coffees with their real
  * classification, roast and flavour. That is a useful destination in its own
  * right, not an apology.
+ *
+ * This is where the ocean-light atmosphere is strongest: the section is the
+ * page's one moment of participation, and the light marks it as somewhere
+ * different without a border or a colour change. Both ambient layers are
+ * decorative, aria-hidden and inert to the pointer, and both sit behind the
+ * content in the stacking order.
  */
 export function FindYourKona() {
   return (
     <section
       id="find-your-kona"
       aria-labelledby="discovery-heading"
-      className="scroll-mt-24 bg-surface-sunken py-24 sm:py-32"
+      className="relative isolate scroll-mt-24 overflow-hidden bg-surface-sunken py-24 sm:py-32"
     >
+      <OceanLight className="-z-10" />
+      <PalmShadow className="-z-10 -right-16 -top-24 h-[22rem] w-[30rem] lg:-right-4 lg:h-[26rem] lg:w-[36rem]" />
+
       <noscript>
         {/* Scoped to this section, and parsed only when scripting is off. */}
         <style>{`[data-discovery-interactive]{display:none !important}`}</style>
       </noscript>
 
-      <div className="mx-auto max-w-page px-5 sm:px-8">
+      <div className="relative mx-auto max-w-page px-5 sm:px-8">
         <SectionReveal className="max-w-editorial">
           <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-accent">
             {discovery.eyebrow}

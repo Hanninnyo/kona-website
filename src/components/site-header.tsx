@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { OrderChooser } from '@/components/order-chooser'
 import { site } from '@/content/site'
 
 /**
@@ -17,6 +18,11 @@ import { site } from '@/content/site'
  * and a body scroll lock. It does NOT mark background content inert or
  * aria-hidden, so assistive technology can still reach the page behind it via
  * virtual cursor. Adding that is a follow-up, not part of this correction.
+ *
+ * Ordering is one action, not two. Kona takes orders in two places, so the
+ * header's single Order Ahead control opens a small choice panel rather than
+ * sending every visitor to the café; the mobile menu lists both destinations
+ * outright, where there is room and no need for a second layer.
  */
 export function SiteHeader() {
   const pathname = usePathname()
@@ -156,20 +162,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <a
-            href={site.primaryAction.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={[
-              'hidden rounded-panel border px-5 py-2.5 font-body text-sm transition-colors duration-200 sm:inline-block',
-              solid
-                ? 'border-ink/25 text-ink hover:border-accent hover:text-accent'
-                : 'border-sand-50/45 text-sand-50 hover:border-sand-50 hover:bg-sand-50/10',
-            ].join(' ')}
-          >
-            {site.primaryAction.label}
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
+          <OrderChooser solid={solid} className="hidden sm:block" />
 
           <button
             ref={triggerRef}
@@ -237,16 +230,48 @@ export function SiteHeader() {
               ))}
             </ul>
 
-            <a
-              href={site.primaryAction.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={closeMenu}
-              className="mt-6 mb-2 block rounded-panel bg-surface-inverse px-5 py-4 text-center font-body text-sm text-ink-inverse"
-            >
-              {site.primaryAction.label}
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
+            {/* No nested disclosure here: on a panel this size both
+                destinations fit, and one fewer layer to open is one fewer
+                thing between a visitor and a coffee. */}
+            <div className="mt-6 mb-2">
+              <p
+                id={`${menuId}-order`}
+                className="font-body text-eyebrow uppercase tracking-[0.18em] text-ink-soft"
+              >
+                Order ahead from
+              </p>
+              <ul aria-labelledby={`${menuId}-order`} className="mt-3 flex flex-col gap-3">
+                {site.orderDestinations.map((destination, index) => (
+                  <li key={destination.href}>
+                    <a
+                      href={destination.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={closeMenu}
+                      className={[
+                        'block min-h-14 rounded-panel px-5 py-4 font-body text-sm',
+                        index === 0
+                          ? 'bg-surface-inverse text-ink-inverse'
+                          : 'border border-ink-soft text-ink',
+                      ].join(' ')}
+                    >
+                      {destination.label}
+                      <span className="sr-only"> (opens in a new tab)</span>
+                      {destination.description && (
+                        <span
+                          className={[
+                            'mt-0.5 block font-body text-sm',
+                            index === 0 ? 'text-ink-inverse-soft' : 'text-ink-muted',
+                          ].join(' ')}
+                        >
+                          {destination.description}
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </nav>
         </div>
       )}

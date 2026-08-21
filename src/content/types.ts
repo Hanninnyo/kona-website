@@ -79,6 +79,11 @@ export interface SiteContent {
   }
   navigation: NavItem[]
   primaryAction: NavItem
+  /**
+   * The two places a visitor can order from, offered as a single choice rather
+   * than as competing buttons. Both URLs are owner-confirmed.
+   */
+  orderDestinations: NavItem[]
   locations: Location[]
   giftCardsUrl: string
   contact: ContactDetails
@@ -103,6 +108,24 @@ export interface Principle {
   detail: string
 }
 
+/**
+ * One of the two ways to experience Kona. Both destinations carry equal weight
+ * in the layout: the café and the truck are one brand, not a flagship and a
+ * footnote.
+ */
+export interface VisitDestination {
+  id: Location['id']
+  label: string
+  description: string
+  /** Verified address line. Never hours, never a schedule. */
+  place: string
+  /** Directions, or wherever the visitor goes to find this destination. */
+  primary: NavItem
+  /** The verified ordering destination for this location. */
+  secondary: NavItem
+  image: ImageSlot
+}
+
 export interface HomepageContent {
   hero: {
     eyebrow: string
@@ -124,6 +147,12 @@ export interface HomepageContent {
     lines: string[]
     body: string
     images: ImageSlot[]
+  }
+  visit: {
+    eyebrow: string
+    heading: string
+    intro: string
+    destinations: VisitDestination[]
   }
 }
 
@@ -268,6 +297,8 @@ export interface DiscoveryContent {
   /** Sets expectations before the visitor commits to starting. */
   invitationMeta: string
   beginLabel: string
+  /** Shown beside the options until one is chosen. */
+  choosePrompt: string
   questions: DiscoveryQuestion[]
   beans: DiscoveryBean[]
   drinks: DiscoveryDrink[]
