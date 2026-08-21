@@ -126,3 +126,169 @@ export interface HomepageContent {
     images: ImageSlot[]
   }
 }
+
+/* ==========================================================================
+   Find Your Kona — guided discovery
+   ========================================================================== */
+
+/**
+ * The vocabulary the discovery experience reasons in.
+ *
+ * Every tag is either a mood, a flavour direction, or a way of drinking
+ * coffee. Answers contribute weighted tags; beans and drinks declare which
+ * tags they genuinely match. Nothing outside this union can influence a
+ * recommendation, which keeps the engine closed and auditable.
+ */
+export type DiscoveryTag =
+  // mood
+  | 'comforting'
+  | 'bright'
+  | 'indulgent'
+  | 'tropical'
+  | 'warm'
+  | 'energizing'
+  | 'rich'
+  | 'refreshing'
+  // flavour
+  | 'chocolate'
+  | 'caramel'
+  | 'fruity'
+  | 'clean'
+  | 'toasted'
+  | 'nutty'
+  | 'smooth'
+  | 'balanced'
+  | 'flavored'
+  // how it is enjoyed
+  | 'pour-over'
+  | 'espresso-milk'
+  | 'iced'
+  | 'beans-at-home'
+  | 'decaf'
+
+/** Tag → weight. A missing tag means no affinity, not a negative one. */
+export type TagWeights = Partial<Record<DiscoveryTag, number>>
+
+/**
+ * An image placement that is ready for approved photography.
+ *
+ * Unlike `ImageSlot` this carries no owner-facing brief: the discovery
+ * experience is customer-facing, so an empty slot renders as a composed
+ * typographic panel rather than as a "photography pending" notice.
+ */
+export interface DiscoveryImage {
+  /** Null until approved photography is delivered. */
+  src: string | null
+  alt: string
+}
+
+export type BeanId =
+  | 'private-estate'
+  | 'peaberry'
+  | 'chocolate-macadamia'
+  | 'hazelnut'
+  | 'kauai-decaf'
+
+export interface DiscoveryBean {
+  id: BeanId
+  name: string
+  /** e.g. "100% Kona Coffee" or "100% Hawaiian coffee". Rendered verbatim. */
+  classification: string
+  roast: string
+  /** Verified flavour description. Never paraphrased into new tasting notes. */
+  flavor: string
+  personality: string
+  /**
+   * An explicit clarification shown with the result — used for the flavoured
+   * coffees, and for the Kauaʻi decaf, which is Hawaiian but not Kona.
+   */
+  clarification?: string
+  /** Why this bean suits the visitor. Character, not invented provenance. */
+  rationale: string
+  /** Owner-confirmed availability, stated plainly. Omitted when none applies. */
+  availability?: string
+  affinity: TagWeights
+  image: DiscoveryImage
+}
+
+export type DrinkId =
+  | 'kona-island-latte'
+  | 'captain-cook'
+  | 'kamoa-mocha'
+  | 'nutella'
+  | 'island-coco-refresher'
+
+export interface DiscoveryDrink {
+  id: DrinkId
+  name: string
+  /** Verified flavour description. No ingredient may be added to it. */
+  flavor: string
+  /** Verified positioning, where one exists. */
+  position?: string
+  rationale: string
+  /**
+   * True for drinks built on espresso. The owner has confirmed that every
+   * espresso-based drink can be prepared with decaf espresso, so this is what
+   * gates the decaf availability line on a result.
+   */
+  espressoBased: boolean
+  affinity: TagWeights
+  image: DiscoveryImage
+}
+
+export type QuestionId = 'mood' | 'flavor' | 'method'
+
+export interface DiscoveryOption {
+  id: string
+  label: string
+  /** Optional second line. Kept short so options stay scannable on mobile. */
+  detail?: string
+  tags: TagWeights
+  /**
+   * Narrows the shortlist to candidates carrying this tag. Used only where a
+   * preference is a genuine constraint rather than a leaning — currently just
+   * decaf, where recommending a caffeinated bean would be wrong rather than
+   * merely off-key. A constraint that no candidate in a pool satisfies is
+   * ignored for that pool, and the result reports that it was.
+   */
+  requiresTag?: DiscoveryTag
+}
+
+export interface DiscoveryQuestion {
+  id: QuestionId
+  /** The question, used as the group label and the visible heading. */
+  prompt: string
+  options: DiscoveryOption[]
+}
+
+export interface DiscoveryContent {
+  eyebrow: string
+  heading: string
+  intro: string
+  /** Sets expectations before the visitor commits to starting. */
+  invitationMeta: string
+  beginLabel: string
+  questions: DiscoveryQuestion[]
+  beans: DiscoveryBean[]
+  drinks: DiscoveryDrink[]
+  /** Short display labels for the descriptors gathered around a result. */
+  tagLabels: Record<DiscoveryTag, string>
+  result: {
+    eyebrow: string
+    heading: string
+    beanLabel: string
+    drinkLabel: string
+    /**
+     * Shown on the drink card when the visitor asked for decaf. Owner-confirmed:
+     * every espresso-based drink can be made with decaf espresso.
+     */
+    decafDrinkAvailability: string
+    viewMenu: NavItem
+    startAgainLabel: string
+  }
+  /** Rendered when JavaScript is unavailable. */
+  fallback: {
+    heading: string
+    intro: string
+  }
+}

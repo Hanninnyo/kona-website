@@ -169,6 +169,42 @@
       transform var(--duration-calm) var(--ease-enter);
   }
 
+  /* --- Find Your Kona ------------------------------------------------------
+     The discovery experience changes text in place rather than navigating, so
+     each stage gets a short, calm entrance to signal that something moved.
+     CSS only: no animation library, and nothing that content depends on. */
+  @keyframes discovery-enter {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes discovery-gather {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .discovery-enter {
+    animation: discovery-enter var(--duration-calm) var(--ease-enter) both;
+  }
+
+  /* Small flavour descriptors settling in around a result. The stagger is set
+     per item as an inline animation-delay. */
+  .discovery-gather {
+    animation: discovery-gather var(--duration-quick) var(--ease-calm) both;
+  }
+
   /* Keyboard-only skip link: visually hidden until focused. */
   .skip-link {
     position: absolute;
@@ -218,5 +254,13 @@
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+
+  /* Discovery stages appear immediately. Removing the animation outright also
+     drops the per-item stagger delay, which would otherwise still hold content
+     back for a moment even with a zero-length animation. */
+  .discovery-enter,
+  .discovery-gather {
+    animation: none !important;
   }
 }
