@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { OceanLight } from '@/components/ambient/ocean-light'
 import { MediaFrame } from '@/components/media-frame'
 import { homepage } from '@/content/homepage'
 
@@ -16,6 +17,7 @@ export function CinematicHero() {
 
   return (
     <section
+      id="hero-section"
       // Not quite full-viewport: a deliberate sliver of the next section shows
       // at the fold so the page reads as continuous rather than as a splash.
       className="relative flex min-h-[88svh] items-end overflow-hidden bg-surface-inverse"
@@ -38,6 +40,18 @@ export function CinematicHero() {
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-gradient-to-t from-charcoal-900/85 via-charcoal-900/45 to-charcoal-900/20"
+        />
+
+        {/*
+          A trace of the same reflected light along the bottom edge, as an
+          invitation to scroll into the section that carries it properly. Sits
+          above the scrim but below the copy, masked so it fades out well
+          before the headline, and confined to the lowest sliver of the frame
+          so it never covers or tints the photograph itself.
+        */}
+        <OceanLight
+          intensity="hint"
+          className="!inset-auto bottom-0 left-0 right-0 h-[22%] [mask-image:linear-gradient(to_top,black_0%,transparent_100%)]"
         />
       </div>
 

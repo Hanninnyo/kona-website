@@ -2,8 +2,10 @@
  * Palm shadow — a decorative atmosphere layer.
  *
  * A frond silhouette blurred until it reads as a shadow cast by sunlight
- * rather than as a palm-leaf graphic. Monochrome espresso at ~5% opacity,
- * entering from a single edge, swaying on a 42-second cycle.
+ * rather than as a palm-leaf graphic. Monochrome espresso, entering from a
+ * single edge, swaying on a 14-second cycle with a 9-second breath layered
+ * under it — two pivots rather than one, because a single rotation reads as a
+ * rigid shape rocking, and a frond in a breeze does not do that.
  *
  * The geometry matters: what makes a frond shadow read as light rather than as
  * a mark is the gaps between the leaflets. So the shape is a thin spine with
@@ -12,10 +14,12 @@
  * scope — no randomness, no dates, nothing that could differ between the
  * server and the client, so this cannot cause a hydration mismatch.
  *
- * Decorative and aria-hidden. Hidden below `sm`, where the page is too narrow
- * for an overlay that does not compete with the content, and removed entirely
- * under prefers-reduced-motion: a still palm silhouette is exactly the
- * tropical decoration this is trying not to be.
+ * Decorative and aria-hidden. It is kept on small screens rather than dropped,
+ * at a smaller scale and lower opacity, cropped by the section edge so it
+ * enters the corner without reaching the answer cards. Under
+ * prefers-reduced-motion it holds still at roughly half strength: a frond
+ * shadow that cannot move has to be quieter, or it stops reading as light and
+ * starts reading as a graphic.
  */
 
 const BLADE_COUNT = 15
@@ -49,23 +53,25 @@ interface PalmShadowProps {
 
 export function PalmShadow({ className = '' }: PalmShadowProps) {
   return (
-    <div aria-hidden="true" className={`palm-shadow hidden sm:block ${className}`}>
-      <svg
-        viewBox="0 0 400 300"
-        className="h-full w-full"
-        fill="currentColor"
-        aria-hidden="true"
-        focusable="false"
-      >
-        {/* Spine */}
-        <path
-          d="M399 3C330 30 258 76 198 136 138 196 96 258 74 300c30-52 74-112 132-170C264 72 334 26 399 12z"
-          fillOpacity="0.9"
-        />
-        {BLADES.map((d, index) => (
-          <path key={index} d={d} />
-        ))}
-      </svg>
+    <div aria-hidden="true" className={`palm-shadow ${className}`}>
+      <div className="palm-shadow__inner">
+        <svg
+          viewBox="0 0 400 300"
+          className="palm-shadow__art"
+          fill="currentColor"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {/* Spine */}
+          <path
+            d="M399 3C330 30 258 76 198 136 138 196 96 258 74 300c30-52 74-112 132-170C264 72 334 26 399 12z"
+            fillOpacity="0.9"
+          />
+          {BLADES.map((d, index) => (
+            <path key={index} d={d} />
+          ))}
+        </svg>
+      </div>
     </div>
   )
 }

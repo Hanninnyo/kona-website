@@ -32,7 +32,7 @@ export function FindYourKona() {
       className="relative isolate scroll-mt-24 overflow-hidden bg-surface-sunken py-24 sm:py-32"
     >
       <OceanLight className="-z-10" />
-      <PalmShadow className="-z-10 -right-16 -top-24 h-[22rem] w-[30rem] lg:-right-4 lg:h-[26rem] lg:w-[36rem]" />
+      <PalmShadow className="-z-10 -right-24 -top-28 h-[20rem] w-[26rem] sm:-right-20 sm:h-[28rem] sm:w-[38rem] lg:-right-8 lg:-top-32 lg:h-[36rem] lg:w-[48rem]" />
 
       <noscript>
         {/* Scoped to this section, and parsed only when scripting is off. */}

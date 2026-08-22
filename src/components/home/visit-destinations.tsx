@@ -32,7 +32,7 @@ export function VisitDestinations() {
     >
       {/* The transitional moment: the same light as Find Your Kona, at roughly
           half strength, carrying the atmosphere across the page. */}
-      <OceanLight intensity="whisper" className="-z-10" />
+      <OceanLight intensity="whisper" onLight className="-z-10" />
 
       <div className="relative mx-auto max-w-page px-5 sm:px-8">
         <SectionReveal className="max-w-editorial">

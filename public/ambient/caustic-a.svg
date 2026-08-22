@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1000" viewBox="0 0 1400 1000">
+  <!--
+    Caustic net, weave A. Decorative; referenced only as a CSS mask.
+
+    Fractal noise is collapsed to one channel and squeezed through a narrow
+    transfer spike, so only values inside a thin band survive. What remains is
+    the filament network a real caustic has, rather than a cloud. White on
+    transparent, because the page tints it with a design token.
+
+    This lives in a file rather than in the document so the browser rasterises
+    it once and caches it. The same filter applied to a live element was
+    recomputed per pixel per frame and measured at about one frame per second.
+  -->
+  <filter id="a" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.0022 0.0041" numOctaves="3" seed="7" result="field"/>
+    <feColorMatrix in="field" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0" result="mono"/>
+    <feComponentTransfer in="mono" result="net">
+      <feFuncA type="table" tableValues="0 0 0 0.18 1 0.28 0 0 0"/>
+    </feComponentTransfer>
+    <feFlood flood-color="#ffffff" result="tint"/>
+    <feComposite in="tint" in2="net" operator="in" result="filaments"/>
+    <feGaussianBlur in="filaments" stdDeviation="3.5"/>
+  </filter>
+  <rect width="1400" height="1000" filter="url(#a)"/>
+</svg>
