@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { OceanLight } from '@/components/ambient/ocean-light'
 import { SectionReveal } from '@/components/section-reveal'
 import { homepage } from '@/content/homepage'
 import type { VisitDestination } from '@/content/types'
@@ -28,13 +27,9 @@ export function VisitDestinations() {
     <section
       id="visit"
       aria-labelledby="visit-heading"
-      className="relative isolate scroll-mt-24 overflow-hidden bg-surface py-24 sm:py-32"
+      className="scroll-mt-24 bg-surface py-24 sm:py-32"
     >
-      {/* The transitional moment: the same light as Find Your Kona, at roughly
-          half strength, carrying the atmosphere across the page. */}
-      <OceanLight intensity="whisper" onLight className="-z-10" />
-
-      <div className="relative mx-auto max-w-page px-5 sm:px-8">
+      <div className="mx-auto max-w-page px-5 sm:px-8">
         <SectionReveal className="max-w-editorial">
           <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-accent">
             {visit.eyebrow}

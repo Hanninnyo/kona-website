@@ -323,3 +323,37 @@ export interface DiscoveryContent {
     intro: string
   }
 }
+
+/* ==========================================================================
+   The Kona Arrival Journey
+   ========================================================================== */
+
+export interface JourneyMoment {
+  id: 'grown' | 'roasted' | 'flown' | 'served' | 'arrival'
+  /** Short label for the stage indicator. */
+  stage: string
+  eyebrow: string
+  primary: string
+  supporting?: string
+  /** Milliseconds before advancing. Null means the moment is terminal. */
+  holdMs: number | null
+}
+
+export interface JourneyContent {
+  label: string
+  moments: JourneyMoment[]
+  enterLabel: string
+  skipLabel: string
+  replayLabel: string
+  summary: string
+  places: {
+    island: string
+    kona: string
+    departure: string
+    departureFull: string
+    arrival: string
+    arrivalFull: string
+    cafe: string
+    truck: string
+  }
+}

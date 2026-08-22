@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { ReplayJourney } from '@/components/journey/replay-journey'
 import { site } from '@/content/site'
 
 /**
@@ -118,6 +119,12 @@ export function SiteFooter() {
           <p className="font-body text-xs text-ink-inverse-soft">
             © {year} {site.brand.name}. All rights reserved.
           </p>
+          {/*
+            The one way back into the opening chapter. It belongs at the end of
+            the page rather than in the navigation: the journey is a story, not
+            a destination, and nothing else on the site depends on it.
+          */}
+          <ReplayJourney className="min-h-11 self-start font-body text-xs uppercase tracking-[0.18em] text-ink-inverse-soft underline decoration-line-inverse underline-offset-4 transition-colors duration-200 hover:text-gold-400 hover:decoration-gold-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400 sm:self-auto" />
           {/*
             Hours, phone, email and social profiles are intentionally absent
             until the owner confirms both the values and how they should be

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Cormorant_Garamond, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
+import { ArrivalJourney } from '@/components/journey/arrival-journey'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { site } from '@/content/site'
@@ -48,22 +49,36 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body>
-        <a href="#content" className="skip-link">
-          Skip to content
-        </a>
-        <SiteHeader />
         {/*
-          A neutral wrapper, not a landmark. Legacy routes such as /locations
-          render their own <main>, and a global <main> here would nest them.
-          Each route is responsible for its own <main>; the homepage provides
-          one. Some legacy routes still have none — that is tracked for the
-          later route audit rather than fixed here.
-          tabIndex={-1} makes this a valid skip-link target.
+          Everything a visitor can normally reach lives in this shell, so the
+          arrival journey can mark it `inert` while it is open — actually
+          inert, not merely described as such.
         */}
-        <div id="content" tabIndex={-1}>
-          {children}
+        <div id="site-shell">
+          <a href="#content" className="skip-link">
+            Skip to content
+          </a>
+          <SiteHeader />
+          {/*
+            A neutral wrapper, not a landmark. Legacy routes such as /locations
+            render their own <main>, and a global <main> here would nest them.
+            Each route is responsible for its own <main>; the homepage provides
+            one. Some legacy routes still have none — that is tracked for the
+            later route audit rather than fixed here.
+            tabIndex={-1} makes this a valid skip-link target.
+          */}
+          <div id="content" tabIndex={-1}>
+            {children}
+          </div>
+          <SiteFooter />
         </div>
-        <SiteFooter />
+
+        {/*
+          The opening chapter. Mounted once, above the shell, and rendering
+          nothing until it opens — so it does not exist without JavaScript, and
+          the homepage below is never obstructed.
+        */}
+        <ArrivalJourney />
       </body>
     </html>
   )
