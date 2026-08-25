@@ -266,37 +266,11 @@
     inset: 0;
   }
 
-  .journey-stack {
-    position: absolute;
-    inset: 0;
-  }
-
-  /* Every take fills the frame. `object-fit: cover` is doing the last of the
-     framing work here — the crops are already chosen so that the horizon
-     survives it at every supported viewport. */
-  .journey-video,
-  .journey-still {
-    position: absolute;
-    inset: 0;
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
-  }
-
-  /* The cut between takes. A short cross-dissolve rather than a fade to
-     black: the sequence never passes through an empty frame. */
-  .journey-video {
-    opacity: 0;
-    transition: opacity 700ms var(--ease-calm);
-  }
-
-  .journey-video[data-state='active'] {
-    opacity: 1;
-  }
-
   /* A slow drift over the footage, so a four-second take never reads as a
      still. Deliberately small — the footage carries its own movement. */
   .journey-stack {
+    position: absolute;
+    inset: 0;
     animation: journey-drift 18s var(--ease-calm) infinite alternate;
     will-change: transform;
   }
@@ -310,10 +284,56 @@
     }
   }
 
-  /* The still composition sits behind longer copy than any single moment of
-     the sequence, so it is nudged clear of it. */
-  .journey-layer[data-moment='static'] .journey-still {
-    object-position: 50% 34%;
+  /* One scene: a poster and, over it, the take. Both fill the same box.
+
+     `isolation` matters more than it looks. The take is lifted above its own
+     poster with a z-index, and without a stacking context here that z-index
+     is measured against the whole layer — which puts the footage on top of
+     the copy and the controls, where it silently swallows clicks on Enter.
+     Isolated, the ordering stays a private matter between the two layers of
+     one scene. */
+  .journey-scene {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    opacity: 0;
+    transition: opacity 700ms var(--ease-calm);
+  }
+
+  .journey-scene[data-state='active'] {
+    opacity: 1;
+  }
+
+  /* `object-fit: cover` does the last of the framing — the crops are already
+     chosen so the horizon survives it at every supported viewport. */
+  .journey-poster,
+  .journey-video,
+  .journey-still {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  /* The poster sits under the take and is never hidden. It is what holds the
+     frame while the take loads, and what stays if the take never arrives —
+     so there is no state in which the layer shows nothing. */
+  .journey-poster {
+    z-index: 0;
+  }
+
+  /* The take fades in over its own poster once it is genuinely playing. A
+     scene that fell back to its poster leaves this at zero for the rest of
+     its beat rather than flashing in late. */
+  .journey-video {
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 520ms var(--ease-calm);
+  }
+
+  .journey-video[data-state='shown'] {
+    opacity: 1;
   }
 
   /* The scrim the copy sits on.
@@ -322,19 +342,19 @@
      height follows its own text: a gradient painted on it starts wherever
      that text happens to begin, which left the eyebrow — the smallest type on
      screen — sitting on open cloud. Anchored to the viewport instead, the
-     darkening is the same wherever the copy lands. */
+     darkening is the same wherever the copy lands.
+
+     Two axes rather than one. A single bottom-up wash heavy enough to hold
+     the eyebrow also flattened the whole lower half of the footage. Split
+     across a gentler vertical and a left-weighted horizontal, the density
+     gathers where the copy actually is and the frame keeps its light on the
+     side the copy never reaches. The third gradient is anchored to the top
+     edge, where it reads as vignetting rather than as a shape floating on the
+     sky, and it carries the route line. */
   .journey-scrim {
     position: absolute;
     inset: 0;
-    /* Two axes rather than one. A single bottom-up wash heavy enough to hold
-       the eyebrow also flattened the whole lower half of the footage. Split
-       across a gentler vertical and a left-weighted horizontal, the density
-       gathers where the copy actually is and the frame keeps its light on the
-       side the copy never reaches. */
     background:
-      /* Anchored to the top edge, where a gradient reads as vignetting rather
-         than as a shape floating on the sky. It carries the route line, which
-         sits high in the frame well clear of the copy. */
       linear-gradient(
         to bottom,
         color-mix(in srgb, var(--color-pacific-950) 66%, transparent) 0%,
@@ -362,6 +382,80 @@
   /* The warm ground replaces it rather than stacking with it. */
   .journey-layer[data-moment='4'] .journey-scrim {
     opacity: 0;
+  }
+
+  /* --- The farm, held in an aperture ---------------------------------------
+     The farm take is a phone-held portrait. On a narrow screen that is simply
+     the right shape and it fills the frame like every other scene. On a wide
+     one it is not: filling the frame would mean either stretching it or
+     throwing away everything but a strip down the middle, and blurring a copy
+     of it behind itself is the social-media answer, not an editorial one. So
+     above this breakpoint — and only above it — the take keeps its own
+     proportions inside a tall opening, with deep espresso either side and the
+     copy set into that space. */
+  @media (min-width: 900px) {
+    .journey-layer[data-layout='aperture'] .journey-stack {
+      /* The drift belongs to full-bleed footage; against the aperture's own
+         edges it would only rock the opening. */
+      animation: none;
+      transform: none;
+    }
+
+    .journey-layer[data-layout='aperture'] .journey-scene[data-state='active'] {
+      display: grid;
+      place-items: center;
+      justify-items: end;
+      padding-right: max(6vw, 3rem);
+      background-color: var(--color-espresso-900);
+    }
+
+    .journey-layer[data-layout='aperture'] .journey-poster,
+    .journey-layer[data-layout='aperture'] .journey-video {
+      position: relative;
+      inset: auto;
+      grid-area: 1 / 1;
+      height: min(78vh, 44rem);
+      width: auto;
+      max-width: 46vw;
+      border-radius: 2px;
+      object-fit: cover;
+      box-shadow:
+        0 2px 6px color-mix(in srgb, #000 35%, transparent),
+        0 26px 70px color-mix(in srgb, #000 45%, transparent);
+    }
+
+    /* The espresso ground is its own separation, so the scrim built for
+       full-bleed footage would only muddy it. */
+    .journey-layer[data-layout='aperture'] .journey-scrim {
+      opacity: 0;
+    }
+
+    .journey-layer[data-layout='aperture'] .journey-content {
+      margin-block: auto;
+      background: none;
+    }
+
+    .journey-layer[data-layout='aperture'] .journey-copy,
+    .journey-layer[data-layout='aperture'] .journey-controls {
+      margin-inline: 0;
+      max-width: min(34rem, 42vw);
+      padding-left: max(6vw, 3rem);
+    }
+
+    /* The stops need the full column or they wrap into two ragged rows. */
+    .journey-layer[data-layout='aperture'] .journey-steps {
+      margin-inline: 0;
+      max-width: min(44rem, 48vw);
+      padding-left: max(6vw, 3rem);
+    }
+
+    /* Against a flat espresso ground the separation glow has nothing to
+       separate the type from, and only smears it. */
+    .journey-layer[data-layout='aperture'] .journey-eyebrow,
+    .journey-layer[data-layout='aperture'] .journey-primary,
+    .journey-layer[data-layout='aperture'] .journey-supporting {
+      text-shadow: none;
+    }
   }
 
   /* The arrival: the homepage's own warm ground rising through the footage. */
@@ -503,6 +597,7 @@
      block only positions the copy over it. */
   .journey-content {
     position: relative;
+    z-index: 1;
     margin-top: auto;
     width: 100%;
     padding: 3rem 1.25rem 2rem;

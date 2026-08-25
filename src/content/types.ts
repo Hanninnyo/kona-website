@@ -335,19 +335,30 @@ export interface DiscoveryContent {
  * four and a half times to fill it.
  */
 export interface JourneyScene {
-  id: 'origin' | 'crossing' | 'arrival'
+  id: 'origin' | 'farm' | 'crossing' | 'arrival'
+  /**
+   * How the footage is composed on a wide viewport.
+   *
+   * `band` fills the frame: the licensed landscape takes are cut to a 2.09:1
+   * strip and the copy sits over them. `aperture` does not — the farm take is
+   * a phone-held portrait, and stretching or centre-cropping it to full width
+   * would either distort it or throw away the whole subject. It is instead
+   * held at its own proportions in a tall opening, with the copy set beside
+   * it in deep negative space.
+   */
+  layout: 'band' | 'aperture'
   wide: { src: string; poster: string; width: number; height: number }
   tall: { src: string; poster: string; width: number; height: number }
   /**
    * What the footage shows. Read by assistive technology in place of the
-   * video, and deliberately descriptive rather than narrative: this is
-   * atmospheric imagery, not a record of our own farm, aircraft or shipment.
+   * video, and deliberately literal: it describes the frame, and claims
+   * nothing the frame does not show.
    */
   description: string
 }
 
 export interface JourneyMoment {
-  id: 'grown' | 'roasted' | 'crossing' | 'arrival' | 'destination'
+  id: 'grown' | 'farm' | 'crossing' | 'arrival' | 'destination'
   /** Short label for the stage indicator. */
   stage: string
   /**
@@ -359,7 +370,11 @@ export interface JourneyMoment {
   eyebrow: string
   primary: string
   supporting?: string
-  /** Milliseconds before advancing. Null means the moment is terminal. */
+  /**
+   * Milliseconds this beat stays readable, measured from the moment its scene
+   * becomes visually ready — not from the moment the beat begins. Loading is
+   * never charged against it. Null means the beat is terminal.
+   */
   holdMs: number | null
 }
 

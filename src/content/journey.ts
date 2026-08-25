@@ -29,7 +29,7 @@ export const journey: JourneyContent = {
   label: 'The journey of Kona Island Coffee, from the farm to your cup',
 
   /**
-   * Three takes, each encoded twice. `wide` is the 2.09:1 band used by
+   * Four takes, each encoded twice. `wide` is the 2.09:1 band used by
    * landscape viewports; `tall` is a separately framed portrait crop, not the
    * same footage letterboxed. Dimensions are the real encoded pixels, so the
    * player can reserve the right box before a byte arrives.
@@ -37,6 +37,7 @@ export const journey: JourneyContent = {
   scenes: [
     {
       id: 'origin',
+      layout: 'band',
       wide: {
         src: '/journey/origin-wide.mp4',
         poster: '/journey/origin-wide.jpg',
@@ -53,7 +54,29 @@ export const journey: JourneyContent = {
         'An aerial view along the Kona coast on Hawaiʻi Island: palms, black lava shoreline and clear shallow water.',
     },
     {
+      id: 'farm',
+      layout: 'aperture',
+      wide: {
+        src: '/journey/farm-wide.mp4',
+        poster: '/journey/farm-wide.jpg',
+        width: 720,
+        height: 1280,
+      },
+      tall: {
+        src: '/journey/farm-tall.mp4',
+        poster: '/journey/farm-tall.jpg',
+        width: 414,
+        height: 896,
+      },
+      /* Literal, and careful. Coffee cherries on the branch and a hand at
+         them is all this frame shows; it is not a roastery and must never be
+         described as one. */
+      description:
+        'Coffee cherries ripening on the branch at the farm on Hawaiʻi Island, with a hand reaching among them.',
+    },
+    {
       id: 'crossing',
+      layout: 'band',
       wide: {
         src: '/journey/crossing-wide.mp4',
         poster: '/journey/crossing-wide.jpg',
@@ -70,6 +93,7 @@ export const journey: JourneyContent = {
     },
     {
       id: 'arrival',
+      layout: 'band',
       wide: {
         src: '/journey/arrival-wide.mp4',
         poster: '/journey/arrival-wide.jpg',
@@ -87,9 +111,13 @@ export const journey: JourneyContent = {
   ],
 
   /**
-   * Five beats over four scenes. The first two share the origin take: the
-   * copy changes from where the coffee grows to what happens to it there,
-   * while the shot runs on uninterrupted.
+   * Five moments: the coast, the farm, the crossing, the arrival, and the
+   * handover. Each names the take it plays over; the last has none and holds
+   * the one before it while the warm ground rises.
+   *
+   * `holdMs` is readable time, not wall-clock time. A beat's clock starts
+   * when its scene is visually ready — playing, or committed to its poster —
+   * so a slow connection costs the visitor waiting, never the scene itself.
    */
   moments: [
     {
@@ -99,17 +127,20 @@ export const journey: JourneyContent = {
       eyebrow: 'Origin',
       primary: 'Grown in Kona',
       supporting: 'Hawaiʻi Island',
-      /** How long this beat holds before the next, in milliseconds. */
-      holdMs: 2000,
+      /** How long this beat stays readable once its scene is ready. */
+      holdMs: 3500,
     },
     {
-      id: 'roasted',
-      /* Same stage as the beat before it: one moment, two lines of copy. */
-      stage: 'Origin',
-      scene: 'origin',
-      eyebrow: 'Origin',
-      primary: 'Roasted on the farm',
-      holdMs: 2000,
+      id: 'farm',
+      stage: 'The farm',
+      scene: 'farm',
+      eyebrow: 'The farm',
+      /* Owner-verified: the coffee is grown and roasted on the farm. The
+         footage shows cherries on the branch and nothing else, so the words
+         carry the roasting claim and the picture is never asked to. */
+      primary: 'Grown. Roasted.',
+      supporting: 'On the farm.',
+      holdMs: 2700,
     },
     {
       id: 'crossing',

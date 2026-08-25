@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { journey } from '@/content/journey'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { JourneyScene, JourneyRouteLine } from '@/components/journey/journey-scene'
+import { JourneyScene, JourneyRouteLine, type Gate } from '@/components/journey/journey-scene'
 import {
   JOURNEY_REPLAY_EVENT,
   markJourneySeen,
@@ -78,8 +78,24 @@ const STILL = scenes[0]
 type OpenedBy = 'auto' | 'replay'
 type Variant = 'wide' | 'tall'
 
-/** Below this the portrait encodes are used; at or above it, the wide band. */
+/** Below this the portrait encodes are used; at or above it, the wide ones. */
 const WIDE_QUERY = '(min-width: 640px)'
+
+/**
+ * How long a scene may spend becoming ready before the journey stops waiting.
+ *
+ * This is the whole fix for the bug where a phone showed two seconds of a
+ * four-second scene. A beat's clock used to start the instant the beat began,
+ * so every second the take spent downloading was a second subtracted from the
+ * take. Now the clock starts when the scene is visually ready and this bound
+ * decides how long "becoming ready" is allowed to take. Past it the scene
+ * commits to its poster and plays out its full readable duration there, so a
+ * slow connection costs the visitor a short wait and never a truncated scene.
+ *
+ * It is deliberately short. The point is not to wait for slow video, it is to
+ * stop charging load time to the scene.
+ */
+const READY_BOUND_MS = 2500
 
 export function ArrivalJourney() {
   const pathname = usePathname()
@@ -96,11 +112,21 @@ export function ArrivalJourney() {
    * so no video ever gets a `src` chosen from a guess.
    */
   const [variant, setVariant] = useState<Variant | null>(null)
+  /**
+   * Which scene has settled, and how.
+   *
+   * Keyed by scene rather than held as a bare status, so moving to the next
+   * scene makes the gate `waiting` again on its own. Nothing has to remember
+   * to reset it, and a `playing` event that arrives from the take we just
+   * left cannot reopen a gate that has moved on.
+   */
+  const [ready, setReady] = useState<{ id: string; mode: 'video' | 'poster' } | null>(null)
 
   const labelId = useId()
   const layerRef = useRef<HTMLDivElement | null>(null)
   const skipRef = useRef<HTMLButtonElement | null>(null)
   const returnFocusTo = useRef<HTMLElement | null>(null)
+  const sceneKeyRef = useRef<string | null>(null)
 
   /**
    * Reduced motion gets the whole story at once: every stage laid out as text
@@ -115,6 +141,7 @@ export function ArrivalJourney() {
     markJourneySeen()
     setOpenedBy(by)
     setMoment(0)
+    setReady(null)
     setIsOpen(true)
   }, [])
 
@@ -167,16 +194,65 @@ export function ArrivalJourney() {
     return () => cancelAnimationFrame(raf)
   }, [isOpen])
 
+  /* --- The readiness gate -------------------------------------------------
+     One gate per scene, not per beat: consecutive beats over the same take
+     share it, so the take is not re-gated when only the copy changes.
+
+     It opens on the first `playing` event, or on the bound expiring, and once
+     it has settled on the poster it stays there for the rest of the scene.
+     That last part matters as much as the wait: without it a take that
+     finished loading late would flash in for a moment and then be cut, which
+     reads worse than never showing it at all. */
+  const sceneKey = isStatic ? null : sceneAt(moment)
+
+  /* The handover has no take of its own — it holds the one before it, which
+     is already on screen — so it is never gated. */
+  const gate: Gate =
+    sceneKey === null ? 'video' : ready?.id === sceneKey ? ready.mode : 'waiting'
+
+  useEffect(() => {
+    if (!isOpen || isStatic || sceneKey === null) return
+    const bound = setTimeout(
+      () => setReady((current) => (current?.id === sceneKey ? current : { id: sceneKey, mode: 'poster' })),
+      READY_BOUND_MS
+    )
+    return () => clearTimeout(bound)
+  }, [isOpen, isStatic, sceneKey])
+
+  /* Mirrored into a ref so the two callbacks below can stay identity-stable.
+     They are passed to every video element, and re-creating them each beat
+     would re-run the effect that starts playback. Written in an effect rather
+     than during render; both callbacks fire from media events, which is long
+     after the commit that set it. */
+  useEffect(() => {
+    sceneKeyRef.current = sceneKey
+  }, [sceneKey])
+
+  /* Both settle the gate only if it has not settled already, so a take that
+     finishes loading after the bound expired cannot displace the poster the
+     scene has already committed to. */
+  const handlePlaying = useCallback((id: string) => {
+    if (id !== sceneKeyRef.current) return
+    setReady((current) => (current?.id === id ? current : { id, mode: 'video' }))
+  }, [])
+
+  const handleFailed = useCallback((id: string) => {
+    if (id !== sceneKeyRef.current) return
+    setReady((current) => (current?.id === id ? current : { id, mode: 'poster' }))
+  }, [])
+
   /* --- The chain ----------------------------------------------------------
-     One timer per moment. Nothing runs for the terminal moment, for a static
-     visitor, or once the layer is closed. */
+     One timer per beat, started only once the scene it belongs to is ready.
+     Nothing runs for the terminal beat, for a static visitor, or once the
+     layer is closed. */
   useEffect(() => {
     if (!isOpen || isStatic) return
+    if (gate === 'waiting') return
     const hold = moments[moment].holdMs
     if (hold === null) return
     const timer = setTimeout(() => setMoment((current) => Math.min(current + 1, LAST)), hold)
     return () => clearTimeout(timer)
-  }, [isOpen, isStatic, moment])
+  }, [isOpen, isStatic, moment, gate])
 
   /* --- Modal behaviour ----------------------------------------------------
      Scroll lock, a real `inert` on the page behind, Escape, and a Tab trap. */
@@ -254,9 +330,10 @@ export function ArrivalJourney() {
   const current = moments[moment]
   const isFinal = moment === LAST
   const showEnter = isStatic || isFinal
-  const activeScene = isStatic ? null : sceneAt(moment)
+  const activeScene = sceneKey
   const scene = scenes.find((item) => item.id === (activeScene ?? STILL.id))
   const still = STILL[variant ?? 'wide']
+  const layout = scene?.layout ?? 'band'
 
   return (
     <div
@@ -265,6 +342,8 @@ export function ArrivalJourney() {
       aria-modal="true"
       aria-labelledby={labelId}
       data-moment={isStatic ? 'static' : moment}
+      data-layout={layout}
+      data-gate={gate}
       data-entered={entered ? 'true' : 'false'}
       className="journey-layer"
     >
@@ -293,7 +372,14 @@ export function ArrivalJourney() {
           />
         ) : (
           variant && (
-            <JourneyScene activeId={activeScene} momentIndex={moment} variant={variant} />
+            <JourneyScene
+              activeId={activeScene}
+              momentIndex={moment}
+              variant={variant}
+              gate={gate}
+              onPlaying={handlePlaying}
+              onFailed={handleFailed}
+            />
           )
         )}
 
