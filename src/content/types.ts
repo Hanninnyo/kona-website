@@ -328,10 +328,34 @@ export interface DiscoveryContent {
    The Kona Arrival Journey
    ========================================================================== */
 
+/**
+ * One piece of footage. Two encodes of the same seconds: a wide band for
+ * landscape viewports and a portrait framing for narrow ones, because a
+ * 2.09:1 band object-covered into a 390x844 frame would have to be scaled
+ * four and a half times to fill it.
+ */
+export interface JourneyScene {
+  id: 'origin' | 'crossing' | 'arrival'
+  wide: { src: string; poster: string; width: number; height: number }
+  tall: { src: string; poster: string; width: number; height: number }
+  /**
+   * What the footage shows. Read by assistive technology in place of the
+   * video, and deliberately descriptive rather than narrative: this is
+   * atmospheric imagery, not a record of our own farm, aircraft or shipment.
+   */
+  description: string
+}
+
 export interface JourneyMoment {
-  id: 'grown' | 'roasted' | 'flown' | 'served' | 'arrival'
+  id: 'grown' | 'roasted' | 'crossing' | 'arrival' | 'destination'
   /** Short label for the stage indicator. */
   stage: string
+  /**
+   * The footage this beat plays over. Consecutive beats naming the same
+   * scene share one continuous take: the copy changes, the shot does not
+   * restart. `null` is the handover, which has no footage at all.
+   */
+  scene: JourneyScene['id'] | null
   eyebrow: string
   primary: string
   supporting?: string
@@ -339,9 +363,19 @@ export interface JourneyMoment {
   holdMs: number | null
 }
 
+/** The restrained route line drawn over the crossing. */
+export interface JourneyRoute {
+  from: string
+  to: string
+  fromFull: string
+  toFull: string
+}
+
 export interface JourneyContent {
   label: string
+  scenes: JourneyScene[]
   moments: JourneyMoment[]
+  route: JourneyRoute
   enterLabel: string
   skipLabel: string
   replayLabel: string
@@ -349,10 +383,6 @@ export interface JourneyContent {
   places: {
     island: string
     kona: string
-    departure: string
-    departureFull: string
-    arrival: string
-    arrivalFull: string
     cafe: string
     truck: string
   }

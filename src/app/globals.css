@@ -35,15 +35,11 @@
   --color-palm-600: #3A4A3D;
 
   /* --- Arrival journey ----------------------------------------------------
-     Used only by the opening chapter, which is a night-time Pacific scene and
-     the one place on the site with a dark ground. Deliberately desaturated:
-     deep water, not tourist blue. */
+     Used only by the opening chapter, which is the one place on the site with
+     a dark ground. It sits under the footage before the first frame paints
+     and behind the copy vignette, so it is a deep, desaturated near-black
+     rather than a colour of its own. */
   --color-pacific-950: #0A141C;
-  --color-pacific-800: #14283A;
-  --color-land: #2E2118;           /* volcanic charcoal for island and coast */
-  --color-coast: #8B7359;          /* the lit edge where land meets water */
-  --color-seaglass-line: #7FA8A0;  /* the chart grid, always at low opacity */
-  --color-seaglass-mark: #A9C6C0;  /* the two destination points */
 
 
   /* --- Semantic roles -----------------------------------------------------
@@ -241,13 +237,13 @@
   }
 
   /* --- Arrival journey -----------------------------------------------------
-     A full-viewport opening chapter over the homepage.
+     A full-viewport opening chapter over the homepage, told in real footage.
 
-     Everything that moves here moves with transform, opacity or
-     stroke-dashoffset. There is no filter, no blur, no mask animation and no
-     per-frame JavaScript: the camera is one transform on one wrapper, the
-     route is a dash offset, and the travelling light rides an offset-path.
-     When the layer closes it unmounts, so nothing is left running. */
+     Three takes are stacked and cross-faded by opacity; only the active one
+     is opaque and only the active one is playing. Everything that moves here
+     moves with opacity, transform or stroke-dashoffset — no filter, no blur,
+     no mask, no per-frame JavaScript. When the layer closes it unmounts, so
+     nothing is left decoding. */
   .journey-layer {
     position: fixed;
     inset: 0;
@@ -265,26 +261,110 @@
     opacity: 1;
   }
 
-  .journey-scene {
+  .journey-stage {
     position: absolute;
     inset: 0;
   }
 
-  /* The camera. One element, one transform, moved by the moment attribute. */
-  .journey-camera {
+  .journey-stack {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Every take fills the frame. `object-fit: cover` is doing the last of the
+     framing work here — the crops are already chosen so that the horizon
+     survives it at every supported viewport. */
+  .journey-video,
+  .journey-still {
+    position: absolute;
+    inset: 0;
     height: 100%;
     width: 100%;
-    transform-origin: 22% 52%;
-    transition: transform 1400ms cubic-bezier(0.65, 0, 0.2, 1);
+    object-fit: cover;
+  }
+
+  /* The cut between takes. A short cross-dissolve rather than a fade to
+     black: the sequence never passes through an empty frame. */
+  .journey-video {
+    opacity: 0;
+    transition: opacity 700ms var(--ease-calm);
+  }
+
+  .journey-video[data-state='active'] {
+    opacity: 1;
+  }
+
+  /* A slow drift over the footage, so a four-second take never reads as a
+     still. Deliberately small — the footage carries its own movement. */
+  .journey-stack {
+    animation: journey-drift 18s var(--ease-calm) infinite alternate;
     will-change: transform;
   }
 
-  .journey-map {
-    height: 100%;
-    width: 100%;
+  @keyframes journey-drift {
+    from {
+      transform: scale(1.03) translate3d(-0.6%, 0, 0);
+    }
+    to {
+      transform: scale(1.06) translate3d(0.6%, 0, 0);
+    }
   }
 
-  /* The arrival: the homepage's own warm ground rising through the scene. */
+  /* The still composition sits behind longer copy than any single moment of
+     the sequence, so it is nudged clear of it. */
+  .journey-layer[data-moment='static'] .journey-still {
+    object-position: 50% 34%;
+  }
+
+  /* The scrim the copy sits on.
+
+     It belongs to the stage, not to the copy block, because the copy block's
+     height follows its own text: a gradient painted on it starts wherever
+     that text happens to begin, which left the eyebrow — the smallest type on
+     screen — sitting on open cloud. Anchored to the viewport instead, the
+     darkening is the same wherever the copy lands. */
+  .journey-scrim {
+    position: absolute;
+    inset: 0;
+    /* Two axes rather than one. A single bottom-up wash heavy enough to hold
+       the eyebrow also flattened the whole lower half of the footage. Split
+       across a gentler vertical and a left-weighted horizontal, the density
+       gathers where the copy actually is and the frame keeps its light on the
+       side the copy never reaches. */
+    background:
+      /* Anchored to the top edge, where a gradient reads as vignetting rather
+         than as a shape floating on the sky. It carries the route line, which
+         sits high in the frame well clear of the copy. */
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-pacific-950) 66%, transparent) 0%,
+        color-mix(in srgb, var(--color-pacific-950) 46%, transparent) 12%,
+        color-mix(in srgb, var(--color-pacific-950) 16%, transparent) 22%,
+        transparent 34%
+      ),
+      linear-gradient(
+        to top,
+        color-mix(in srgb, var(--color-pacific-950) 84%, transparent) 0%,
+        color-mix(in srgb, var(--color-pacific-950) 72%, transparent) 30%,
+        color-mix(in srgb, var(--color-pacific-950) 46%, transparent) 52%,
+        color-mix(in srgb, var(--color-pacific-950) 12%, transparent) 74%,
+        transparent 90%
+      ),
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-pacific-950) 46%, transparent) 0%,
+        color-mix(in srgb, var(--color-pacific-950) 15%, transparent) 44%,
+        transparent 70%
+      );
+    transition: opacity 900ms var(--ease-calm);
+  }
+
+  /* The warm ground replaces it rather than stacking with it. */
+  .journey-layer[data-moment='4'] .journey-scrim {
+    opacity: 0;
+  }
+
+  /* The arrival: the homepage's own warm ground rising through the footage. */
   .journey-dawn {
     position: absolute;
     inset: 0;
@@ -303,149 +383,129 @@
     opacity: 1;
   }
 
-  /* Moments 1 and 2 sit close on the island; 3 pulls out to the whole ocean;
-     4 settles over the Bay Area; 5 holds wide as the scene hands over. */
-  .journey-layer[data-moment='0'] .journey-camera {
-    transform: translate(26%, -2%) scale(3.1);
-  }
-  .journey-layer[data-moment='1'] .journey-camera {
-    transform: translate(24%, -2%) scale(3.2);
-  }
-  .journey-layer[data-moment='2'] .journey-camera {
-    transform: none;
-  }
-  .journey-layer[data-moment='3'] .journey-camera {
-    transform-origin: 80% 32%;
-    transform: translate(-5%, 7%) scale(2);
-  }
-  .journey-layer[data-moment='4'] .journey-camera {
-    transform: scale(1.06);
-  }
-  /* The still composition lifts the scene clear of the copy, which is longer
-     here than in any single moment of the animated sequence. */
-  .journey-layer[data-moment='static'] .journey-camera {
-    transform: translateY(-9%);
+  /* --- The route over the crossing ----------------------------------------
+     Two verified endpoints and a hairline between them. No aircraft, no
+     globe, no map: the footage is atmospheric imagery, and a route drawn like
+     a flight tracker would claim it records a real shipment. */
+  /* Centred with auto margins rather than a translate, because the entrance
+     animation animates `transform` and would overwrite a centring one. */
+  .journey-route {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 10%;
+    display: flex;
+    width: min(30rem, 78vw);
+    margin-inline: auto;
+    align-items: center;
+    gap: 0.875rem;
+    animation: journey-rise 900ms 200ms var(--ease-enter) both;
   }
 
-  /* --- Scene elements ----------------------------------------------------- */
-  .journey-grid {
-    opacity: 0;
-    transition: opacity 1200ms var(--ease-calm);
-  }
-  .journey-layer[data-moment='2'] .journey-grid,
-  .journey-layer[data-moment='3'] .journey-grid,
-  .journey-layer[data-moment='4'] .journey-grid,
-  .journey-layer[data-moment='static'] .journey-grid {
-    opacity: 0.16;
-  }
-
-  .journey-kona-glow {
-    opacity: 1;
-    transition: opacity 1400ms var(--ease-calm);
+  /* Set a little larger and heavier than an eyebrow. Two words have to hold
+     against open sky, where no scrim can go dark without becoming a shape;
+     at this size and weight they clear the large-text threshold instead. */
+  .journey-route__place {
+    flex: none;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-sand-100);
+    text-shadow: 0 1px 10px color-mix(in srgb, var(--color-pacific-950) 70%, transparent);
   }
 
-  /* The contours belong to the farm moment: they arrive as the camera settles
-     and stay for the rest of the island scene. */
-  .journey-contours {
-    opacity: 0;
-    transition: opacity 900ms var(--ease-calm);
-  }
-  .journey-layer[data-moment='1'] .journey-contours,
-  .journey-layer[data-moment='2'] .journey-contours,
-  .journey-layer[data-moment='static'] .journey-contours {
-    opacity: 1;
+  .journey-route__track {
+    position: relative;
+    display: block;
+    flex: 1 1 auto;
+    height: 2px;
   }
 
-  /* --- The route ----------------------------------------------------------
-     `pathLength="1"` normalises every path, so one dash rule draws them all
-     regardless of their real length. */
-  .journey-route path {
+  .journey-route__rule {
+    display: block;
+    height: 4px;
+    width: 100%;
+  }
+
+  /* `pathLength="1"` normalises the line, so one dash rule draws it whatever
+     width the track happens to be. Two strokes, not one: the hairline has to
+     read over both a bright cloud top and dark water, and a soft dark line
+     beneath it does that far more cheaply than a drop-shadow filter. */
+  .journey-route__line {
+    fill: none;
+    stroke-width: 1;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
-    transition: stroke-dashoffset 1800ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: journey-draw 2600ms 320ms cubic-bezier(0.4, 0, 0.2, 1) both;
   }
 
-  .journey-layer[data-moment='2'] .journey-route__line,
-  .journey-layer[data-moment='3'] .journey-route__line,
-  .journey-layer[data-moment='4'] .journey-route__line,
-  .journey-layer[data-moment='static'] .journey-route__line {
-    stroke-dashoffset: 0;
+  .journey-route__line--shadow {
+    stroke: var(--color-pacific-950);
+    stroke-width: 3;
+    opacity: 0.38;
   }
 
-  .journey-route__leg {
-    transition-duration: 900ms;
+  .journey-route__line--ink {
+    stroke: var(--color-sand-100);
+    opacity: 0.9;
   }
 
-  .journey-layer[data-moment='3'] .journey-route__leg,
-  .journey-layer[data-moment='4'] .journey-route__leg,
-  .journey-layer[data-moment='static'] .journey-route__leg {
-    stroke-dashoffset: 0;
+  @keyframes journey-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
   }
 
-  /* The travelling light. Its path is set inline from the same constant the
-     route is drawn from, so the two cannot drift apart. */
-  .journey-marker {
-    offset-distance: 0%;
-    offset-rotate: 0deg;
-    opacity: 0;
-    transition:
-      offset-distance 1800ms cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 500ms var(--ease-calm);
+  /* Rides the drawing edge of the line: same duration, delay and easing.
+
+     The mark spans the whole track and carries the visible point on its right
+     edge, so translating it from -100% to 0 walks that point across exactly
+     one track width. That keeps the travel on the compositor: a percentage
+     transform needs no layout, where animating `left` would. */
+  .journey-route__mark {
+    position: absolute;
+    inset: 0;
+    animation: journey-travel 2600ms 320ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    will-change: transform;
   }
 
-  .journey-layer[data-moment='2'] .journey-marker,
-  .journey-layer[data-moment='3'] .journey-marker,
-  .journey-layer[data-moment='4'] .journey-marker {
-    offset-distance: 100%;
-    opacity: 1;
+  .journey-route__mark::before {
+    content: '';
+    position: absolute;
+    right: -2.5px;
+    top: 50%;
+    height: 5px;
+    width: 5px;
+    margin-top: -2.5px;
+    border-radius: 50%;
+    background-color: var(--color-sand-50);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--color-gold-400) 80%, transparent);
   }
 
-  .journey-map__label {
-    fill: var(--color-ink-inverse-soft);
-    font-family: var(--font-body);
-    font-size: 9px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-
-  .journey-map__label--place {
-    font-size: 7.5px;
-    letter-spacing: 0.1em;
-    text-transform: none;
-  }
-
-  .journey-points g {
-    opacity: 0;
-    transition: opacity 700ms var(--ease-calm);
-  }
-  .journey-layer[data-moment='2'] .journey-point--koa,
-  .journey-layer[data-moment='3'] .journey-point--koa,
-  .journey-layer[data-moment='4'] .journey-point--koa,
-  .journey-layer[data-moment='2'] .journey-point--sfo,
-  .journey-layer[data-moment='3'] .journey-point--sfo,
-  .journey-layer[data-moment='4'] .journey-point--sfo,
-  .journey-layer[data-moment='3'] .journey-point--cafe,
-  .journey-layer[data-moment='3'] .journey-point--truck,
-  .journey-layer[data-moment='4'] .journey-point--cafe,
-  .journey-layer[data-moment='4'] .journey-point--truck,
-  .journey-layer[data-moment='static'] .journey-points g {
-    opacity: 1;
+  @keyframes journey-travel {
+    from {
+      transform: translate3d(-100%, 0, 0);
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
   }
 
   /* --- Copy and controls --------------------------------------------------
-     A vignette under the copy so the type stays readable wherever the camera
-     happens to be. */
+     The darkening under the type is `.journey-scrim`, on the stage. This
+     block only positions the copy over it. */
   .journey-content {
     position: relative;
     margin-top: auto;
     width: 100%;
     padding: 3rem 1.25rem 2rem;
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-pacific-950) 92%, transparent) 0%,
-      color-mix(in srgb, var(--color-pacific-950) 74%, transparent) 45%,
-      transparent 100%
-    );
   }
 
   .journey-copy {
@@ -453,12 +513,20 @@
     max-width: var(--container-page);
   }
 
+  /* Highest in the copy block, where the vignette is thinnest, and the
+     smallest type on the screen — so it carries its own separation rather
+     than relying on the gradient reaching that far. */
   .journey-eyebrow {
     font-family: var(--font-body);
     font-size: var(--text-eyebrow);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-gold-400);
+    /* Warm sand, not the site's gold. Gold sits at roughly half the luminance
+       of sand, and over footage no scrim dark enough to carry it at this size
+       leaves the picture worth looking at. The gold returns on the final
+       moment, where the warm ground supports it. */
+    color: var(--color-sand-100);
+    text-shadow: 0 1px 12px var(--color-pacific-950);
     animation: journey-rise 700ms var(--ease-enter) both;
   }
 
@@ -470,6 +538,7 @@
     font-size: var(--text-display-md);
     line-height: 1.05;
     color: var(--color-sand-50);
+    text-shadow: 0 2px 24px color-mix(in srgb, var(--color-pacific-950) 65%, transparent);
     animation: journey-rise 800ms 60ms var(--ease-enter) both;
   }
 
@@ -479,7 +548,8 @@
     font-family: var(--font-body);
     font-size: var(--text-lede);
     line-height: 1.55;
-    color: var(--color-ink-inverse-soft);
+    color: var(--color-sand-100);
+    text-shadow: 0 1px 16px color-mix(in srgb, var(--color-pacific-950) 70%, transparent);
     animation: journey-rise 800ms 120ms var(--ease-enter) both;
   }
 
@@ -505,6 +575,13 @@
 
   .journey-layer[data-moment='4'] .journey-primary {
     color: var(--color-ink);
+  }
+
+  /* Dark type on the warm ground: the dark separation glow would smear it. */
+  .journey-layer[data-moment='4'] .journey-eyebrow,
+  .journey-layer[data-moment='4'] .journey-primary,
+  .journey-layer[data-moment='4'] .journey-supporting {
+    text-shadow: none;
   }
 
   .journey-layer[data-moment='4'] .journey-supporting {
@@ -577,7 +654,7 @@
     font-size: var(--text-eyebrow);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-ink-inverse-soft);
+    color: var(--color-sand-100);
     text-decoration: underline;
     text-underline-offset: 4px;
     text-decoration-color: color-mix(in srgb, var(--color-ink-inverse-soft) 45%, transparent);
@@ -619,7 +696,7 @@
   }
 
   .journey-step[data-state='current'] {
-    color: var(--color-gold-400);
+    color: var(--color-sand-50);
   }
 
   .journey-step__mark {
@@ -654,58 +731,59 @@
     padding-top: 0.75rem;
   }
 
+  /* Warm sand rather than gold, for the same reason as `.journey-eyebrow`:
+     this list sits mid-frame over the footage, and gold at this size cannot
+     clear the small-text threshold there. Label and line separate by weight
+     and by tracking instead of by hue. */
   .journey-static-stages__stage {
     font-family: var(--font-body);
     font-size: var(--text-eyebrow);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--color-gold-400);
+    color: var(--color-sand-50);
+  }
+
+  /* A stage can carry more than one line — the origin does — so its lines
+     stack under the one label rather than repeating it. */
+  .journey-static-stages__lines {
+    display: grid;
+    gap: 0.25rem;
   }
 
   .journey-static-stages__line {
     font-family: var(--font-body);
     font-size: 0.9375rem;
     line-height: 1.5;
-    color: var(--color-ink-inverse-soft);
+    color: var(--color-sand-100);
   }
 
   /* --- The journey on a narrow screen --------------------------------------
-     The wide Pacific cannot simply be shrunk into a portrait frame: it would
-     letterbox into a thin band with the island too small to read and most of
-     the screen empty. So the camera is retuned rather than the map redrawn —
-     pushed up into the top half, and pulled closer at every moment, which also
-     lets the route keep its diagonal from lower-left to upper-right instead of
-     flattening into a horizontal line. */
+     A portrait phone gets separately framed encodes rather than the landscape
+     band scaled up, so the footage itself needs no retuning here. What does
+     change is everything sitting over it: the drift is gentler, the route
+     line has less room, and the warm ground has to rise further up a tall
+     frame or the copy lands on the boundary between the two grounds. */
   @media (max-width: 639px) {
-    .journey-camera {
-      transform-origin: 26% 50%;
+    @keyframes journey-drift {
+      from {
+        transform: scale(1.02) translate3d(0, -0.5%, 0);
+      }
+      to {
+        transform: scale(1.05) translate3d(0, 0.5%, 0);
+      }
     }
 
-    .journey-layer[data-moment='0'] .journey-camera {
-      transform: translate(20%, -14%) scale(4.6);
-    }
-    .journey-layer[data-moment='1'] .journey-camera {
-      transform: translate(18%, -14%) scale(5);
-    }
-    .journey-layer[data-moment='2'] .journey-camera {
-      transform-origin: 50% 50%;
-      transform: translateY(-13%) scale(1.28);
-    }
-    .journey-layer[data-moment='3'] .journey-camera {
-      transform-origin: 84% 40%;
-      transform: translate(-12%, -6%) scale(2.4);
-    }
-    .journey-layer[data-moment='4'] .journey-camera {
-      transform-origin: 50% 50%;
-      transform: translateY(-13%) scale(1.32);
-    }
-    .journey-layer[data-moment='static'] .journey-camera {
-      transform-origin: 50% 50%;
-      transform: translateY(-13%) scale(1.28);
+    .journey-route {
+      top: 9%;
+      width: min(21rem, 86vw);
+      gap: 0.625rem;
     }
 
-    /* The dawn wash has to reach higher on a tall frame, or the copy sits on
-       the boundary between the two grounds. */
+    .journey-route__place {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+    }
+
     .journey-dawn {
       background: linear-gradient(
         to top,
@@ -718,13 +796,6 @@
 
     .journey-steps {
       gap: 0.25rem 1.25rem;
-    }
-
-    /* The two destination names would run off a narrow frame at this zoom.
-       They are decorative here: the copy for that very moment names both the
-       café and the truck in full, so nothing is lost by dropping them. */
-    .journey-map__label--place {
-      display: none;
     }
   }
 
@@ -801,22 +872,21 @@
     opacity: 0 !important;
   }
 
-  /* The journey does not autoplay for these visitors; it opens on a still
-     composition with the route already drawn. Belt and braces: even if a
-     moment attribute were set, nothing here would move. */
+  /* The journey does not autoplay for these visitors: it opens on a single
+     still frame, with no video element mounted and no footage requested.
+     Belt and braces — even if a moment attribute were somehow set, nothing
+     below would move. */
   .journey-layer,
-  .journey-camera,
+  .journey-video,
   .journey-dawn,
-  .journey-grid,
-  .journey-kona-glow,
-  .journey-contours,
-  .journey-route path,
-  .journey-marker,
-  .journey-points g,
   .journey-step__mark {
     transition: none !important;
   }
 
+  .journey-stack,
+  .journey-route,
+  .journey-route__line,
+  .journey-route__mark,
   .journey-eyebrow,
   .journey-primary,
   .journey-supporting,
@@ -824,7 +894,9 @@
     animation: none !important;
   }
 
-  .journey-marker {
-    display: none;
+  /* The drift is the one piece of motion with no still equivalent, so it is
+     removed outright rather than frozen mid-transform. */
+  .journey-stack {
+    transform: none !important;
   }
 }

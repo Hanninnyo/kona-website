@@ -1,15 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { journey } from '@/content/journey'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import {
-  JourneyMap,
-  ROUTE_CAFE,
-  ROUTE_PACIFIC,
-  ROUTE_TRUCK,
-} from '@/components/journey/journey-map'
+import { JourneyScene, JourneyRouteLine } from '@/components/journey/journey-scene'
 import {
   JOURNEY_REPLAY_EVENT,
   markJourneySeen,
@@ -35,10 +31,55 @@ import {
  * layer is dismissed.
  */
 
-const { moments } = journey
+const { moments, scenes } = journey
 const LAST = moments.length - 1
 
+/**
+ * The stage indicator, which counts moments rather than beats.
+ *
+ * The origin is one moment told in two beats: the copy moves from where the
+ * coffee grows to what happens to it there while the same take runs on. The
+ * indicator collapses consecutive beats that share a stage, so it shows four
+ * stops and not five, and selecting one returns to the beat that opens it.
+ */
+const STEPS = moments.reduce<{ stage: string; index: number }[]>((steps, moment, index) => {
+  if (steps[steps.length - 1]?.stage !== moment.stage) {
+    steps.push({ stage: moment.stage, index })
+  }
+  return steps
+}, [])
+
+/**
+ * The same four stops, laid out for a visitor who has asked not to be moved.
+ * The terminal beat is dropped: it is the destination, and it is already the
+ * heading of the still composition.
+ */
+const STATIC_STAGES = STEPS.filter((step) => step.index < LAST).map((step, position, all) => ({
+  stage: step.stage,
+  beats: moments.slice(step.index, all[position + 1]?.index ?? LAST),
+}))
+
+/**
+ * The footage a beat is shown over, which is not always the footage it names:
+ * the handover has no take of its own and holds the one before it, so the
+ * warm ground rises through the Bay Area rather than through an empty frame.
+ */
+function sceneAt(index: number) {
+  for (let i = index; i >= 0; i -= 1) {
+    const { scene } = moments[i]
+    if (scene) return scene
+  }
+  return null
+}
+
+/** The still shown to reduced-motion visitors, who download no video at all. */
+const STILL = scenes[0]
+
 type OpenedBy = 'auto' | 'replay'
+type Variant = 'wide' | 'tall'
+
+/** Below this the portrait encodes are used; at or above it, the wide band. */
+const WIDE_QUERY = '(min-width: 640px)'
 
 export function ArrivalJourney() {
   const pathname = usePathname()
@@ -49,6 +90,12 @@ export function ArrivalJourney() {
   const [openedBy, setOpenedBy] = useState<OpenedBy>('auto')
   /** True once the layer has painted, so the entrance can fade rather than cut. */
   const [entered, setEntered] = useState(false)
+  /**
+   * Null until measured. The layer renders nothing on the server and nothing
+   * before it opens, and this is settled in an effect during that same commit,
+   * so no video ever gets a `src` chosen from a guess.
+   */
+  const [variant, setVariant] = useState<Variant | null>(null)
 
   const labelId = useId()
   const layerRef = useRef<HTMLDivElement | null>(null)
@@ -57,8 +104,8 @@ export function ArrivalJourney() {
 
   /**
    * Reduced motion gets the whole story at once: every stage laid out as text
-   * beside a still map with the route already drawn. Nothing autoplays and
-   * nothing moves.
+   * over a single still frame. Nothing autoplays, nothing moves, and no video
+   * is requested at all — only the one poster image the still is made from.
    */
   const isStatic = prefersReducedMotion
 
@@ -74,6 +121,19 @@ export function ArrivalJourney() {
   const close = useCallback(() => {
     setIsOpen(false)
     setEntered(false)
+  }, [])
+
+  /* --- Which encode ------------------------------------------------------
+     A landscape band cannot fill a portrait phone: covering 390x844 with a
+     2.09:1 frame would mean scaling it four and a half times. So the two
+     orientations get separately framed encodes, and the choice is made here
+     rather than by `<source media>`, which no browser implements. */
+  useEffect(() => {
+    const query = window.matchMedia(WIDE_QUERY)
+    const apply = () => setVariant(query.matches ? 'wide' : 'tall')
+    apply()
+    query.addEventListener('change', apply)
+    return () => query.removeEventListener('change', apply)
   }, [])
 
   /* --- Arrival ------------------------------------------------------------
@@ -194,6 +254,9 @@ export function ArrivalJourney() {
   const current = moments[moment]
   const isFinal = moment === LAST
   const showEnter = isStatic || isFinal
+  const activeScene = isStatic ? null : sceneAt(moment)
+  const scene = scenes.find((item) => item.id === (activeScene ?? STILL.id))
+  const still = STILL[variant ?? 'wide']
 
   return (
     <div
@@ -209,26 +272,45 @@ export function ArrivalJourney() {
         {journey.label}
       </p>
 
-      {/* The whole story, independent of the animation and of the drawing. */}
+      {/* The whole story, independent of the sequence and of the footage. */}
       <p className="sr-only">{journey.summary}</p>
 
-      <div className="journey-scene">
-        <div className="journey-camera">
-          <JourneyMap />
-        </div>
+      {/* What is on screen right now, for anyone who cannot see it. Not a live
+          region: it is there to be found, not to interrupt. */}
+      {scene && <p className="sr-only">{scene.description}</p>}
+
+      <div className="journey-stage">
+        {isStatic ? (
+          /* One frame, no video element: a visitor who has asked not to be
+             moved downloads a single image and no footage at all. */
+          <Image
+            className="journey-still"
+            src={still.poster}
+            alt=""
+            aria-hidden
+            fill
+            sizes="100vw"
+          />
+        ) : (
+          variant && (
+            <JourneyScene activeId={activeScene} momentIndex={moment} variant={variant} />
+          )
+        )}
+
+        {/* Anchored to the viewport, not to the copy: see `.journey-scrim`. */}
+        <div aria-hidden="true" className="journey-scrim" />
+
+        {/* The route belongs to the beat that names the crossing, not to a
+            later one that merely still holds the footage. */}
+        {current.scene === 'crossing' && <JourneyRouteLine />}
+
         {/*
           The handover. On the last moment the warm ground of the homepage
-          rises through the scene, so the visitor crosses from the night
-          Pacific into the room they are about to be standing in rather than
-          having one screen swapped for another.
+          rises through the footage, so the visitor crosses into the room they
+          are about to be standing in rather than having one screen swapped
+          for another.
         */}
         <div aria-hidden="true" className="journey-dawn" />
-        {/* The travelling light follows the same path the route draws. */}
-        <style>{`
-          .journey-marker { offset-path: path('${ROUTE_PACIFIC}'); }
-          .journey-route__leg--cafe { --leg: path('${ROUTE_CAFE}'); }
-          .journey-route__leg--truck { --leg: path('${ROUTE_TRUCK}'); }
-        `}</style>
       </div>
 
       <div className="journey-content">
@@ -265,20 +347,26 @@ export function ArrivalJourney() {
 
         {!isStatic && (
           <ol className="journey-steps" aria-label="Journey stages">
-            {moments.map((step, index) => (
-              <li key={step.id}>
-                <button
-                  type="button"
-                  onClick={() => setMoment(index)}
-                  aria-current={index === moment ? 'step' : undefined}
-                  className="journey-step"
-                  data-state={index === moment ? 'current' : index < moment ? 'done' : 'upcoming'}
-                >
-                  <span className="journey-step__mark" aria-hidden="true" />
-                  <span className="journey-step__label">{step.stage}</span>
-                </button>
-              </li>
-            ))}
+            {STEPS.map((step, position) => {
+              const next = STEPS[position + 1]
+              const isCurrent = moment >= step.index && (!next || moment < next.index)
+              return (
+                <li key={step.stage}>
+                  <button
+                    type="button"
+                    onClick={() => setMoment(step.index)}
+                    aria-current={isCurrent ? 'step' : undefined}
+                    className="journey-step"
+                    data-state={
+                      isCurrent ? 'current' : moment > step.index ? 'done' : 'upcoming'
+                    }
+                  >
+                    <span className="journey-step__mark" aria-hidden="true" />
+                    <span className="journey-step__label">{step.stage}</span>
+                  </button>
+                </li>
+              )
+            })}
           </ol>
         )}
       </div>
@@ -290,13 +378,22 @@ export function ArrivalJourney() {
 function StaticSummary() {
   return (
     <>
-      <p className="journey-eyebrow">{moments[0].eyebrow}</p>
+      {/* The heading is the terminal beat's, so the eyebrow is too — taking
+          the first beat's would label the destination "Origin", and repeat a
+          word the stage list below is about to use. */}
+      <p className="journey-eyebrow">{moments[LAST].eyebrow}</p>
       <h2 className="journey-primary">{moments[LAST].primary}</h2>
       <ol className="journey-static-stages">
-        {moments.slice(0, LAST).map((step) => (
-          <li key={step.id}>
+        {STATIC_STAGES.map((step) => (
+          <li key={step.stage}>
             <span className="journey-static-stages__stage">{step.stage}</span>
-            <span className="journey-static-stages__line">{step.primary}</span>
+            <span className="journey-static-stages__lines">
+              {step.beats.map((beat) => (
+                <span key={beat.id} className="journey-static-stages__line">
+                  {beat.supporting ? `${beat.primary} — ${beat.supporting}` : beat.primary}
+                </span>
+              ))}
+            </span>
           </li>
         ))}
       </ol>
