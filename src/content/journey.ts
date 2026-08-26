@@ -1,3 +1,4 @@
+import { site } from './site'
 import type { JourneyContent } from './types'
 
 /**
@@ -111,77 +112,144 @@ export const journey: JourneyContent = {
   ],
 
   /**
-   * Five moments: the coast, the farm, the crossing, the arrival, and the
-   * handover. Each names the take it plays over; the last has none and holds
-   * the one before it while the warm ground rises.
+   * One short film in five beats: the island, the farm, the crossing, the
+   * arrival, and the two places the coffee is served.
+   *
+   * The copy is written to read as one sentence carried across five frames —
+   * it begins in Kona, is grown and roasted at the source, crosses the
+   * Pacific, arrives in the Bay Area, and is served at the café and from the
+   * truck. No beat restates the one before it.
    *
    * `holdMs` is readable time, not wall-clock time. A beat's clock starts
    * when its scene is visually ready — playing, or committed to its poster —
    * so a slow connection costs the visitor waiting, never the scene itself.
+   * The dissolve between beats overlaps them, so each take is on screen for
+   * about a second longer than its own number.
    */
   moments: [
     {
-      id: 'grown',
-      stage: 'Origin',
+      id: 'island',
+      stage: 'The Big Island',
       scene: 'origin',
-      eyebrow: 'Origin',
-      primary: 'Grown in Kona',
-      supporting: 'Hawaiʻi Island',
-      /** How long this beat stays readable once its scene is ready. */
-      holdMs: 3500,
+      anchor: 'bottom-left',
+      eyebrow: 'The Big Island',
+      primary: 'It begins in Kona.',
+      supporting:
+        'On the volcanic slopes of Hawaiʻi Island, coffee grows unlike anywhere else.',
+      /**
+       * Readable time, measured from the moment the scene is visually ready.
+       * The dissolve into the next beat overlaps this, so each take is on
+       * screen for roughly a second longer than the number here.
+       */
+      holdMs: 4600,
     },
     {
       id: 'farm',
-      stage: 'The farm',
+      stage: 'From the farm',
       scene: 'farm',
-      eyebrow: 'The farm',
-      /* Owner-verified: the coffee is grown and roasted on the farm. The
-         footage shows cherries on the branch and nothing else, so the words
-         carry the roasting claim and the picture is never asked to. */
-      primary: 'Grown. Roasted.',
-      supporting: 'On the farm.',
-      holdMs: 2700,
+      anchor: 'bottom-left',
+      eyebrow: 'From the farm',
+      /* Owner-verified: grown and roasted on the farm. The take shows
+         cherries on the branch and nothing else — no roasting equipment, no
+         roasting activity — so the words carry the claim and the picture is
+         never asked to. */
+      primary: 'Grown and roasted at the source.',
+      supporting:
+        'Our coffee is roasted on the farm before beginning its journey to California.',
+      /**
+       * Longer than the take.
+       *
+       * The usable motion in the source runs 3.2 s — earlier than 12.85 s a
+       * figure is cropped at the shoulders, and 16.04 s is the end of the
+       * clip — but this is the sentence that carries the whole roasting
+       * claim, and three seconds is not enough to read it and look at the
+       * cherries. The take plays out and its last frame then settles under
+       * the words rather than freezing: see `journey-settle`. Nothing is
+       * looped and nothing is slowed.
+       */
+      holdMs: 4400,
     },
     {
       id: 'crossing',
-      stage: 'Crossing',
+      stage: 'Across the Pacific',
       scene: 'crossing',
+      anchor: 'top-left',
       eyebrow: 'Across the Pacific',
-      primary: 'From Kona International Airport',
-      supporting: 'Across the Pacific',
-      holdMs: 4000,
+      primary: 'From KOA to the Bay Area.',
+      supporting:
+        'Farm-roasted coffee, flown from Kona International Airport to Northern California.',
+      holdMs: 4200,
     },
     {
       id: 'arrival',
-      stage: 'Arrival',
+      stage: 'The Bay Area',
       scene: 'arrival',
-      eyebrow: 'Bay Area',
-      primary: 'From Hawaiʻi Island',
-      supporting: 'To the Bay Area',
-      holdMs: 2500,
+      anchor: 'bottom-left',
+      eyebrow: 'The Bay Area',
+      primary: 'An island journey, arriving closer to home.',
+      supporting: 'The same farm-roasted beans continue to the places where we serve them.',
+      holdMs: 3000,
     },
     {
       id: 'destination',
-      stage: 'Destination',
+      stage: 'Two destinations',
       scene: null,
-      eyebrow: 'Destination',
-      primary: 'The same farm-roasted beans.',
-      supporting: 'Two ways to experience Kona.',
-      /** Terminal beat: it holds until the visitor chooses to enter. */
+      anchor: 'bottom-wide',
+      eyebrow: 'One coffee. Two experiences.',
+      primary: 'Find your island escape.',
+      supporting:
+        'The same farm-roasted coffee is served at our Mountain View café and from the Kona coffee truck.',
+      /** Terminal: the film ends here and waits for the visitor. */
       holdMs: null,
     },
   ],
 
   /**
-   * The route typography drawn over the crossing. Two verified endpoints and
-   * a line between them — no aircraft, no globe, no map.
+   * The two photographs the film ends on. Both are owner-supplied and show
+   * the real places: the Mountain View café with its door open, and the Kona
+   * coffee truck in service. Neither is stock and neither is generated.
+   *
+   * The truck photograph carries a menu panel advertising crepes that the
+   * café no longer serves. It is cropped to the corner of frame rather than
+   * removed — nothing in either picture has been erased, replaced or painted
+   * over.
    */
-  route: {
-    from: 'KOA',
-    to: 'BAY AREA',
-    fromFull: 'Kona International Airport',
-    toFull: 'The Bay Area',
-  },
+  stills: [
+    {
+      id: 'cafe',
+      wide: { src: '/journey/cafe-wide.jpg', width: 720, height: 900 },
+      tall: { src: '/journey/cafe-tall.jpg', width: 480, height: 600 },
+      description:
+        'The Mountain View café entrance, its door open beneath the round Kona Island Coffee sign.',
+    },
+    {
+      id: 'truck',
+      wide: { src: '/journey/truck-wide.jpg', width: 720, height: 900 },
+      tall: { src: '/journey/truck-tall.jpg', width: 480, height: 600 },
+      description:
+        'The Kona coffee truck with its service window open and a customer ordering.',
+    },
+  ],
+
+  /**
+   * The close of the film. Both hrefs are read from the verified location
+   * records rather than written out again, so there is exactly one place in
+   * the codebase where either address can be wrong.
+   */
+  destinations: [
+    {
+      label: 'Visit the Café',
+      href: site.locations.find((l) => l.id === 'mountain-view')!.directionsUrl,
+      description: 'Directions to the Mountain View café',
+    },
+    {
+      label: 'Find the Truck',
+      href: site.locations.find((l) => l.id === 'coffee-truck')!.directionsUrl,
+      description: 'Directions to the Kona coffee truck',
+    },
+  ],
+
+  orderLabel: 'Order Ahead',
 
   enterLabel: 'Enter Your Island Escape',
   skipLabel: 'Skip to Kona',

@@ -1,11 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { journey } from '@/content/journey'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { JourneyScene, JourneyRouteLine, type Gate } from '@/components/journey/journey-scene'
+import {
+  JourneyScene,
+  JourneyDestinations,
+  DISSOLVE_MS,
+  type Gate,
+} from '@/components/journey/journey-scene'
+import { OrderChooser } from '@/components/order-chooser'
 import {
   JOURNEY_REPLAY_EVENT,
   markJourneySeen,
@@ -35,12 +40,12 @@ const { moments, scenes } = journey
 const LAST = moments.length - 1
 
 /**
- * The stage indicator, which counts moments rather than beats.
+ * The beats grouped by stage.
  *
- * The origin is one moment told in two beats: the copy moves from where the
- * coffee grows to what happens to it there while the same take runs on. The
- * indicator collapses consecutive beats that share a stage, so it shows four
- * stops and not five, and selecting one returns to the beat that opens it.
+ * There is deliberately no progress indicator over the film — dots would make
+ * a short piece of storytelling read as an onboarding flow. This grouping is
+ * used only by the reduced-motion composition, which lays the whole story out
+ * as text at once.
  */
 const STEPS = moments.reduce<{ stage: string; index: number }[]>((steps, moment, index) => {
   if (steps[steps.length - 1]?.stage !== moment.stage) {
@@ -121,6 +126,18 @@ export function ArrivalJourney() {
    * left cannot reopen a gate that has moved on.
    */
   const [ready, setReady] = useState<{ id: string; mode: 'video' | 'poster' } | null>(null)
+  /**
+   * The beat the copy is dissolving away from. Held for exactly one dissolve
+   * so the outgoing words can fade out under the incoming ones instead of
+   * disappearing the moment the beat changes.
+   */
+  const [outgoing, setOutgoing] = useState<number | null>(null)
+  /**
+   * The closing beat's two phases: the café alone, then both places together.
+   * Held here rather than in the scene component so that Replay resets it and
+   * a reduced-motion visitor can be handed the finished pair immediately.
+   */
+  const [pairPhase, setPairPhase] = useState<'cafe' | 'both'>('cafe')
 
   const labelId = useId()
   const layerRef = useRef<HTMLDivElement | null>(null)
@@ -142,6 +159,8 @@ export function ArrivalJourney() {
     setOpenedBy(by)
     setMoment(0)
     setReady(null)
+    setOutgoing(null)
+    setPairPhase('cafe')
     setIsOpen(true)
   }, [])
 
@@ -250,9 +269,36 @@ export function ArrivalJourney() {
     if (gate === 'waiting') return
     const hold = moments[moment].holdMs
     if (hold === null) return
-    const timer = setTimeout(() => setMoment((current) => Math.min(current + 1, LAST)), hold)
+    if (moment >= LAST) return
+    const timer = setTimeout(() => {
+      // Both together: the beat we are leaving stays mounted and fading while
+      // the next one arrives over it.
+      setOutgoing(moment)
+      setMoment(moment + 1)
+    }, hold)
     return () => clearTimeout(timer)
   }, [isOpen, isStatic, moment, gate])
+
+  /* --- The copy handover --------------------------------------------------
+     The beat we just left is released once its fade has finished. Until then
+     both beats are mounted, which is what lets the words dissolve rather than
+     cut. Set where the advance happens, in the chain below. */
+  useEffect(() => {
+    if (outgoing === null) return
+    const done = setTimeout(() => setOutgoing(null), DISSOLVE_MS)
+    return () => clearTimeout(done)
+  }, [outgoing])
+
+  /* --- The closing reveal -------------------------------------------------
+     The café holds the canvas on its own long enough to register as the
+     destination, and the truck then opens out beside it. A visitor who has
+     asked not to be moved is given both at once. */
+  useEffect(() => {
+    if (!isOpen || isStatic) return
+    if (moment !== LAST) return
+    const open = setTimeout(() => setPairPhase('both'), 1400)
+    return () => clearTimeout(open)
+  }, [isOpen, isStatic, moment])
 
   /* --- Modal behaviour ----------------------------------------------------
      Scroll lock, a real `inert` on the page behind, Escape, and a Tab trap. */
@@ -332,7 +378,6 @@ export function ArrivalJourney() {
   const showEnter = isStatic || isFinal
   const activeScene = sceneKey
   const scene = scenes.find((item) => item.id === (activeScene ?? STILL.id))
-  const still = STILL[variant ?? 'wide']
   const layout = scene?.layout ?? 'band'
 
   return (
@@ -356,39 +401,39 @@ export function ArrivalJourney() {
 
       {/* What is on screen right now, for anyone who cannot see it. Not a live
           region: it is there to be found, not to interrupt. */}
-      {scene && <p className="sr-only">{scene.description}</p>}
+      {scene && !isFinal && <p className="sr-only">{scene.description}</p>}
+      {(isFinal || isStatic) &&
+        journey.stills.map((still) => (
+          <p key={still.id} className="sr-only">
+            {still.description}
+          </p>
+        ))}
 
       <div className="journey-stage">
-        {isStatic ? (
-          /* One frame, no video element: a visitor who has asked not to be
-             moved downloads a single image and no footage at all. */
-          <Image
-            className="journey-still"
-            src={still.poster}
-            alt=""
-            aria-hidden
-            fill
-            sizes="100vw"
+        {/* No video element and no footage for a visitor who has asked not to
+            be moved: they are given the two destination photographs below,
+            which is where the film was going anyway, and the whole story as
+            text beneath them. */}
+        {!isStatic && variant && (
+          <JourneyScene
+            activeId={activeScene}
+            momentIndex={moment}
+            variant={variant}
+            gate={gate}
+            onPlaying={handlePlaying}
+            onFailed={handleFailed}
           />
-        ) : (
-          variant && (
-            <JourneyScene
-              activeId={activeScene}
-              momentIndex={moment}
-              variant={variant}
-              gate={gate}
-              onPlaying={handlePlaying}
-              onFailed={handleFailed}
-            />
-          )
+        )}
+
+        {/* The closing pair sits over the arrival footage and dissolves in on
+            the same clock, so the last hand-over of the film is a dissolve
+            like every other one — not a cut to a layout. */}
+        {variant && (isStatic || isFinal) && (
+          <JourneyDestinations variant={variant} phase={isStatic ? 'both' : pairPhase} />
         )}
 
         {/* Anchored to the viewport, not to the copy: see `.journey-scrim`. */}
         <div aria-hidden="true" className="journey-scrim" />
-
-        {/* The route belongs to the beat that names the crossing, not to a
-            later one that merely still holds the footage. */}
-        {current.scene === 'crossing' && <JourneyRouteLine />}
 
         {/*
           The handover. On the last moment the warm ground of the homepage
@@ -399,26 +444,46 @@ export function ArrivalJourney() {
         <div aria-hidden="true" className="journey-dawn" />
       </div>
 
-      <div className="journey-content">
+      <div className="journey-content" data-anchor={current.anchor}>
         <div className="journey-copy">
           {isStatic ? (
             <StaticSummary />
           ) : (
+            /*
+              Two copy layers, stacked and cross-faded, for the same reason the
+              media has two: a single block keyed on the beat would unmount the
+              old words the instant the new ones arrived, and the type would
+              hard-cut over a picture that was still dissolving. The outgoing
+              beat stays mounted and fades out underneath the incoming one.
+            */
             <>
-              <p key={`e${moment}`} className="journey-eyebrow">
-                {current.eyebrow}
-              </p>
-              <h2 key={`p${moment}`} className="journey-primary">
-                {current.primary}
-              </h2>
-              {current.supporting && (
-                <p key={`s${moment}`} className="journey-supporting">
-                  {current.supporting}
-                </p>
+              {outgoing !== null && outgoing !== moment && (
+                <BeatCopy key={`out-${outgoing}`} index={outgoing} state="leaving" />
               )}
+              <BeatCopy key={`in-${moment}`} index={moment} state="entering" />
             </>
           )}
         </div>
+
+        {/* The two places the coffee is served, offered together and given
+            the same weight, and the existing ordering chooser beside them. */}
+        {showEnter && (
+          <div className="journey-destinations">
+            {journey.destinations.map((destination) => (
+              <a
+                key={destination.href}
+                href={destination.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="journey-destination"
+              >
+                <span className="journey-destination__label">{destination.label}</span>
+                <span className="journey-destination__detail">{destination.description}</span>
+              </a>
+            ))}
+            <OrderChooser solid className="journey-order" />
+          </div>
+        )}
 
         <div className="journey-controls">
           {showEnter && (
@@ -431,31 +496,26 @@ export function ArrivalJourney() {
           </button>
         </div>
 
-        {!isStatic && (
-          <ol className="journey-steps" aria-label="Journey stages">
-            {STEPS.map((step, position) => {
-              const next = STEPS[position + 1]
-              const isCurrent = moment >= step.index && (!next || moment < next.index)
-              return (
-                <li key={step.stage}>
-                  <button
-                    type="button"
-                    onClick={() => setMoment(step.index)}
-                    aria-current={isCurrent ? 'step' : undefined}
-                    className="journey-step"
-                    data-state={
-                      isCurrent ? 'current' : moment > step.index ? 'done' : 'upcoming'
-                    }
-                  >
-                    <span className="journey-step__mark" aria-hidden="true" />
-                    <span className="journey-step__label">{step.stage}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ol>
-        )}
       </div>
+    </div>
+  )
+}
+
+/**
+ * One beat's words.
+ *
+ * The three lines enter in sequence — eyebrow, then headline, then supporting
+ * — so the picture is allowed to establish the place before the sentence
+ * finishes arriving. On the way out they leave together, because staggering a
+ * departure only draws attention to it.
+ */
+function BeatCopy({ index, state }: { index: number; state: 'entering' | 'leaving' }) {
+  const beat = moments[index]
+  return (
+    <div className="journey-beat" data-state={state} aria-hidden={state === 'leaving'}>
+      <p className="journey-eyebrow">{beat.eyebrow}</p>
+      <h2 className="journey-primary">{beat.primary}</h2>
+      {beat.supporting && <p className="journey-supporting">{beat.supporting}</p>}
     </div>
   )
 }

@@ -358,9 +358,19 @@ export interface JourneyScene {
 }
 
 export interface JourneyMoment {
-  id: 'grown' | 'farm' | 'crossing' | 'arrival' | 'destination'
-  /** Short label for the stage indicator. */
+  id: 'island' | 'farm' | 'crossing' | 'arrival' | 'destination'
+  /** Short label, used only by the reduced-motion summary. */
   stage: string
+  /**
+   * Where the copy sits over this beat's media.
+   *
+   * Not decoration: each frame has a subject the words must not cover. The
+   * coastline runs across the lower half, so its copy sits low-left where the
+   * open water is; the cloud deck is emptiest at the top; the Golden Gate
+   * tower stands left of centre. Consistent typography, placement that
+   * answers to the picture.
+   */
+  anchor: 'bottom-left' | 'top-left' | 'bottom-wide'
   /**
    * The footage this beat plays over. Consecutive beats naming the same
    * scene share one continuous take: the copy changes, the shot does not
@@ -378,19 +388,32 @@ export interface JourneyMoment {
   holdMs: number | null
 }
 
-/** The restrained route line drawn over the crossing. */
-export interface JourneyRoute {
-  from: string
-  to: string
-  fromFull: string
-  toFull: string
+/**
+ * A still that closes the film. Two of them — the café and the truck — shown
+ * one after the other and then together, which is the whole point: the same
+ * coffee, two places to drink it.
+ */
+export interface JourneyStill {
+  id: 'cafe' | 'truck'
+  wide: { src: string; width: number; height: number }
+  tall: { src: string; width: number; height: number }
+  /** What the photograph shows, for anyone who cannot see it. */
+  description: string
 }
 
 export interface JourneyContent {
   label: string
   scenes: JourneyScene[]
+  /** The closing pair. Owner photographs, never stock and never generated. */
+  stills: JourneyStill[]
+  /**
+   * The two places the coffee is served, offered at the close of the film.
+   * Both links are the verified ones from site content — never restated here,
+   * only referenced — so there is one place a URL can be wrong.
+   */
+  destinations: { label: string; href: string; description: string }[]
+  orderLabel: string
   moments: JourneyMoment[]
-  route: JourneyRoute
   enterLabel: string
   skipLabel: string
   replayLabel: string

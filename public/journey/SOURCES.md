@@ -1,8 +1,8 @@
 # Arrival journey footage
 
-Three licensed clips and one owner-supplied take, re-encoded for the opening
-chapter. This file is the record of where each came from and exactly how it
-was cut.
+Three licensed clips, one owner-supplied take and two owner-supplied
+photographs, re-encoded for the opening chapter. This file is the record of
+where each came from and exactly how it was cut.
 
 ## What this footage is, and is not
 
@@ -66,10 +66,41 @@ elsewhere in `public/images/` — identifiable by a four-point sparkle
 watermark, garbled signage and stripped metadata — and none of them is used
 here or may be introduced here.
 
-The destination moment carries no photography yet. It is waiting on a current
-authentic photograph of the coffee truck; the café image will land with it,
-because the two destinations are given equal weight and neither is shown
-alone.
+### The closing photographs
+
+| Production files | Original filename | Source | Ownership | Supplied | Depicts |
+| --- | --- | --- | --- | --- | --- |
+| `cafe-wide.jpg`, `cafe-tall.jpg` | `kona-cafe-current.jpg` | Owner-supplied | Kona Island Coffee | 2026-08-26 | The **current Mountain View café**, entrance open beneath the round sign |
+| `truck-wide.jpg`, `truck-tall.jpg` | `kona-truck-authentic.jpg` | Owner-supplied | Kona Island Coffee | 2026-08-26 | The **authentic Kona coffee truck**, service window open, a customer ordering |
+
+Both originals are 1536 × 2048. They were delivered inside
+`kona-destination-photos.zip`, extracted outside the repository, and only the
+derivatives below are committed.
+
+**The truck photograph carries older menu graphics** — a printed panel
+advertising crepes, and an A-frame board — which no longer reflect what is
+served. The crop pushes that panel into the corner of frame and leaves the
+A-frame board out entirely, and the composition leads with the truck, the
+round Kona logo, the open service window and a real customer at it. The dog,
+the parked car and the figure at the right edge fall outside the crop for the
+same reason.
+
+**Nothing in either photograph was erased, replaced, extended or repainted.**
+No generative image editing of any kind was used. The only operations applied
+were cropping, scaling, positioning and the shared colour grade, exactly as
+for the footage — both originals arrive soft and slightly milky, and the grade
+brings them onto the same curve as the film so the close does not look like a
+different piece of work.
+
+| Output | Crop | Scale |
+| --- | --- | --- |
+| `cafe-wide.jpg` | `1360:1700:88:180` | `720:900` |
+| `cafe-tall.jpg` | `1104:1380:216:280` | `480:600` |
+| `truck-wide.jpg` | `945:1181:0:380` | `720:900` |
+| `truck-tall.jpg` | `945:1181:0:380` | `480:600` |
+
+Photograph grade, applied before the shared grade:
+`eq=contrast=1.16:saturation=1.06:gamma=0.95:brightness=-0.012`
 
 Two further clips were evaluated and **rejected**: a Kīlauea eruption clip
 (it would imply the farm sits at an active volcano, which it does not) and an
@@ -98,18 +129,34 @@ Per-scene correction, applied before the shared grade:
 | arrival  | `eq=brightness=0.015:contrast=0.97:saturation=0.88:gamma=1.04` |
 
 Crops and ranges. Every output keeps its source's native frame rate; nothing
-is slowed, stretched or frame-doubled:
+is slowed, stretched or frame-doubled.
+
+The ranges are set by the film, not the other way round: each take has to
+outlast the beat it plays under *plus* the dissolve out of it, or the picture
+freezes while the words are still being read. The island and the crossing were
+therefore extended from their first cuts, and the farm was extended backwards
+to just after the point where a figure is cropped at the shoulders. The
+arrival is the whole clip and cannot be extended, so its last frames play out
+under the outgoing fade — which is what that fade is for.
 
 | Output              | Range        | Crop                     | Scale     |
 | ------------------- | ------------ | ------------------------ | --------- |
-| `origin-wide.mp4`   | 13.6–17.6 s  | `1920:918:0:151`         | `1280:612` |
-| `origin-tall.mp4`   | 13.6–17.6 s  | `500:1080:500:0`         | `414:896`  |
-| `crossing-wide.mp4` | 6.0–10.0 s   | `1280:612:0:54`          | native     |
-| `crossing-tall.mp4` | 6.0–10.0 s   | `332:720:474:0`          | `414:896`  |
+| `origin-wide.mp4`   | 13.6–18.6 s  | `1920:918:0:151`         | `1280:612` |
+| `origin-tall.mp4`   | 13.6–18.6 s  | `500:1080:500:0`         | `414:896`  |
+| `crossing-wide.mp4` | 6.0–10.6 s   | `1280:612:0:54`          | native     |
+| `crossing-tall.mp4` | 6.0–10.6 s   | `332:720:474:0`          | `414:896`  |
 | `arrival-wide.mp4`  | 0.0–2.5 s\*  | `1920:918:0:61`          | `1280:612` |
 | `arrival-tall.mp4`  | 0.0–2.5 s\*  | `500:1080:460:0`         | `414:896`  |
-| `farm-wide.mp4`     | 13.35–16.04 s | `1080:1920:0:0`         | `720:1280`  |
-| `farm-tall.mp4`     | 13.35–16.04 s | `886:1920:97:0`         | `414:896`   |
+| `farm-wide.mp4`     | 12.85–16.04 s | `1080:1920:0:0`         | `720:1280`  |
+| `farm-tall.mp4`     | 12.85–16.04 s | `886:1920:97:0`         | `414:896`   |
+
+The farm take is 3.20 s and its beat is 4.4 s, because that beat carries the
+sentence the whole roasting claim rests on. Earlier than 12.85 s a figure is
+cropped at the shoulders and 16.04 s is the end of the clip, so the range
+cannot grow further. The take plays out in full and its last frame then
+settles under the words — a three per cent push across the beat, imperceptible
+while the footage runs — rather than stopping dead. It is not looped and it is
+not slowed.
 
 \* the complete clip, at its native 23.976 fps.
 

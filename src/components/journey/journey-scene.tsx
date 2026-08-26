@@ -12,24 +12,41 @@ import type { JourneyScene as Scene } from '@/content/types'
  *
  * Three things here are deliberate and worth not undoing:
  *
- * 1. Every scene carries its poster as its own element underneath the video,
+ * 1. An outgoing take keeps playing while it fades out. Pausing it the instant
+ *    it stopped being active — which is what this did before — meant every
+ *    dissolve was between a frozen frame and a moving one, and that is what
+ *    made a continuous film read as a stack of slides. It is paused only once
+ *    it is fully invisible.
+ *
+ * 2. Every scene carries its poster as its own element underneath the video,
  *    rather than relying on the `poster` attribute. A `<video>` at zero
  *    opacity hides its poster too, so the attribute cannot hold a frame for a
  *    scene that is loading or has fallen back. Painted separately, there is
  *    always something on screen and never a blank frame.
  *
- * 2. The variant is chosen in JavaScript, not by `<source media>`. That
+ * 3. The variant is chosen in JavaScript, not by `<source media>`. That
  *    attribute was dropped from the HTML spec and no browser honours it, so
  *    the only way to avoid downloading both a landscape and a portrait encode
  *    is to decide before the element gets a `src`. The layer never renders on
  *    the server, so reading `matchMedia` cannot desynchronise hydration.
  *
- * 3. A scene's `src` is withheld until the sequence is close enough to need
+ * 4. A scene's `src` is withheld until the sequence is close enough to need
  *    it. The first take is the only thing requested when the layer opens; the
  *    rest arrive with several seconds of lead over the beat that shows them.
  */
 
 const { scenes } = journey
+
+/**
+ * How long one take takes to hand over to the next.
+ *
+ * Both sides move at once: the outgoing fades 1→0 and the incoming 0→1 over
+ * the same window, so there is always something fully painted underneath and
+ * the sequence never passes through black, through a poster-only frame, or
+ * through the homepage. Kept in step with `--journey-dissolve` in the
+ * stylesheet, which drives the opacity transitions themselves.
+ */
+export const DISSOLVE_MS = 900
 
 type Variant = 'wide' | 'tall'
 
@@ -129,8 +146,10 @@ function SceneVideo({
     if (!video) return
 
     if (!isActive) {
-      video.pause()
-      return
+      /* Let it play out its own fade. Stopping it here is what turned every
+         cross-dissolve into a still frame handing over to a moving one. */
+      const settle = setTimeout(() => video.pause(), DISSOLVE_MS)
+      return () => clearTimeout(settle)
     }
 
     if (video.readyState >= 1) {
@@ -188,54 +207,46 @@ function SceneVideo({
 }
 
 /**
- * The route drawn over the crossing.
+ * The close of the film: the two places the coffee is actually served.
  *
- * A hairline between two named points and a light travelling along it. There
- * is no aircraft, no globe and no map, because the footage is licensed
- * atmospheric imagery: it does not record our shipment, and a route drawn like
- * a flight tracker would claim that it does. What this states is only what is
- * verified — the coffee leaves through Kona International Airport and reaches
- * the Bay Area.
+ * It arrives in two phases rather than as a finished layout, because the point
+ * of the beat is a discovery, not a summary. The café lands first and holds
+ * the whole canvas — this is where the journey has been going — and only then
+ * does the truck open out beside it, so the visitor reads "and there is a
+ * second one" rather than "here are two cards".
+ *
+ * The widening is a flex-basis transition on both panels at once, so no image
+ * is ever squashed or letterboxed: each panel crops through `object-fit` while
+ * its width changes. The café also carries a very slow push toward its own
+ * doorway, which is the only movement in the beat.
  */
-export function JourneyRouteLine() {
-  const { route } = journey
-
+export function JourneyDestinations({
+  variant,
+  phase,
+}: {
+  variant: Variant
+  phase: 'cafe' | 'both'
+}) {
   return (
-    <div className="journey-route" aria-hidden="true">
-      <span className="journey-route__place">{route.from}</span>
-      <span className="journey-route__track">
-        <svg
-          className="journey-route__rule"
-          viewBox="0 0 200 4"
-          preserveAspectRatio="none"
-          focusable="false"
-        >
-          {/* Two strokes drawn as one: a soft dark line under a warm sand
-              one, so the hairline holds over both bright cloud and dark
-              water without needing a filter. */}
-          <line
-            className="journey-route__line journey-route__line--shadow"
-            x1="0"
-            y1="2"
-            x2="200"
-            y2="2"
-            pathLength="1"
-            vectorEffect="non-scaling-stroke"
-          />
-          <line
-            className="journey-route__line journey-route__line--ink"
-            x1="0"
-            y1="2"
-            x2="200"
-            y2="2"
-            pathLength="1"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
-        {/* Rides the drawing edge of the line: same duration, same easing. */}
-        <span className="journey-route__mark" />
-      </span>
-      <span className="journey-route__place">{route.to}</span>
+    <div className="journey-pair" data-phase={phase} aria-hidden="true">
+      {journey.stills.map((still) => {
+        const source = still[variant]
+        return (
+          <div key={still.id} className={`journey-pair__panel journey-pair__panel--${still.id}`}>
+            {/* Plain <img>: these are already cut and compressed for exactly
+                this box, and the beat they close should not wait on an
+                optimiser round-trip. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="journey-pair__image"
+              src={source.src}
+              alt=""
+              width={source.width}
+              height={source.height}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }
