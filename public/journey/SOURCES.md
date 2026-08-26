@@ -1,15 +1,31 @@
-# Arrival journey footage
+# Journey media
 
 Three licensed clips, one owner-supplied take and two owner-supplied
-photographs, re-encoded for the opening chapter. This file is the record of
-where each came from and exactly how it was cut.
+photographs. This file is the record of where each came from and exactly how
+it was cut.
+
+## How this media is used
+
+The journey is **scroll-controlled**. It is an optional story the visitor
+drives with their own scroll position: nothing plays on its own, nothing
+advances on a timer, and a visitor who stops scrolling stays in the chapter
+they stopped in for as long as they like. Every transition between chapters —
+media and words alike — is a function of how far they have scrolled, so
+scrolling back up runs the story exactly backwards. `Enter Kona` is on the
+first screen and again at the close, so the homepage is never more than one
+action away.
+
+The same media is used here as in the timed arrival it replaced. **No source
+file, encode, crop, range or grade changed when the experience became
+scroll-controlled**; only the way the media is composed and transitioned did.
 
 ## What this footage is, and is not
 
-The three licensed clips are atmospheric travel imagery. They are **not** a
-record of our farm, our aircraft, our shipment or any particular flight, and
-no copy anywhere on the site may describe them that way. The farm footage is
-different in kind: it is our own, and it shows the farm.
+Each piece of footage **represents** its chapter. None of it documents a
+literal shipment. The three licensed clips are atmospheric travel imagery and
+are **not** a record of our farm, our aircraft, our shipment or any particular
+flight, and no copy anywhere on the site may describe them that way. The farm
+footage is different in kind: it is our own, and it shows the farm.
 
 What it does **not** show is roasting. There is no roasting equipment and no
 roasting activity in any frame of it. The claim that the coffee is roasted on
@@ -19,8 +35,8 @@ asked to prove it, and no copy may say the footage depicts roasting.
 The verified story is narrow and stated in words, not implied by pictures:
 the coffee is grown in Kona on Hawaiʻi Island
 and roasted on the farm; it travels through Kona International Airport and
-across the Pacific to the Bay Area; the same farm-roasted beans are served
-at the Mountain View café and from the Kona coffee truck.
+across the Pacific to Northern California; the same farm-roasted coffee is
+served at the Mountain View café and from the Kona coffee truck.
 
 The coastline establishes where Kona is. It does not depict the farm property.
 
@@ -38,7 +54,7 @@ The coastline establishes where Kona is. It does not depict the farm property.
 
 | Production file | Original filename | Source         | Ownership          | Supplied   | Intended use |
 | --------------- | ----------------- | -------------- | ------------------ | ---------- | ------------ |
-| `farm-wide.mp4`, `farm-tall.mp4`, `farm-wide.jpg`, `farm-tall.jpg` | `IMG_1202.mov` | Owner-supplied | Kona Island Coffee | 2026-08-25 | The farm moment: the second beat of the arrival journey |
+| `farm-wide.mp4`, `farm-tall.mp4`, `farm-wide.jpg`, `farm-tall.jpg` | `IMG_1202.mov` | Owner-supplied | Kona Island Coffee | 2026-08-25 | Chapter two of the journey, *From the farm* |
 
 The farm footage carries its own capture metadata — an iPhone 16 Pro Max,
 iOS 18.6, recorded 2025-09-05 at 11:39 local time, with GPS at 19.5596 N,
@@ -59,9 +75,9 @@ Two further owner-supplied assets were reviewed and are **not used**:
   journey needs it, because nothing in the journey asks a picture to carry
   the roasting claim.
 
-**No AI-generated imagery is used anywhere in the arrival journey.** Every
-frame is either licensed stock photography of real places or owner-supplied
-footage of the farm. Several AI-generated truck and café images exist
+**No AI-generated imagery is used anywhere in the journey, and no generative
+image editing was used on any asset in it.** Every frame is either licensed
+stock photography of real places or owner-supplied footage of the farm. Several AI-generated truck and café images exist
 elsewhere in `public/images/` — identifiable by a four-point sparkle
 watermark, garbled signage and stripped metadata — and none of them is used
 here or may be introduced here.
@@ -79,18 +95,25 @@ derivatives below are committed.
 
 **The truck photograph carries older menu graphics** — a printed panel
 advertising crepes, and an A-frame board — which no longer reflect what is
-served. The crop pushes that panel into the corner of frame and leaves the
-A-frame board out entirely, and the composition leads with the truck, the
-round Kona logo, the open service window and a real customer at it. The dog,
-the parked car and the figure at the right edge fall outside the crop for the
-same reason.
+served. The crop pushes that panel to the edge of frame and leaves the A-frame
+board out entirely, and the composition leads with the truck, the round Kona
+logo, the open service window and a real customer at it. The dog, the parked
+car and the figure at the right edge fall outside the crop for the same
+reason. The closing composition then crops it further: the photograph is held
+in a portrait frame carried to the right edge of the stage, which minimises
+the menu panel again without altering the original photograph in any way.
+
+In the linear story — what a reduced-motion visitor and a visitor without
+JavaScript see — the two photographs stack, and the truck is held in the same
+portrait proportion and cropped the same way for the same reason.
 
 **Nothing in either photograph was erased, replaced, extended or repainted.**
-No generative image editing of any kind was used. The only operations applied
-were cropping, scaling, positioning and the shared colour grade, exactly as
-for the footage — both originals arrive soft and slightly milky, and the grade
-brings them onto the same curve as the film so the close does not look like a
-different piece of work.
+No generative image editing of any kind was used, on these or on anything else
+in the journey. The only operations applied were cropping, scaling,
+positioning and the shared colour grade, exactly as for the footage — both
+originals arrive soft and slightly milky, and the grade brings them onto the
+same curve as the footage so the close does not look like a different piece of
+work.
 
 | Output | Crop | Scale |
 | --- | --- | --- |
@@ -129,15 +152,14 @@ Per-scene correction, applied before the shared grade:
 | arrival  | `eq=brightness=0.015:contrast=0.97:saturation=0.88:gamma=1.04` |
 
 Crops and ranges. Every output keeps its source's native frame rate; nothing
-is slowed, stretched or frame-doubled.
+is slowed, stretched, looped or frame-doubled.
 
-The ranges are set by the film, not the other way round: each take has to
-outlast the beat it plays under *plus* the dissolve out of it, or the picture
-freezes while the words are still being read. The island and the crossing were
-therefore extended from their first cuts, and the farm was extended backwards
-to just after the point where a figure is cropped at the shoulders. The
-arrival is the whole clip and cannot be extended, so its last frames play out
-under the outgoing fade — which is what that fade is for.
+**Chapter progression is not synchronised to any of these durations.** Scroll
+position, not playback time, decides when a chapter arrives and when it
+leaves; a take that reaches its end simply holds its last frame under the
+words until the visitor scrolls on, and a visitor who scrolls quickly may
+never see the end of one. The ranges below were chosen for what is in frame,
+not for how long anything is on screen.
 
 | Output              | Range        | Crop                     | Scale     |
 | ------------------- | ------------ | ------------------------ | --------- |
@@ -150,13 +172,10 @@ under the outgoing fade — which is what that fade is for.
 | `farm-wide.mp4`     | 12.85–16.04 s | `1080:1920:0:0`         | `720:1280`  |
 | `farm-tall.mp4`     | 12.85–16.04 s | `886:1920:97:0`         | `414:896`   |
 
-The farm take is 3.20 s and its beat is 4.4 s, because that beat carries the
-sentence the whole roasting claim rests on. Earlier than 12.85 s a figure is
-cropped at the shoulders and 16.04 s is the end of the clip, so the range
-cannot grow further. The take plays out in full and its last frame then
-settles under the words — a three per cent push across the beat, imperceptible
-while the footage runs — rather than stopping dead. It is not looped and it is
-not slowed.
+The farm take is 3.20 s. Earlier than 12.85 s a figure is cropped at the
+shoulders and 16.04 s is the end of the clip, so the range cannot grow
+further. It plays out in full and then holds its last frame under the words.
+It is not looped, not slowed and not extended.
 
 \* the complete clip, at its native 23.976 fps.
 
@@ -172,10 +191,12 @@ tonemap=hable:desat=0, zscale=t=bt709:m=bt709:r=tv, format=yuv420p
 
 then `eq=contrast=1.00:saturation=0.88:gamma=1.02` and the shared grade above.
 
-Both farm outputs stay portrait. On a narrow screen that fills the frame; on
-a wide one the take is held at its own proportions in a tall aperture against
-deep espresso, because stretching a phone-held portrait to full width or
-centre-cropping it to a strip would waste the only thing worth showing.
+Both farm outputs stay portrait, because that is how it was shot. On a narrow
+screen the portrait encode fills the frame exactly. On a wide one it is
+carried full-bleed and centre-cropped like every other chapter — the subject
+is a branch of cherries filling the frame, so a centre crop keeps all of it,
+and the upscale is invisible at the scale it is shown. Nothing is stretched:
+the aspect ratio is preserved and only the framing changes.
 
 Codec, identical for all six:
 
@@ -189,3 +210,22 @@ H.264 at matched quality on clips this short, so there are no WebM duplicates
 to keep in sync. Audio is stripped from every output.
 
 Posters are the first frame of each encode, at `-q:v 6`.
+
+## What loads, and when
+
+Only the opening chapter's media is fetched when the page opens: one poster
+and one take. Every other chapter — including its poster — is admitted to the
+layout a full viewport of scrolling before it begins to fade in, and is never
+withdrawn, so scrolling back up refetches nothing. Videos are muted, carry no
+audio track, have no controls, and are paused whenever they are outside the
+chapter they belong to, so at most two are ever decoding.
+
+Measured payloads, from a real browser walking the whole journey:
+
+| | Opening screen | Whole journey |
+| --- | --- | --- |
+| Mobile (390 px, portrait encodes) | 462 KB | 1229 KB |
+| Desktop (1440 px, landscape encodes) | 1403 KB | 2998 KB |
+
+A reduced-motion visitor and a visitor without JavaScript fetch no video at
+all: the linear story is told in posters and photographs.

@@ -325,103 +325,106 @@ export interface DiscoveryContent {
 }
 
 /* ==========================================================================
-   The Kona Arrival Journey
+   The Kona journey — a scroll-controlled story
    ========================================================================== */
 
+/** One encode of one take, or one crop of one photograph. */
+export interface JourneyFrame {
+  src: string
+  width: number
+  height: number
+}
+
 /**
- * One piece of footage. Two encodes of the same seconds: a wide band for
- * landscape viewports and a portrait framing for narrow ones, because a
- * 2.09:1 band object-covered into a 390x844 frame would have to be scaled
- * four and a half times to fill it.
+ * One piece of footage, encoded twice.
+ *
+ * `wide` is the 2.09:1 band used by landscape viewports; `tall` is a
+ * separately framed portrait crop, not the same footage letterboxed. The
+ * poster is a real frame from the same take: it is what the chapter shows
+ * before the video has decoded, what it shows if the video never decodes, and
+ * what it shows to a visitor who has asked for reduced motion or has no
+ * JavaScript. Nothing in the story depends on the video playing.
  */
-export interface JourneyScene {
-  id: 'origin' | 'farm' | 'crossing' | 'arrival'
+export interface JourneyFootage {
+  wide: JourneyFrame & { poster: string }
+  tall: JourneyFrame & { poster: string }
   /**
-   * How the footage is composed on a wide viewport.
-   *
-   * `band` fills the frame: the licensed landscape takes are cut to a 2.09:1
-   * strip and the copy sits over them. `aperture` does not — the farm take is
-   * a phone-held portrait, and stretching or centre-cropping it to full width
-   * would either distort it or throw away the whole subject. It is instead
-   * held at its own proportions in a tall opening, with the copy set beside
-   * it in deep negative space.
-   */
-  layout: 'band' | 'aperture'
-  wide: { src: string; poster: string; width: number; height: number }
-  tall: { src: string; poster: string; width: number; height: number }
-  /**
-   * What the footage shows. Read by assistive technology in place of the
-   * video, and deliberately literal: it describes the frame, and claims
-   * nothing the frame does not show.
+   * What the footage shows. Deliberately literal: it describes the frame and
+   * claims nothing the frame does not show.
    */
   description: string
 }
 
-export interface JourneyMoment {
-  id: 'island' | 'farm' | 'crossing' | 'arrival' | 'destination'
-  /** Short label, used only by the reduced-motion summary. */
-  stage: string
+/** An owner photograph of a real place. Never stock, never generated. */
+export interface JourneyPhoto {
+  wide: JourneyFrame
+  tall: JourneyFrame
+  description: string
+}
+
+export type JourneyChapterId = 'kona' | 'farm' | 'pacific' | 'arrival' | 'destinations'
+
+/**
+ * One chapter of the journey.
+ *
+ * A chapter is a position in the story, not a duration. The visitor's scroll
+ * position decides when it arrives, how long it stays and when it leaves;
+ * there is no timer anywhere in this experience, and a visitor who stops
+ * scrolling stays in the chapter they stopped in for as long as they like.
+ */
+export interface JourneyChapter {
+  id: JourneyChapterId
+  eyebrow: string
+  headline: string
+  supporting: string
   /**
-   * Where the copy sits over this beat's media.
+   * Where the copy sits over this chapter's picture.
    *
    * Not decoration: each frame has a subject the words must not cover. The
-   * coastline runs across the lower half, so its copy sits low-left where the
-   * open water is; the cloud deck is emptiest at the top; the Golden Gate
-   * tower stands left of centre. Consistent typography, placement that
-   * answers to the picture.
+   * coastline runs across the lower half, so its copy sits low where the open
+   * water is; the cloud deck is emptiest at the top.
    */
-  anchor: 'bottom-left' | 'top-left' | 'bottom-wide'
+  anchor: 'lower' | 'upper'
   /**
-   * The footage this beat plays over. Consecutive beats naming the same
-   * scene share one continuous take: the copy changes, the shot does not
-   * restart. `null` is the handover, which has no footage at all.
+   * The footage this chapter is told over. The closing chapter has none — it
+   * is told over the two destination photographs instead.
    */
-  scene: JourneyScene['id'] | null
-  eyebrow: string
-  primary: string
-  supporting?: string
-  /**
-   * Milliseconds this beat stays readable, measured from the moment its scene
-   * becomes visually ready — not from the moment the beat begins. Loading is
-   * never charged against it. Null means the beat is terminal.
-   */
-  holdMs: number | null
-}
-
-/**
- * A still that closes the film. Two of them — the café and the truck — shown
- * one after the other and then together, which is the whole point: the same
- * coffee, two places to drink it.
- */
-export interface JourneyStill {
-  id: 'cafe' | 'truck'
-  wide: { src: string; width: number; height: number }
-  tall: { src: string; width: number; height: number }
-  /** What the photograph shows, for anyone who cannot see it. */
-  description: string
+  footage: JourneyFootage | null
 }
 
 export interface JourneyContent {
-  label: string
-  scenes: JourneyScene[]
-  /** The closing pair. Owner photographs, never stock and never generated. */
-  stills: JourneyStill[]
   /**
-   * The two places the coffee is served, offered at the close of the film.
-   * Both links are the verified ones from site content — never restated here,
-   * only referenced — so there is one place a URL can be wrong.
+   * A concise introduction for assistive technology, announced once where the
+   * journey begins. It says what the section is and that it is optional.
+   */
+  intro: string
+  /**
+   * The opening screen: a full view of the Kona coast, the invitation to
+   * follow the journey, and the way straight past it.
+   */
+  cover: {
+    eyebrow: string
+    headline: string
+    supporting: string
+    followLabel: string
+  }
+  chapters: JourneyChapter[]
+  /** The two places the coffee is served, photographed by the owner. */
+  photos: { cafe: JourneyPhoto; truck: JourneyPhoto }
+  /**
+   * The verified directions links, read from the location records rather than
+   * written out again, so there is one place either address can be wrong.
    */
   destinations: { label: string; href: string; description: string }[]
   orderLabel: string
-  moments: JourneyMoment[]
+  /** Leaves the journey for the homepage. Available from the first screen. */
   enterLabel: string
-  skipLabel: string
   replayLabel: string
+  /** The understated line along the foot of the stage. Typography, not a map. */
+  route: { start: string; middle: string; end: string }
+  /**
+   * The whole story as plain prose, so nothing meaningful depends on the
+   * footage being seen or the sequence being scrolled.
+   */
   summary: string
-  places: {
-    island: string
-    kona: string
-    cafe: string
-    truck: string
-  }
 }

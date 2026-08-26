@@ -1,3 +1,4 @@
+import { ScrollJourney } from '@/components/journey/scroll-journey'
 import { CinematicHero } from '@/components/home/cinematic-hero'
 import { FindYourKona } from '@/components/home/find-your-kona'
 import { KonaPrinciples } from '@/components/home/kona-principles'
@@ -16,11 +17,21 @@ import { VisitDestinations } from '@/components/home/visit-destinations'
 export default function HomePage() {
   return (
     <main>
-      <CinematicHero />
-      <KonaPrinciples />
-      <FindYourKona />
-      <SpaceEditorial />
-      <VisitDestinations />
+      {/*
+        The journey is optional and it is scrolled, not played. It sits inside
+        the one `main` landmark ahead of the homepage, and `Enter Kona` — on
+        its very first screen and again at its close — is a plain link to the
+        anchor below, so the homepage is never more than one action away and
+        no visitor can be held here.
+      */}
+      <ScrollJourney />
+      <div id="home-content" tabIndex={-1}>
+        <CinematicHero />
+        <KonaPrinciples />
+        <FindYourKona />
+        <SpaceEditorial />
+        <VisitDestinations />
+      </div>
     </main>
   )
 }

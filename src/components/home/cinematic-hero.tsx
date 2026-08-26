@@ -46,12 +46,17 @@ export function CinematicHero() {
           {hero.eyebrow}
         </p>
 
-        <h1
+        {/*
+          An h2, not an h1. The journey above the homepage opens with the
+          document's only h1; this is the first section under it. The visual
+          weight is unchanged — only the level.
+        */}
+        <h2
           id="hero-heading"
           className="mt-5 max-w-4xl font-display text-display-lg font-light text-sand-50"
         >
           {hero.headline}
-        </h1>
+        </h2>
 
         <p className="mt-6 max-w-xl font-body text-lede text-sand-100/85">
           {hero.place}

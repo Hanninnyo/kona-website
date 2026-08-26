@@ -1,24 +1,25 @@
-'use client'
-
 import { journey } from '@/content/journey'
-import { requestJourneyReplay } from '@/lib/journey/session'
 
 /**
- * Reopens the arrival journey.
+ * The way back to the start of the journey.
  *
- * A window event rather than a context: the journey is mounted once in the
- * root layout, this button lives in the server-rendered footer, and an event
- * couples them without turning the footer — or anything between them — into a
- * client component.
+ * A plain link to the journey section, which is the top of its scroll track
+ * and therefore its opening screen. That is the whole implementation, and it
+ * is deliberate:
  *
- * It replays in place, with no navigation and no reload, and it does not clear
- * the session flag, so dismissing it again does not cause the journey to
- * reappear on the next page the visitor opens.
+ * - it works without JavaScript, so it is a Server Component and the footer
+ *   stays server-rendered;
+ * - fragment navigation moves focus to the section, which is focusable and
+ *   named by the opening headline, so a screen reader announces where the
+ *   visitor has arrived;
+ * - it touches no storage. The journey is not something a visitor dismisses
+ *   and is not suppressed once seen, so there is no flag to clear and nothing
+ *   to reopen.
  */
 export function ReplayJourney({ className = '' }: { className?: string }) {
   return (
-    <button type="button" onClick={requestJourneyReplay} className={className}>
+    <a href="#journey" className={className}>
       {journey.replayLabel}
-    </button>
+    </a>
   )
 }
