@@ -90,11 +90,10 @@ export const homepage: HomepageContent = {
   /**
    * Two ways to visit, given equal weight.
    *
-   * Addresses come from `site.locations`, so they cannot drift from the rest of
-   * the site. No hours and no truck schedule appear here: the café hours are
-   * marked `needs-owner-confirmation` in content, and no verified current truck
-   * schedule exists. Both primary actions therefore lead to directions rather
-   * than to a timetable.
+   * Addresses and hours both come from `site.locations`, so they cannot drift
+   * from the rest of the site. The truck's hours are the hours of its Valley
+   * Medical Center stop and are labelled as such where they are shown; the
+   * truck's other stops are a separate schedule and nothing here claims one.
    *
    * Photography: both images are authentic photographs already in the
    * repository. Three other truck images in `public/images` are AI-generated

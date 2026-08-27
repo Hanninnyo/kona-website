@@ -3,6 +3,9 @@
 import React, { useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Navigation, MapPin } from 'lucide-react'
+import { site } from '@/content/site'
+
+const truckHours = site.locations.find((l) => l.id === 'coffee-truck')!.hours
 
 interface GoogleMapProps {
   center: {
@@ -84,9 +87,11 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
           <p className="text-kona-espresso/70 mb-4 text-sm">
             751 S Bascom Ave, San Jose, CA 95128
           </p>
-          <p className="text-kona-espresso/60 mb-6 text-sm">
-            Monday-Friday: 7:30am - 4:00pm
-          </p>
+          <div className="text-kona-espresso/60 mb-6 text-sm">
+            {truckHours.value.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 justify-center">

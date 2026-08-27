@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Coffee, MapPin, Phone, Mail, Instagram, Facebook, Twitter } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { site } from '@/content/site'
+
+const truckHours = site.locations.find((l) => l.id === 'coffee-truck')!.hours
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear()
@@ -181,8 +184,12 @@ const Footer: React.FC = () => {
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-kona-teal mt-0.5 flex-shrink-0" />
                 <div className="text-kona-white/80">
-                  <p>Monday–Friday 7:30am–4:00pm at Valley Medical Center</p>
-                  <p>Saturday Bay Area trips</p>
+                  {/* Read from the verified location record. This component is
+                      not currently mounted anywhere, but a stale time left in
+                      the tree is a stale time waiting to be mounted. */}
+                  {truckHours.value.map((line) => (
+                    <p key={line}>{line} at Valley Medical Center</p>
+                  ))}
                   <Link href="/locations" className="text-kona-teal hover:underline">
                     View all locations
                   </Link>

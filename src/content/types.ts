@@ -35,6 +35,23 @@ export interface OrderingDestination {
   url: string
 }
 
+/**
+ * One block of a schedule: a place, when it is served, and anything a visitor
+ * needs to know before setting out.
+ *
+ * The shape exists because the truck does not serve one place. Flattening a
+ * weekday hospital stop and a Saturday route that moves into a single list of
+ * days is how someone drives to Valley Medical Center on a Saturday. Each
+ * block names its own place, and no block's hours may be read as applying to
+ * another block's place.
+ */
+export interface ScheduleBlock {
+  label: string
+  when: string
+  /** Shown with the block. Used where the place itself is not fixed. */
+  note?: string
+}
+
 export interface Location {
   id: 'mountain-view' | 'coffee-truck'
   name: string
@@ -46,8 +63,18 @@ export interface Location {
   district?: string
   directionsUrl: string
   ordering: OrderingDestination
-  /** Unconfirmed until the owner re-verifies. Never render as fact when unverified. */
+  /**
+   * The complete public schedule, one self-describing line per entry, for
+   * compact surfaces like the footer. Unconfirmed until the owner re-verifies;
+   * never render as fact when unverified.
+   */
   hours: Verifiable<string[]>
+  /**
+   * The same schedule broken into place-and-time blocks, for surfaces with
+   * room to show it properly. Present only where a location serves more than
+   * one place — the café serves one, so it has none.
+   */
+  schedule?: ScheduleBlock[]
 }
 
 export interface ContactDetails {
@@ -325,33 +352,39 @@ export interface DiscoveryContent {
 }
 
 /* ==========================================================================
-   The Kona journey — a scroll-controlled story
+   The Kona journey — an automatic satellite sequence
    ========================================================================== */
 
-/** One encode of one take, or one crop of one photograph. */
+/** One encode of one take, or one crop of one image. */
 export interface JourneyFrame {
   src: string
   width: number
   height: number
 }
 
-/**
- * One piece of footage, encoded twice.
- *
- * `wide` is the 2.09:1 band used by landscape viewports; `tall` is a
- * separately framed portrait crop, not the same footage letterboxed. The
- * poster is a real frame from the same take: it is what the chapter shows
- * before the video has decoded, what it shows if the video never decodes, and
- * what it shows to a visitor who has asked for reduced motion or has no
- * JavaScript. Nothing in the story depends on the video playing.
- */
+/** One piece of footage, encoded twice: a landscape band and a portrait crop. */
 export interface JourneyFootage {
   wide: JourneyFrame & { poster: string }
   tall: JourneyFrame & { poster: string }
-  /**
-   * What the footage shows. Deliberately literal: it describes the frame and
-   * claims nothing the frame does not show.
-   */
+  /** Literal description of the frame, for anyone who cannot see it. */
+  description: string
+}
+
+/**
+ * A satellite image, and the patch of the Earth it covers.
+ *
+ * Both satellite sources are equirectangular (Plate Carrée, WGS84), so a
+ * degree of longitude and a degree of latitude are the same number of pixels
+ * everywhere in the image. That is what lets one geographic camera drive both
+ * of them and the route overlay at once: the close view of Hawaiʻi and the
+ * wide view of the Pacific are two windows onto the same coordinate system,
+ * and aligning them is arithmetic rather than eyeballing.
+ */
+export interface JourneySatellite {
+  wide: JourneyFrame
+  mid: JourneyFrame
+  /** Degrees. `north`/`south` are latitudes, `west`/`east` longitudes. */
+  bounds: { north: number; south: number; west: number; east: number }
   description: string
 }
 
@@ -362,69 +395,57 @@ export interface JourneyPhoto {
   description: string
 }
 
-export type JourneyChapterId = 'kona' | 'farm' | 'pacific' | 'arrival' | 'destinations'
+/** One end of the route, as a verified place on the Earth. */
+export interface JourneyWaypoint {
+  label: string
+  lat: number
+  lon: number
+}
 
-/**
- * One chapter of the journey.
- *
- * A chapter is a position in the story, not a duration. The visitor's scroll
- * position decides when it arrives, how long it stays and when it leaves;
- * there is no timer anywhere in this experience, and a visitor who stops
- * scrolling stays in the chapter they stopped in for as long as they like.
- */
-export interface JourneyChapter {
-  id: JourneyChapterId
-  eyebrow: string
-  headline: string
-  supporting: string
-  /**
-   * Where the copy sits over this chapter's picture.
-   *
-   * Not decoration: each frame has a subject the words must not cover. The
-   * coastline runs across the lower half, so its copy sits low where the open
-   * water is; the cloud deck is emptiest at the top.
-   */
-  anchor: 'lower' | 'upper'
-  /**
-   * The footage this chapter is told over. The closing chapter has none — it
-   * is told over the two destination photographs instead.
-   */
-  footage: JourneyFootage | null
+/** One of the two places the coffee is served. */
+export interface JourneyDestination {
+  id: 'mountain-view' | 'coffee-truck'
+  /** The choice itself, as the visitor reads it. */
+  label: string
+  /** Where this destination is, in one line. */
+  place: string
+  directionsLabel: string
+  orderLabel: string
+  /** Both read from the verified location records, never restated. */
+  directionsHref: string
+  orderHref: string
 }
 
 export interface JourneyContent {
-  /**
-   * A concise introduction for assistive technology, announced once where the
-   * journey begins. It says what the section is and that it is optional.
-   */
+  /** A concise introduction announced once to assistive technology. */
   intro: string
-  /**
-   * The opening screen: a full view of the Kona coast, the invitation to
-   * follow the journey, and the way straight past it.
-   */
   cover: {
     eyebrow: string
     headline: string
-    supporting: string
-    followLabel: string
+    beginLabel: string
   }
-  chapters: JourneyChapter[]
-  /** The two places the coffee is served, photographed by the owner. */
+  /** The words over each phase. No paragraphs; these are titles. */
+  captions: {
+    farm: string[]
+    pacific: { primary: string; secondary: string }
+    california: string
+  }
+  footage: {
+    coastline: JourneyFootage
+    farm: JourneyFootage
+    california: JourneyFootage
+  }
+  satellite: { island: JourneySatellite; pacific: JourneySatellite }
   photos: { cafe: JourneyPhoto; truck: JourneyPhoto }
-  /**
-   * The verified directions links, read from the location records rather than
-   * written out again, so there is one place either address can be wrong.
-   */
-  destinations: { label: string; href: string; description: string }[]
-  orderLabel: string
-  /** Leaves the journey for the homepage. Available from the first screen. */
+  /** The two verified endpoints the route is drawn between. */
+  route: { origin: JourneyWaypoint; destination: JourneyWaypoint }
+  destinations: JourneyDestination[]
+  /** The closing question and line over the destination composition. */
+  close: { eyebrow: string; lines: string[] }
   enterLabel: string
   replayLabel: string
-  /** The understated line along the foot of the stage. Typography, not a map. */
-  route: { start: string; middle: string; end: string }
-  /**
-   * The whole story as plain prose, so nothing meaningful depends on the
-   * footage being seen or the sequence being scrolled.
-   */
+  controls: { skip: string; pause: string; play: string }
+  continueLabel: string
+  /** The whole story as prose, so nothing depends on the animation running. */
   summary: string
 }

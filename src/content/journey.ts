@@ -1,25 +1,34 @@
 import { site } from './site'
 import type { JourneyContent } from './types'
 
+const mountainView = site.locations.find((l) => l.id === 'mountain-view')!
+const coffeeTruck = site.locations.find((l) => l.id === 'coffee-truck')!
+
 /**
- * The Kona journey — an optional, visitor-controlled story told in five
- * chapters between the top of the homepage and the homepage itself.
+ * The Kona journey — an optional eleven-second sequence that plays only when
+ * the visitor asks for it.
  *
- * Nothing here plays on its own. The visitor's scroll position is the only
- * thing that advances the story, so there are no durations in this file and
- * no beat can expire while someone is still reading it. `Enter Kona` is on
- * the first screen and in the last chapter, so the homepage is never more
- * than one action away.
+ * Nothing here starts on its own. The opening screen is the Kona coastline
+ * and two choices, and `Enter Kona` goes straight to the homepage from the
+ * first frame and from every frame after it. There is no session flag: the
+ * journey is neither forced on a first visit nor suppressed on a second.
+ *
+ * The centre of the sequence is real satellite imagery. Two NASA images —
+ * a MODIS scene of Hawaiʻi Island and the Blue Marble Next Generation tile
+ * covering the North Pacific and North America — are windowed by one
+ * geographic camera that pulls back continuously from the Kona coast to the
+ * whole ocean and then moves in on California. The route drawn over them is
+ * the real great circle between two verified airports.
  *
  * Every claim is owner-verified and deliberately narrow: grown in Kona on
- * Hawaiʻi Island, roasted on the farm, carried through Kona International
- * Airport across the Pacific to Northern California, and served at both the
+ * Hawaiʻi Island, roasted on the farm, carried from Kona International
+ * Airport across the Pacific to the Bay Area, and served at both the
  * Mountain View café and the coffee truck.
  *
- * The footage represents those chapters; it does not document them. It is not
- * our aircraft and not a specific flight, and nothing here may say or imply
- * otherwise. The farm take shows coffee cherries on the branch and a hand
- * among them — no roasting equipment and no roasting activity — so the words
+ * The satellite imagery shows where the journey happens. It does not document
+ * a shipment, and the route line is our own drawing over NASA's photograph,
+ * not something NASA recorded. The farm take shows coffee cherries on the
+ * branch — no roasting equipment and no roasting activity — so the words
  * carry the roasting claim and the picture is never asked to.
  *
  * What is NOT here, and must not be added: a farm name, a farmer, an
@@ -30,149 +39,105 @@ import type { JourneyContent } from './types'
  */
 export const journey: JourneyContent = {
   intro:
-    'An optional five-chapter story about where this coffee comes from, told as you scroll. You can skip it and go straight to the homepage at any time.',
+    'An optional eleven-second animation about where this coffee comes from. You can skip it or go straight to the homepage at any time.',
 
-  /**
-   * The opening screen. The Kona coastline fills the frame from the first
-   * paint — there is no dialog over it, no countdown and nothing to dismiss —
-   * and the visitor chooses between following the story and going past it.
-   */
   cover: {
     eyebrow: 'FROM KONA TO CALIFORNIA',
-    headline: 'Coffee with a journey worth following.',
-    supporting:
-      'Grown and roasted on the farm in Kona, then flown across the Pacific to the Bay Area.',
-    followLabel: 'Follow the Journey',
+    headline: '100% Kona coffee, with a journey worth following.',
+    beginLabel: 'Begin the Journey',
   },
 
   /**
-   * Five chapters, in the order the coffee travels. The copy reads as one
-   * sentence carried across five frames, and no chapter restates the one
-   * before it.
+   * Titles, not paragraphs. Each one is on screen for two or three seconds
+   * over moving pictures, which is enough to read a line and not enough to
+   * read a sentence.
    */
-  chapters: [
-    {
-      id: 'kona',
-      eyebrow: 'THE BIG ISLAND',
-      headline: 'It begins in Kona.',
-      supporting:
-        'On volcanic slopes above the Kona coast, our 100% Kona coffee begins its journey.',
-      /* The coastline runs across the lower half of the frame and the open
-         water sits under it; the copy stays low, over the water. */
-      anchor: 'lower',
-      footage: {
-        wide: {
-          src: '/journey/origin-wide.mp4',
-          poster: '/journey/origin-wide.jpg',
-          width: 1280,
-          height: 612,
-        },
-        tall: {
-          src: '/journey/origin-tall.mp4',
-          poster: '/journey/origin-tall.jpg',
-          width: 414,
-          height: 896,
-        },
-        description:
-          'An aerial view along the Kona coast on Hawaiʻi Island: palms, black lava shoreline and clear shallow water.',
+  captions: {
+    /* Owner-verified. The take under these words shows cherries on the
+       branch; it does not show roasting equipment or the roasting process,
+       and nothing here may suggest that it does. */
+    farm: ['GROWN IN KONA.', 'ROASTED ON THE FARM.'],
+    pacific: { primary: 'FLOWN ACROSS THE PACIFIC.', secondary: 'Kona to California.' },
+    california: 'KONA TO CALIFORNIA.',
+  },
+
+  footage: {
+    coastline: {
+      wide: {
+        src: '/journey/origin-wide.mp4',
+        poster: '/journey/origin-wide.jpg',
+        width: 1280,
+        height: 612,
       },
-    },
-    {
-      id: 'farm',
-      eyebrow: 'FROM THE FARM',
-      /* Owner-verified: grown and roasted on the farm. The take shows
-         cherries on the branch and nothing else. It does not show roasting
-         equipment or the roasting process, and no wording or presentation
-         here may suggest that it does. */
-      headline: 'Grown and roasted at the source.',
-      supporting: 'The coffee is roasted on the farm before leaving Hawaiʻi Island.',
-      anchor: 'lower',
-      footage: {
-        wide: {
-          src: '/journey/farm-wide.mp4',
-          poster: '/journey/farm-wide.jpg',
-          width: 720,
-          height: 1280,
-        },
-        tall: {
-          src: '/journey/farm-tall.mp4',
-          poster: '/journey/farm-tall.jpg',
-          width: 414,
-          height: 896,
-        },
-        description:
-          'Coffee cherries ripening on the branch at the farm on Hawaiʻi Island, with a hand reaching among them.',
+      tall: {
+        src: '/journey/origin-tall.mp4',
+        poster: '/journey/origin-tall.jpg',
+        width: 414,
+        height: 896,
       },
+      description:
+        'An aerial view along the Kona coast on Hawaiʻi Island: palms, black lava shoreline and clear shallow water.',
     },
-    {
-      id: 'pacific',
-      eyebrow: 'ACROSS THE PACIFIC',
-      headline: 'From KOA to the Bay Area.',
-      supporting:
-        'Our farm-roasted coffee travels from Kona International Airport to Northern California.',
-      /* The cloud deck is emptiest at the top of the frame. */
-      anchor: 'upper',
-      footage: {
-        wide: {
-          src: '/journey/crossing-wide.mp4',
-          poster: '/journey/crossing-wide.jpg',
-          width: 1280,
-          height: 612,
-        },
-        tall: {
-          src: '/journey/crossing-tall.mp4',
-          poster: '/journey/crossing-tall.jpg',
-          width: 414,
-          height: 896,
-        },
-        /* Open ocean and cloud at altitude. It represents the crossing; it
-           does not depict our shipment, an airline or a particular flight. */
-        description: 'A view from high above an unbroken deck of cloud, under open blue sky.',
+    farm: {
+      wide: {
+        src: '/journey/farm-wide.mp4',
+        poster: '/journey/farm-wide.jpg',
+        width: 720,
+        height: 1280,
       },
-    },
-    {
-      id: 'arrival',
-      eyebrow: 'NORTHERN CALIFORNIA',
-      headline: 'The island journey arrives closer to home.',
-      supporting: 'The same farm-roasted coffee continues to the places where we serve it.',
-      anchor: 'lower',
-      footage: {
-        wide: {
-          src: '/journey/arrival-wide.mp4',
-          poster: '/journey/arrival-wide.jpg',
-          width: 1280,
-          height: 612,
-        },
-        tall: {
-          src: '/journey/arrival-tall.mp4',
-          poster: '/journey/arrival-tall.jpg',
-          width: 414,
-          height: 896,
-        },
-        description: 'The Golden Gate Bridge above low fog as first light reaches the Bay Area.',
+      tall: {
+        src: '/journey/farm-tall.mp4',
+        poster: '/journey/farm-tall.jpg',
+        width: 414,
+        height: 896,
       },
+      description:
+        'Coffee cherries ripening on the branch at the farm on Hawaiʻi Island, with a hand reaching among them.',
     },
-    {
-      id: 'destinations',
-      eyebrow: 'ONE COFFEE. TWO EXPERIENCES.',
-      headline: 'Find your island escape.',
-      supporting:
-        'The same farm-roasted coffee is served at our Mountain View café and from the Kona coffee truck.',
-      anchor: 'lower',
-      /* Told over the two owner photographs rather than over footage. */
-      footage: null,
+    california: {
+      wide: {
+        src: '/journey/arrival-wide.mp4',
+        poster: '/journey/arrival-wide.jpg',
+        width: 1280,
+        height: 612,
+      },
+      tall: {
+        src: '/journey/arrival-tall.mp4',
+        poster: '/journey/arrival-tall.jpg',
+        width: 414,
+        height: 896,
+      },
+      description: 'The Golden Gate Bridge above low fog as first light reaches the Bay Area.',
     },
-  ],
+  },
 
   /**
-   * The two photographs the journey ends on. Both are owner-supplied and show
-   * the real places: the Mountain View café with its door open under its sign,
-   * and the Kona coffee truck in service.
-   *
-   * The truck photograph carries a menu panel advertising items the business
-   * no longer serves. It is cropped to the edge of frame rather than removed —
-   * nothing in either picture has been erased, replaced or painted over, and
-   * no generative image editing was used on either.
+   * The bounds are the exact patch of Earth each derivative covers, carried
+   * through from the crop that produced it. They are the whole reason the
+   * close view and the wide view line up: the camera asks each image for the
+   * same degrees, and each answers in its own pixels.
+   */
+  satellite: {
+    island: {
+      wide: { src: '/journey/hawaii-wide.jpg', width: 1600, height: 1000 },
+      mid: { src: '/journey/hawaii-mid.jpg', width: 900, height: 563 },
+      bounds: { north: 20.43364, south: 18.74741, west: -156.9344, east: -154.06329 },
+      description:
+        'A NASA satellite view of Hawaiʻi Island, with the Kona coast along its western shore.',
+    },
+    pacific: {
+      wide: { src: '/journey/pacific-wide.jpg', width: 3600, height: 2250 },
+      mid: { src: '/journey/pacific-mid.jpg', width: 1800, height: 1125 },
+      bounds: { north: 43.75125, south: 12.49875, west: -165.00375, east: -115.00875 },
+      description:
+        'A NASA satellite view of the North Pacific, with the Hawaiian Islands to the south-west and the coast of California to the north-east.',
+    },
+  },
+
+  /**
+   * The two photographs the sequence ends on. Both are owner-supplied and
+   * show the real places. Nothing in either was erased, replaced or repainted,
+   * and no generative image editing was used.
    */
   photos: {
     cafe: {
@@ -184,40 +149,51 @@ export const journey: JourneyContent = {
     truck: {
       wide: { src: '/journey/truck-wide.jpg', width: 720, height: 900 },
       tall: { src: '/journey/truck-tall.jpg', width: 480, height: 600 },
-      description:
-        'The Kona coffee truck with its service window open and a customer ordering.',
+      description: 'The Kona coffee truck with its service window open and a customer ordering.',
     },
+  },
+
+  /**
+   * The two verified endpoints. The line between them is drawn as a great
+   * circle — the path an aircraft actually follows — so its gentle northward
+   * bow is geography rather than decoration.
+   */
+  route: {
+    origin: { label: 'KONA', lat: 19.7388, lon: -156.0456 },
+    destination: { label: 'BAY AREA', lat: 37.6213, lon: -122.379 },
   },
 
   destinations: [
     {
-      label: 'Visit the Café',
-      href: site.locations.find((l) => l.id === 'mountain-view')!.directionsUrl,
-      description: 'Directions to the Mountain View café',
+      id: 'mountain-view',
+      label: 'MOUNTAIN VIEW CAFÉ',
+      place: 'Mountain View, California',
+      directionsLabel: 'Directions',
+      orderLabel: 'Order Ahead',
+      directionsHref: mountainView.directionsUrl,
+      orderHref: mountainView.ordering.url,
     },
     {
-      label: 'Find the Truck',
-      href: site.locations.find((l) => l.id === 'coffee-truck')!.directionsUrl,
-      description: 'Directions to the Kona coffee truck',
+      id: 'coffee-truck',
+      label: 'KONA COFFEE TRUCK',
+      place: 'Sobrato Pavilion, San Jose',
+      directionsLabel: 'Directions to VMC',
+      orderLabel: 'Order from the Truck',
+      directionsHref: coffeeTruck.directionsUrl,
+      orderHref: coffeeTruck.ordering.url,
     },
   ],
 
-  orderLabel: 'Order Ahead',
-  enterLabel: 'Enter Kona',
-  replayLabel: 'Replay the Journey',
-
-  /**
-   * A hairline along the foot of the stage that fills with the visitor's own
-   * scroll position. It names the two verified endpoints and nothing else:
-   * there is no map, no marker and no step counter, because the story is the
-   * pictures and this is only a sense of how far along them you are.
-   */
-  route: {
-    start: 'KONA',
-    middle: 'ACROSS THE PACIFIC',
-    end: 'CALIFORNIA',
+  close: {
+    eyebrow: 'WHERE WILL YOU FIND KONA?',
+    lines: ['The same farm-roasted coffee.', 'Two ways to find your island escape.'],
   },
 
+  enterLabel: 'Enter Kona',
+  replayLabel: 'Replay the Journey',
+  controls: { skip: 'Skip', pause: 'Pause', play: 'Play' },
+  continueLabel: 'Continue',
+
   summary:
-    'Our Kona coffee is grown in Kona on Hawaiʻi Island and roasted on the farm. It travels through Kona International Airport and across the Pacific to Northern California, where the same farm-roasted coffee is served at the Mountain View café and from the Kona coffee truck.',
+    'Our Kona coffee is grown in Kona on Hawaiʻi Island and roasted on the farm. It travels from Kona International Airport across the Pacific to Northern California, where the same farm-roasted coffee is served at the Mountain View café and from the Kona coffee truck.',
 }

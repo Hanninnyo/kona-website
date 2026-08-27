@@ -3,6 +3,12 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { site } from "@/content/site";
+
+/* Hours are read from the verified location records rather than written here,
+   so there is exactly one place in the codebase a time can be wrong. */
+const cafeHours = site.locations.find((l) => l.id === "mountain-view")!.hours;
+const truckSchedule = site.locations.find((l) => l.id === "coffee-truck")!.schedule!;
 
 export default function Locations() {
   return (
@@ -32,10 +38,9 @@ export default function Locations() {
             San Antonio Village Center
           </p>
           <div className="mt-3 text-sm text-kona-white/80 space-y-0.5">
-            <p>Monday–Thursday: 6:30am–5:00pm</p>
-            <p>Friday: 6:30am–6:00pm</p>
-            <p>Saturday: 7:30am–6:00pm</p>
-            <p>Sunday: 7:30am–5:00pm</p>
+            {cafeHours.value.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
           </div>
           <div className="mt-4 flex flex-col sm:flex-row gap-3">
             <a
@@ -65,9 +70,26 @@ export default function Locations() {
           <p className="text-sm text-kona-white/85 mt-1">
             751 S Bascom Ave, San Jose, CA
           </p>
-          <p className="mt-2 text-sm text-kona-white">
-            Monday–Friday: 7:30am–4:00pm
-          </p>
+          {/*
+            Three blocks, deliberately not one list of days. The truck is at
+            this address on weekdays only; Saturday is a different place
+            entirely, and Sunday is nowhere. Presenting them together as a
+            week would tell a visitor the hospital forecourt is open on a
+            Saturday, which it is not.
+          */}
+          <dl className="mt-4 space-y-3">
+            {truckSchedule.map((block) => (
+              <div key={block.label}>
+                <dt className="text-xs uppercase tracking-[0.14em] text-kona-taupe">
+                  {block.label}
+                </dt>
+                <dd className="text-sm text-kona-white">{block.when}</dd>
+                {block.note ? (
+                  <dd className="text-sm text-kona-white/70">{block.note}</dd>
+                ) : null}
+              </div>
+            ))}
+          </dl>
           <div className="mt-4">
             <a
               href="https://kona-island-coffee.square.site/"
@@ -94,9 +116,11 @@ export default function Locations() {
             Fields (Milpitas), The Dean (Mountain View), and Communications
             Hill.
           </p>
-          <p className="mt-2 text-sm text-kona-white font-medium">
-            Saturdays · 8:30am–1:30pm · Sundays closed
-          </p>
+          {/*
+            The Saturday time is not repeated here. It lives in the schedule
+            above, beside the two other blocks it has to be read against; this
+            section says where the truck goes, not when.
+          */}
         </section>
 
       </div>

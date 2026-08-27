@@ -49,6 +49,13 @@ const PastriesPage: React.FC = () => {
     }
   ]
 
+  /*
+    Sweet crepes only, and only from the truck. Kona does not serve savory
+    crepes, and the Mountain View café does not serve crepes at all — the
+    savory menu that used to sit in this array described neither. Both facts
+    are owner-confirmed, and the labelling below exists so this page cannot
+    send someone to the storefront for a crepe.
+  */
   const crepes = [
     {
       category: "Sweet Crepes",
@@ -71,30 +78,6 @@ const PastriesPage: React.FC = () => {
           description: "Coconut cream, toasted coconut, fresh berries, and honey drizzle",
           price: "$9.50",
           tags: ["Coconut", "Popular"]
-        }
-      ]
-    },
-    {
-      category: "Savory Crepes",
-      hawaiianName: "Crepe Holoi",
-      items: [
-        {
-          name: "Island Breakfast",
-          description: "Scrambled eggs, Portuguese sausage, cheese, and island-style hash",
-          price: "$11.95",
-          tags: ["Protein Rich", "Local Favorite"]
-        },
-        {
-          name: "Kalua Pig & Cheese",
-          description: "Traditional kalua pig, Swiss cheese, caramelized onions, and island sauce",
-          price: "$12.95",
-          tags: ["Traditional", "Hearty"]
-        },
-        {
-          name: "Garden Fresh",
-          description: "Seasonal vegetables, goat cheese, spinach, and herb oil",
-          price: "$10.50",
-          tags: ["Vegetarian", "Light", "Fresh"]
         }
       ]
     }
@@ -143,7 +126,9 @@ const PastriesPage: React.FC = () => {
               Island-Inspired Pastries & Crepes
             </h1>
             <p className="text-kona-espresso/80 text-lg md:text-xl mb-8 leading-relaxed">
-              Handcrafted daily with island flavors and the finest local ingredients
+              Handcrafted daily with island flavors and the finest local ingredients.
+              Availability varies between the Mountain View café and the Kona Coffee
+              Truck — sweet crepes are served from the truck.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Badge variant="default" className="text-sm px-4 py-2">
@@ -251,10 +236,12 @@ const PastriesPage: React.FC = () => {
             className="text-center mb-12"
           >
             <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-4">
-              Artisan Crepes
+              Sweet Crepes — at the Coffee Truck
             </h2>
             <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              French technique meets Hawaiian flavors in our handcrafted crepes
+              French technique meets Hawaiian flavors in our handcrafted sweet crepes,
+              served from the Kona Coffee Truck. Crepes are not available at the
+              Mountain View café.
             </p>
           </motion.div>
 
@@ -375,16 +362,25 @@ const PastriesPage: React.FC = () => {
               Fresh Daily, Made with Aloha
             </h2>
             <p className="text-lg text-kona-white/90 mb-8">
-              Experience the perfect combination of French technique and Hawaiian flavors. All pastries and crepes made fresh each morning.
+              Experience the perfect combination of French technique and Hawaiian
+              flavors, made fresh each morning. Sweet crepes are served from the Kona
+              Coffee Truck.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {/*
+                The truck's ordering site, not the café's. This page's crepes
+                are served from the truck only, and the button that sits under
+                them has to go to the place that makes them — the other Square
+                address on this site redirects to Mountain View ordering, which
+                would take someone to a counter that has no crepes.
+              */}
               <Button variant="teal" size="lg" asChild>
                 <a
-                  href="https://kona-island-coffee-102495.square.site/"
+                  href="https://kona-island-coffee.square.site/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Order Online
+                  Order from the Truck
                 </a>
               </Button>
               <Button variant="outline" size="lg" className="border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso" asChild>

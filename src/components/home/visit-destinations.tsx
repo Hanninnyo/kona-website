@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { SectionReveal } from '@/components/section-reveal'
 import { homepage } from '@/content/homepage'
+import { site } from '@/content/site'
 import type { VisitDestination } from '@/content/types'
 
 /**
@@ -15,10 +16,11 @@ import type { VisitDestination } from '@/content/types'
  * and the two things a visitor actually wants: how to get there, and how to
  * order.
  *
- * Every fact here comes from `site.locations` via the homepage content. No
- * hours and no truck schedule are shown: the café hours are unconfirmed and no
- * verified current truck schedule exists, so both primary actions lead to
- * directions rather than to a timetable.
+ * Every fact here comes from `site.locations` via the homepage content —
+ * including the hours, now that the owner has confirmed them. The truck's are
+ * the hours of its Valley Medical Center stop and are labelled as such; the
+ * truck's other stops are a separate schedule and no claim is made about them
+ * here.
  */
 export function VisitDestinations() {
   const { visit } = homepage
@@ -63,6 +65,9 @@ function DestinationCard({
   priority: boolean
 }) {
   const { image, primary, secondary } = destination
+  /* Read straight from the verified location record, not from the homepage
+     copy, so a time cannot drift between the two. */
+  const hours = site.locations.find((l) => l.id === destination.id)!.hours
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-frame border border-line bg-surface-raised">
@@ -91,6 +96,21 @@ function DestinationCard({
         <p className="mt-5 font-body text-base leading-relaxed text-ink-soft">
           {destination.description}
         </p>
+
+        {hours.state === 'verified' && hours.value.length > 0 ? (
+          <dl className="mt-5 font-body text-base leading-relaxed text-ink-soft">
+            {/* Each line names its own place, so the heading does not have to
+                — and must not, now that the truck's week covers two of them. */}
+            <dt className="font-body text-eyebrow uppercase tracking-[0.18em] text-ink-muted">
+              Hours
+            </dt>
+            {hours.value.map((line) => (
+              <dd key={line} className="ml-0">
+                {line}
+              </dd>
+            ))}
+          </dl>
+        ) : null}
 
         {/* mt-auto keeps both cards' actions on the same line when the two
             descriptions differ in length. */}

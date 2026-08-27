@@ -7,9 +7,11 @@ import { site } from '@/content/site'
  * Global site footer. Server-rendered; no interactivity.
  *
  * Deliberately minimal, and deliberately incomplete where facts are unverified:
- * hours and social profiles are omitted rather than guessed, and both ordering
- * destinations are shown separately because the café and the truck are distinct
- * locations with distinct menus.
+ * phone, email and social profiles are omitted rather than guessed. Hours are
+ * shown because the owner has confirmed them, and read from the location
+ * records rather than written here. Both ordering destinations are shown
+ * separately because the café and the truck are distinct locations with
+ * distinct menus — the truck serves crêpes and the café does not.
  */
 export function SiteFooter() {
   const year = new Date().getFullYear()
@@ -99,6 +101,21 @@ export function SiteFooter() {
                 {location.address.city}, {location.address.region}{' '}
                 {location.address.postalCode}
               </address>
+              {/*
+                Hours are shown now that the owner has confirmed them. They are
+                still read from the location record rather than written here, so
+                there is one place in the codebase a time can be wrong.
+              */}
+              {location.hours.state === 'verified' && location.hours.value.length > 0 ? (
+                <dl className="mt-3 font-body text-sm leading-relaxed text-ink-inverse-soft">
+                  <dt className="sr-only">Hours for {location.name}</dt>
+                  {location.hours.value.map((line) => (
+                    <dd key={line} className="ml-0">
+                      {line}
+                    </dd>
+                  ))}
+                </dl>
+              ) : null}
               <a
                 href={location.directionsUrl}
                 target="_blank"
@@ -126,9 +143,10 @@ export function SiteFooter() {
           */}
           <ReplayJourney className="min-h-11 self-start font-body text-xs uppercase tracking-[0.18em] text-ink-inverse-soft underline decoration-line-inverse underline-offset-4 transition-colors duration-200 hover:text-gold-400 hover:decoration-gold-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400 sm:self-auto" />
           {/*
-            Hours, phone, email and social profiles are intentionally absent
+            Phone, email and social profiles are still intentionally absent
             until the owner confirms both the values and how they should be
-            managed. Nothing stands in for them. See src/content/site.ts.
+            managed. Nothing stands in for them. Hours are now confirmed and
+            appear above. See src/content/site.ts.
           */}
         </div>
       </div>

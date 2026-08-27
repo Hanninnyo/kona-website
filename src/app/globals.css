@@ -236,43 +236,20 @@
   }
 
   /* --- The Kona journey ----------------------------------------------------
-     An optional, visitor-controlled story that sits above the homepage.
+     An optional eleven-second sequence that plays only when the visitor asks
+     for it, over the top of the homepage.
 
-     Two modes, one DOM. `data-mode="linear"` is what the server sends and
-     what a reduced-motion or JavaScript-less visitor keeps: six ordinary
-     blocks in document order, each a photograph and its words. Nothing here
-     is sticky, nothing is positioned and nothing animates.
+     Two modes, one section. `data-mode="linear"` is what the server sends and
+     what a reduced-motion visitor keeps: three stills, their words and the
+     destination choice, in document order, with nothing positioned and
+     nothing animated.
 
-     `data-mode="stage"` lifts those same six blocks into a single sticky
-     100svh canvas and cross-fades them against each other. Every value that
-     moves is a custom property written once per animation frame from the
-     scroll position, so the browser only ever compositing opacity and
-     transform, and scrolling back up runs the story exactly backwards.
-
-     The defaults below are the linear values. The engine overrides them on
-     `.jy-stage`, which is inside them, so linear mode needs no JavaScript to
-     look right and enhanced mode needs no first-paint flash to correct it. */
+     `data-mode="stage"` mounts the animation. Everything that moves is a
+     transform or an opacity written straight to an element by the timeline —
+     there is no CSS animation driving the sequence, because a paused
+     animation and a paused clock are different things and only one of them
+     can be resumed exactly where it stopped. */
   .jy {
-    --jy-p: 0;
-    --jy-sub: 1;
-    --jy-m0: 1;
-    --jy-m1: 1;
-    --jy-m2: 1;
-    --jy-m3: 1;
-    --jy-m4: 1;
-    --jy-c0: 1;
-    --jy-c1: 1;
-    --jy-c2: 1;
-    --jy-c3: 1;
-    --jy-c4: 1;
-    --jy-c5: 1;
-    --jy-y0: 0px;
-    --jy-y1: 0px;
-    --jy-y2: 0px;
-    --jy-y3: 0px;
-    --jy-y4: 0px;
-    --jy-y5: 0px;
-
     background-color: var(--color-pacific-950);
     color: var(--color-ink-inverse);
   }
@@ -281,75 +258,11 @@
     outline: none;
   }
 
-  /* A chapter the visitor has not reached yet is not in the layout at all.
-     That is what keeps its poster off the wire, and `loading="lazy"` cannot
-     do it alone: every chapter is stacked at `inset: 0` of the sticky stage,
-     so all five are inside the viewport from the first paint of the enhanced
-     layout. A chapter is admitted a full viewport of scrolling before it
-     begins to fade in, and is never withdrawn, so scrolling back up refetches
-     nothing. The `noscript` rule in the component puts every chapter back for
-     a visitor who has no engine to admit them. */
-  .jy-media[data-near='false'] {
-    display: none;
-  }
-
-  /* --- Linear mode ---------------------------------------------------------
-     The story as an editorial column: picture, words, picture, words. This is
-     the whole experience for a reduced-motion visitor, and it is complete —
-     five chapters, both destinations, every action. */
-  .jy[data-mode='linear'] .jy-panel {
-    display: grid;
-    gap: 1.5rem;
-    padding: 3rem 1.5rem;
-    border-top: 1px solid color-mix(in srgb, var(--color-ink-inverse) 12%, transparent);
-  }
-
-  /* Clear of the site header, which stands over the top of the page. */
-  .jy[data-mode='linear'] .jy-panel--cover {
-    border-top: 0;
-    padding-top: 7.5rem;
-  }
-
-  .jy[data-mode='linear'] .jy-media {
+  /* --- The canvas ----------------------------------------------------------
+     `svh` rather than `vh` so a mobile address bar appearing or disappearing
+     resizes the stage without jumping the picture inside it. */
+  .jy-stage {
     position: relative;
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    border-radius: var(--radius-panel);
-  }
-
-  .jy[data-mode='linear'] .jy-route {
-    display: none;
-  }
-
-  @media (min-width: 900px) {
-    .jy[data-mode='linear'] .jy-panel {
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      gap: 3rem;
-      padding: 4rem 3rem;
-    }
-
-    .jy[data-mode='linear'] .jy-panel--cover {
-      grid-template-columns: 1fr;
-      max-width: 46rem;
-      padding-top: 9rem;
-    }
-  }
-
-  /* --- Enhanced mode: the canvas ------------------------------------------
-     The track is the scroll distance; the stage is the one thing seen. The
-     track is measured in `svh` rather than `vh` so that a mobile address bar
-     appearing or disappearing does not change how long the journey is and
-     jump the visitor into a different chapter. */
-  .jy[data-mode='stage'] .jy-track {
-    position: relative;
-    /* One viewport for the stage itself, plus one per chapter unit. */
-    height: calc(100svh * 6.6);
-  }
-
-  .jy[data-mode='stage'] .jy-stage {
-    position: sticky;
-    top: 0;
     height: 100svh;
     overflow: hidden;
     /* Contains every z-index below, so nothing in the journey can rise over
@@ -357,43 +270,25 @@
     isolation: isolate;
   }
 
-  /* The solid ground under every layer of the stage. Nothing that fades can
-     reveal the page behind it, or white, or black — only this.
-
-     Scoped to the stage, and that scoping is load-bearing. In linear mode
-     nothing around it is positioned, so an absolutely positioned ground would
-     resolve against an ancestor far up the tree, cover the page, and — being
-     a positioned element at `z-index: 0` — paint over every word of the
-     linear story while leaving the positioned images visible. The section
-     already carries the same colour; the stage is the only place that needs
-     a layer of it. */
-  .jy[data-mode='stage'] .jy-ground {
+  /* The solid ground under every layer. Nothing that fades can reveal the
+     page behind it, or white, or black — only this. */
+  .jy-ground {
     position: absolute;
     inset: 0;
     z-index: 0;
     background-color: var(--color-pacific-950);
   }
 
-  .jy[data-mode='stage'] .jy-panel {
+  /* --- Picture layers ------------------------------------------------------
+     Stacked in the order they arrive, each one above the last. An incoming
+     layer rises over a picture that is still fully opaque underneath it,
+     which is why no transition dips towards the ground: at no point are two
+     layers both partly transparent. */
+  .jy-layer {
     position: absolute;
     inset: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
+    opacity: 0;
   }
-
-  /* --- The picture ---------------------------------------------------------
-     Five stacked layers, each one above the last. An incoming layer fades up
-     over a picture that is still fully opaque underneath it, which is why the
-     transition never dips towards the ground: at no point are two layers both
-     partly transparent. */
-  .jy[data-mode='stage'] .jy-media {
-    position: absolute;
-    inset: 0;
-    z-index: var(--z);
-    opacity: var(--m);
-  }
-
 
   .jy-frame {
     position: absolute;
@@ -406,8 +301,8 @@
 
   /* The video sits over its own poster and is revealed only once it has a
      decoded frame to show — the same frame the poster already is, so the
-     handover is invisible. If the codec is unavailable or autoplay is
-     refused, this simply never happens and the poster carries the chapter. */
+     handover is invisible. If the codec is unavailable or autoplay refused,
+     this simply never happens and the poster carries the scene. */
   .jy-video {
     opacity: 0;
     transition: opacity 240ms linear;
@@ -417,185 +312,306 @@
     opacity: 1;
   }
 
-  .jy[data-mode='linear'] .jy-video {
-    display: none;
+  /* --- Satellite layers ----------------------------------------------------
+     Held at their natural pixel size and placed by the timeline with a
+     translate and a scale, so one geographic camera drives both of them and
+     the route overlay together. Nothing here resizes an image or bends a
+     coastline: the transform is the projection. */
+  /* Pinned to its own encoded pixel size. The framework's image reset caps
+     images at the width of their container, which would silently rescale the
+     satellite before the camera's transform is applied and slide the map out
+     from under the route. The camera owns the size of these two images; CSS
+     must not have an opinion about it. */
+  .jy-sat {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    width: var(--nat-w);
+    height: var(--nat-h);
+    transform-origin: 0 0;
+    will-change: transform;
   }
 
-  /* --- The darkening under the words ---------------------------------------
-     Placed with the picture, not with the type, so it fades with the picture
-     and never survives its own chapter. Weighted towards whichever half of
-     the frame the words occupy. */
-  .jy-scrim {
+  /* The close view of Hawaiʻi is feathered at its edges so it blends into the
+     wide view underneath rather than ending at a rectangle. Both are the same
+     ocean, graded the same way and aligned to the pixel, so what the visitor
+     sees as the camera pulls back is detail falling away — not one photograph
+     stopping and another starting. */
+  .jy-sat[data-feather='true'] {
+    /* A margin feather rather than a vignette: the island reaches almost to
+       the top and bottom of its own frame, so anything shaped like an ellipse
+       would eat the southern tip. Eight per cent on each side is enough to
+       lose the rectangle and not enough to touch the land. */
+    --feather: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    -webkit-mask-image: var(--feather);
+    mask-image: var(--feather);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
+  /* --- The route -----------------------------------------------------------
+     Our drawing over NASA's photograph. It is the real great circle between
+     two verified airports, which is why it bows gently north without any
+     artificial arc: that is the path, not a flourish.
+
+     The overlay carries the same transform as the wide satellite image, so it
+     is aligned with the coastline by construction rather than by adjustment.
+     `non-scaling-stroke` keeps the line one hairline wide however far the
+     camera has pulled back. */
+  .jy-routes {
     position: absolute;
     inset: 0;
+    pointer-events: none;
   }
 
-  /* The stops are not chosen by eye. The eyebrow is the smallest type on the
-     stage and the only warm colour in it, and gold on a bright frame — the
-     café brick, the fog over the bridge — is what sets the floor: it needs
-     the ground beneath it near black to clear AA at that size. The gradient
-     is therefore heaviest across the band the words occupy and clears
-     entirely well before the middle of the frame, so the picture still owns
-     most of it. */
-  .jy-scrim[data-anchor='lower'] {
+  .jy-route {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+    overflow: visible;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  .jy-route__line {
+    stroke: color-mix(in srgb, var(--color-gold-400) 82%, transparent);
+    stroke-linecap: round;
+    fill: none;
+  }
+
+  /* A short brighter length riding at the head of the drawn line. Not a glow
+     and not a pulse — the same champagne, lifted. */
+  .jy-route__head {
+    stroke: color-mix(in srgb, var(--color-gold-400) 45%, #fff);
+    stroke-linecap: round;
+    fill: none;
+  }
+
+  .jy-glint {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-gold-400) 30%, #fff) 0%,
+      color-mix(in srgb, var(--color-gold-400) 70%, transparent) 45%,
+      transparent 72%
+    );
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  .jy-place {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: var(--font-body);
+    font-size: 0.5625rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-gold-400) 82%, transparent);
+    white-space: nowrap;
+    /* The Bay Area label sits over a bright, snow-covered landmass; Kona's
+       sits over near-black water. A tight halo — the cartographer's trick —
+       carries both without putting a chip or a plate on the map. */
+    text-shadow:
+      0 0 3px color-mix(in srgb, var(--color-pacific-950) 96%, transparent),
+      0 0 7px color-mix(in srgb, var(--color-pacific-950) 88%, transparent),
+      0 1px 2px color-mix(in srgb, var(--color-pacific-950) 92%, transparent);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  /* Set clear of their own endpoints, and set inward, so neither label covers
+     the place it names and neither runs off its own edge of the frame: Kona
+     below its point over open ocean, the Bay Area above its point and reading
+     back towards the middle. */
+  .jy-place--origin {
+    translate: 0.5rem 1rem;
+  }
+
+  .jy-place--destination {
+    translate: calc(-100% - 0.5rem) -1.4rem;
+    /* Lifted to match Kona's presence, and only that far. Kona's label sits on
+       near-black water and needs nothing; this one sits beside a snow-lit
+       coast, where the same ink reads a stop quieter. The size, the weight and
+       the colour are unchanged — what changes is how much of it survives the
+       ground behind it. */
+    color: color-mix(in srgb, var(--color-gold-400) 96%, transparent);
+    text-shadow:
+      0 0 2px color-mix(in srgb, var(--color-pacific-950) 98%, transparent),
+      0 0 5px color-mix(in srgb, var(--color-pacific-950) 94%, transparent),
+      0 0 10px color-mix(in srgb, var(--color-pacific-950) 82%, transparent),
+      0 1px 2px color-mix(in srgb, var(--color-pacific-950) 94%, transparent);
+  }
+
+  /* --- The destination composition -----------------------------------------
+     One full-canvas photograph, not two. The choice swaps the whole picture;
+     it never puts the café and the truck beside each other, and neither one
+     is ever shown in a frame or a card. */
+  .jy-layer--dest {
+    background-color: var(--color-pacific-950);
+  }
+
+  .jy-place-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 520ms var(--ease-calm);
+  }
+
+  .jy-place-photo[data-shown='true'] {
+    opacity: 1;
+  }
+
+  /* The entrance is the subject, with enough of the round sign above it to
+     recognise the place — and the sign clear of the site header. */
+  .jy-place-photo--mountain-view {
+    object-position: 50% 30%;
+  }
+
+  /*
+    Two axes doing two different jobs, because a portrait photograph in a
+    landscape frame is cropped horizontally on a phone and vertically on a
+    desktop, never both.
+
+    On a wide screen only the vertical value bites: at 45% the round logo
+    landed in the bottom third, under the heaviest part of the ground and
+    behind the closing copy, and the trailer read as a close-up of a service
+    window. At 72% the logo sits in clear air above the words with the wheels
+    below it, so what is on screen reads as the truck.
+
+    On a phone only the horizontal value bites, and 38% is what keeps the
+    panel advertising items the business no longer serves out of frame.
+  */
+  .jy-place-photo--coffee-truck {
+    object-position: 38% 72%;
+  }
+
+  /* --- The ground under the words ------------------------------------------
+     One veil over every picture rather than one per scene, because the words
+     sit in the same place all the way through and the pictures behind them
+     change every two seconds. Weighted to the lower half, where the copy is. */
+  .jy-veil {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .jy-veil--bottom {
     background: linear-gradient(
       to top,
-      color-mix(in srgb, var(--color-pacific-950) 94%, transparent) 0%,
-      color-mix(in srgb, var(--color-pacific-950) 90%, transparent) 30%,
-      color-mix(in srgb, var(--color-pacific-950) 80%, transparent) 48%,
-      color-mix(in srgb, var(--color-pacific-950) 48%, transparent) 62%,
-      color-mix(in srgb, var(--color-pacific-950) 16%, transparent) 78%,
-      transparent 92%
+      color-mix(in srgb, var(--color-pacific-950) 92%, transparent) 0%,
+      color-mix(in srgb, var(--color-pacific-950) 84%, transparent) 26%,
+      color-mix(in srgb, var(--color-pacific-950) 58%, transparent) 44%,
+      color-mix(in srgb, var(--color-pacific-950) 20%, transparent) 62%,
+      transparent 82%
     );
   }
 
-  .jy-scrim[data-anchor='upper'] {
+  .jy-veil--top {
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-pacific-950) 92%, transparent) 0%,
-      color-mix(in srgb, var(--color-pacific-950) 86%, transparent) 26%,
-      color-mix(in srgb, var(--color-pacific-950) 68%, transparent) 40%,
-      color-mix(in srgb, var(--color-pacific-950) 34%, transparent) 56%,
-      color-mix(in srgb, var(--color-pacific-950) 10%, transparent) 74%,
-      transparent 90%
+      color-mix(in srgb, var(--color-pacific-950) 90%, transparent) 0%,
+      color-mix(in srgb, var(--color-pacific-950) 80%, transparent) 24%,
+      color-mix(in srgb, var(--color-pacific-950) 52%, transparent) 42%,
+      color-mix(in srgb, var(--color-pacific-950) 16%, transparent) 60%,
+      transparent 78%
     );
-  }
-
-  .jy[data-mode='linear'] .jy-scrim {
-    display: none;
-  }
-
-  /* The closing chapter carries a headline, three lines, two destinations,
-     the ordering chooser and a way onward, so its band of words reaches far
-     higher up the frame than any other chapter's — and it sits over the
-     brightest picture in the journey. Its ground is weighted to match. The
-     café sign, which is high in the frame, stays clear of it. */
-  .jy-panel[data-chapter='destinations'] .jy-scrim[data-anchor='lower'] {
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-pacific-950) 95%, transparent) 0%,
-      color-mix(in srgb, var(--color-pacific-950) 94%, transparent) 48%,
-      color-mix(in srgb, var(--color-pacific-950) 88%, transparent) 61%,
-      color-mix(in srgb, var(--color-pacific-950) 52%, transparent) 68%,
-      color-mix(in srgb, var(--color-pacific-950) 12%, transparent) 78%,
-      transparent 86%
-    );
-  }
-
-  /* --- The close: one composition, not two cards ---------------------------
-     The café is full-canvas and stays full-canvas — its sign and open
-     entrance are never cropped away — and the truck comes forward into the
-     same picture as the visitor keeps scrolling, as an inset editorial layer
-     over it rather than as a second panel beside it. */
-  .jy-close {
-    position: absolute;
-    inset: 0;
-  }
-
-  /* The round sign sits high in the photograph and the open entrance in the
-     middle of it, and a portrait photograph filling a landscape frame can
-     only show about half its height. This band is chosen to keep both — the
-     sign and the open door — inside the frame at every width. */
-  .jy-frame--cafe {
-    object-position: 50% 16%;
-  }
-
-  /* Held against the right edge rather than floated free of it, and taller
-     than it is wide. Both are deliberate: the panel advertising items the
-     business no longer serves sits at the right of the photograph, and a
-     portrait frame carried to the edge crops it out without anything being
-     erased, replaced or painted over. What is left is the trailer, the logo
-     and the open service window. */
-  .jy-truck {
-    position: absolute;
-    right: 0;
-    bottom: 16%;
-    width: min(34vw, 20rem);
-    height: min(58%, 27rem);
-    overflow: hidden;
-    border-radius: var(--radius-panel) 0 0 var(--radius-panel);
-    box-shadow: 0 1.5rem 3rem color-mix(in srgb, var(--color-pacific-950) 55%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-ink-inverse) 22%, transparent);
-    border-right: 0;
-    opacity: var(--jy-sub);
-    transform: translateX(calc((1 - var(--jy-sub)) * 14%));
-  }
-
-  .jy-truck .jy-frame {
-    object-position: 30% 45%;
-  }
-
-  .jy[data-mode='linear'] .jy-truck {
-    position: relative;
-    right: auto;
-    bottom: auto;
-    width: 100%;
-    height: auto;
-    /* Held in the same proportion as the inset on the stage, and cropped the
-       same way, so the panel advertising items the business no longer serves
-       is minimised here too. */
-    aspect-ratio: 3 / 4;
-    margin-top: 1rem;
-    border-radius: var(--radius-panel);
-    border-right: 1px solid color-mix(in srgb, var(--color-ink-inverse) 22%, transparent);
-    transform: none;
-  }
-
-  /* The closing chapter is the one place with two photographs, so its media
-     block is as tall as they are rather than a single fixed band. */
-  .jy[data-mode='linear'] .jy-panel[data-chapter='destinations'] .jy-media {
-    aspect-ratio: auto;
-    overflow: visible;
-  }
-
-  .jy[data-mode='linear'] .jy-close {
-    position: relative;
-    inset: auto;
-    display: grid;
-    gap: 1rem;
-  }
-
-  .jy[data-mode='linear'] .jy-frame--cafe {
-    position: relative;
-    aspect-ratio: 4 / 3;
-    height: auto;
-  }
-
-  .jy[data-mode='linear'] .jy-truck .jy-frame {
-    position: absolute;
-    object-position: 25% 45%;
   }
 
   /* --- The words -----------------------------------------------------------
-     Six beats sharing one place on the canvas. Each is driven by two custom
-     properties and nothing else: how visible it is, and how far it has
-     travelled. The distances are small on purpose — this is a page turning,
-     not text flying. */
-  .jy[data-mode='stage'] .jy-copy {
+     Titles, not paragraphs. Each set arrives on opacity and ten pixels of
+     travel and leaves the same way; nothing is typed, staggered or flown. */
+  .jy-captions {
     position: absolute;
     inset: 0;
-    z-index: 20;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 1.5rem 7rem;
+    pointer-events: none;
+  }
+
+  .jy-caption {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: 7rem;
+    max-width: 46rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    opacity: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 4.4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--color-ink-inverse);
+    text-wrap: balance;
+    will-change: opacity, transform;
+  }
+
+  /* Over the wide Pacific the words move to the top of the frame, because the
+     bottom-left corner is where Hawaiʻi is. */
+  .jy-caption[data-anchor='top'] {
+    bottom: auto;
+    top: 7.5rem;
+  }
+
+  .jy-caption__sub {
+    margin-top: 0.35rem;
+    font-family: var(--font-body);
+    font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--color-ink-inverse) 92%, transparent);
+  }
+
+  /* --- Cover ---------------------------------------------------------------
+     The opening screen. `Begin the Journey` and `Enter Kona` are offered
+     together, and the second is never a dismissal: it is a link to the
+     homepage, and it works from the first frame onward. */
+  .jy-cover {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     padding: 5rem 1.5rem 5.5rem;
-    opacity: var(--c);
-    transform: translate3d(0, var(--y), 0);
-    will-change: opacity, transform;
+    transition: opacity 520ms var(--ease-calm);
+    /* Its own ground. The opening screen is the one place with no timeline
+       behind it — it waits as long as the visitor does — so what makes the
+       headline readable cannot be something the sequence fades in. */
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-pacific-950) 93%, transparent) 0%,
+      color-mix(in srgb, var(--color-pacific-950) 87%, transparent) 30%,
+      color-mix(in srgb, var(--color-pacific-950) 64%, transparent) 50%,
+      color-mix(in srgb, var(--color-pacific-950) 24%, transparent) 68%,
+      transparent 86%
+    );
   }
 
-  .jy[data-mode='stage'] .jy-copy--upper {
-    justify-content: flex-start;
-    padding-top: 6rem;
-    padding-bottom: 5rem;
-  }
-
-  .jy[data-mode='stage'] .jy-copy > * {
+  .jy-cover > * {
     max-width: 34rem;
   }
 
-  .jy[data-mode='stage'] .jy-copy--closing > * {
-    max-width: 30rem;
+  .jy-cover[data-hidden='true'] {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
   }
 
   .jy-eyebrow {
@@ -609,40 +625,28 @@
 
   .jy-headline {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 5.4vw, 3.75rem);
+    font-size: clamp(2rem, 5.2vw, 3.5rem);
     line-height: 1.06;
     letter-spacing: -0.015em;
     color: var(--color-ink-inverse);
     text-wrap: balance;
   }
 
-  .jy-supporting {
+  .jy-preparing {
     margin-top: 1rem;
     font-family: var(--font-body);
-    font-size: clamp(1rem, 1.6vw, 1.125rem);
-    line-height: 1.6;
-    /* Fully opaque. Translucent type over photography is painted as a blend
-       with whatever is behind it, which costs contrast exactly where the
-       frame is brightest and it is needed most. */
-    color: var(--color-ink-inverse);
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-ink-inverse) 62%, transparent);
   }
 
-  /* --- Actions -------------------------------------------------------------
-     `Follow the Journey` and `Enter Kona` are offered together on the first
-     screen. The second is never a dismissal or a countdown skip: it is a
-     link to the homepage, and it works with the whole of the journey still
-     sitting above it. */
+  /* --- Actions ------------------------------------------------------------- */
   .jy-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin-top: 2rem;
-  }
-
-  /* Tight, because every pixel this block grows pushes the eyebrow further
-     up the frame and out of the ground that makes it readable. */
-  .jy-actions--closing {
-    margin-top: 0.75rem;
   }
 
   .jy-action {
@@ -658,6 +662,7 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--color-ink-inverse);
+    background-color: color-mix(in srgb, var(--color-pacific-950) 45%, transparent);
     transition:
       background-color 200ms var(--ease-calm),
       border-color 200ms var(--ease-calm),
@@ -681,139 +686,242 @@
     color: var(--color-espresso-900);
   }
 
-  .jy-action:focus-visible {
+  .jy-action:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  .jy-action:focus-visible,
+  .jy-control:focus-visible,
+  .jy-choice:focus-visible {
     outline: 2px solid var(--color-gold-400);
     outline-offset: 3px;
   }
 
-  /* --- The two destinations ------------------------------------------------ */
-  .jy-destinations {
+  /* --- Controls ------------------------------------------------------------
+     Small text, no player chrome. They stay readable and stay secondary, and
+     they sit inside the safe area so a phone's home indicator never covers
+     them. */
+  .jy-controls {
+    position: absolute;
+    right: calc(1.5rem + env(safe-area-inset-right));
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 1.25rem;
+    gap: 1.25rem;
+    align-items: center;
   }
 
-  .jy-destination {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.25rem;
-    min-height: 3.25rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: var(--radius-panel);
-    border: 1px solid color-mix(in srgb, var(--color-ink-inverse) 34%, transparent);
-    background-color: color-mix(in srgb, var(--color-pacific-950) 55%, transparent);
-    transition:
-      background-color 200ms var(--ease-calm),
-      border-color 200ms var(--ease-calm);
-  }
-
-  .jy-destination:hover {
-    background-color: color-mix(in srgb, var(--color-pacific-950) 78%, transparent);
-    border-color: var(--color-gold-400);
-  }
-
-  .jy-destination:focus-visible {
-    outline: 2px solid var(--color-gold-400);
-    outline-offset: 3px;
-  }
-
-  .jy-destination__label {
+  .jy-control {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
     font-family: var(--font-body);
-    font-size: 0.8125rem;
-    letter-spacing: 0.16em;
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-ink-inverse) 72%, transparent);
+    transition: color 200ms var(--ease-calm);
+  }
+
+  .jy-control:hover {
     color: var(--color-ink-inverse);
   }
 
-  .jy-destination__detail {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    color: color-mix(in srgb, var(--color-ink-inverse) 76%, transparent);
-    text-transform: none;
-    letter-spacing: 0;
+  .jy-control--close {
+    margin-top: 1.5rem;
+    align-self: flex-start;
   }
 
-  /* The site's ordering chooser, unchanged, standing beside the two
-     destinations. Two journey-specific adjustments and no more: it matches
-     the height of the cards it sits with, and its panel opens upward, because
-     the stage clips at its own edge and the chooser sits near the bottom of
-     it. */
-  .jy-order > button {
-    min-height: 3.25rem;
-    padding-inline: 1.25rem;
+  /* --- The close ----------------------------------------------------------- */
+  .jy-close {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 5rem 1.5rem 5.5rem;
+    /* Its own ground, rather than the veil the sequence uses: this screen has
+       no timeline behind it and stays until the visitor chooses, so what is
+       under the words must not depend on a clock that has stopped. Weighted
+       to the lower half, which leaves the café sign and the truck's logo in
+       clear air at the top of the frame. */
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-pacific-950) 95%, transparent) 0%,
+      color-mix(in srgb, var(--color-pacific-950) 92%, transparent) 34%,
+      color-mix(in srgb, var(--color-pacific-950) 84%, transparent) 52%,
+      color-mix(in srgb, var(--color-pacific-950) 52%, transparent) 66%,
+      color-mix(in srgb, var(--color-pacific-950) 16%, transparent) 78%,
+      transparent 90%
+    );
   }
 
-  .jy-order > div {
-    top: auto;
-    bottom: 100%;
-    margin-top: 0;
+  .jy-close > * {
+    max-width: 36rem;
+  }
+
+  .jy-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
     margin-bottom: 0.5rem;
   }
 
-  /* --- The route line ------------------------------------------------------
-     A hairline along the foot of the stage that fills with the visitor's own
-     scroll position. Two place names and a rule. There is no marker, no map,
-     no aircraft and no step count, because the pictures are the story and
-     this is only a sense of how far into them you are. */
-  .jy-route {
-    position: absolute;
-    z-index: 30;
-    left: 1.5rem;
-    right: 1.5rem;
-    bottom: 1.75rem;
-    display: flex;
-    align-items: center;
-    gap: 0.875rem;
+  /* Text, not cards. The selected one is marked with weight and a rule under
+     it rather than a box around it. */
+  .jy-choice {
+    padding: 0.35rem 0;
     font-family: var(--font-body);
-    font-size: 0.625rem;
-    letter-spacing: 0.24em;
+    font-size: clamp(0.875rem, 1.6vw, 1rem);
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-ink-inverse) 62%, transparent);
-    pointer-events: none;
+    color: color-mix(in srgb, var(--color-ink-inverse) 78%, transparent);
+    border-bottom: 1px solid transparent;
+    transition:
+      color 220ms var(--ease-calm),
+      border-color 220ms var(--ease-calm);
   }
 
-  .jy-route__end {
-    flex: none;
+  .jy-choice:hover {
+    color: var(--color-ink-inverse);
   }
 
-  .jy-route__line {
-    position: relative;
-    flex: 1 1 auto;
-    height: 1px;
-    background-color: color-mix(in srgb, var(--color-ink-inverse) 22%, transparent);
-    overflow: hidden;
+  .jy-choice[aria-pressed='true'] {
+    color: var(--color-ink-inverse);
+    border-bottom-color: var(--color-gold-400);
   }
 
-  .jy-route__fill {
-    position: absolute;
-    inset: 0;
-    background-color: var(--color-gold-400);
-    transform: scaleX(var(--jy-p));
-    transform-origin: left center;
+  .jy-place-line {
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    color: color-mix(in srgb, var(--color-ink-inverse) 78%, transparent);
+  }
+
+  .jy-close__lines {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1.75rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.125rem, 2.1vw, 1.5rem);
+    line-height: 1.3;
+    color: var(--color-ink-inverse);
+  }
+
+  /* --- Linear mode ---------------------------------------------------------
+     The story as an editorial column: still, words, still, words, then both
+     destinations with every verified action. This is the whole experience for
+     a reduced-motion visitor and for a visitor without JavaScript, and it is
+     complete. */
+  /* The linear story is in the document from the first byte, which is what
+     makes the experience work without JavaScript — but it stays out of the
+     layout until the client has said this visitor is the one who needs it,
+     so its five pictures are never fetched by anyone getting the animation.
+     The `noscript` rule in the component hands it back to anyone with no
+     script to make that decision. */
+  .jy:not([data-resolved]) .jy-linear,
+  .jy[data-mode='stage'] .jy-linear {
+    display: none;
+  }
+
+  /* Everything above is the animation. These are the overrides that turn it
+     back into an editorial column for a reduced-motion visitor. */
+  .jy[data-mode='linear'][data-resolved] .jy-stage {
+    display: none;
+  }
+
+  .jy[data-mode='linear'][data-resolved] .jy-cover {
+    position: static;
+    padding: 7.5rem 1.5rem 3rem;
+    background: none;
+  }
+
+  .jy[data-mode='linear'][data-resolved] .jy-cover > * {
+    max-width: 46rem;
+  }
+
+  .jy-linear__panel,
+  .jy-linear__place {
+    display: grid;
+    gap: 1.5rem;
+    padding: 3rem 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink-inverse) 12%, transparent);
+  }
+
+  .jy-linear__panel img,
+  .jy-linear__place img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-panel);
+  }
+
+  .jy-linear__place img {
+    aspect-ratio: 4 / 5;
+    object-position: 50% 30%;
+  }
+
+  .jy-caption--static {
+    position: static;
+    opacity: 1;
+    font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+  }
+
+  .jy-linear__close {
+    padding: 3rem 1.5rem 4rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-ink-inverse) 12%, transparent);
+  }
+
+  .jy-linear__name {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink-inverse);
+    margin-bottom: 0.35rem;
+  }
+
+  @media (min-width: 900px) {
+    .jy[data-mode='linear'][data-resolved] .jy-cover {
+      padding: 9rem 3rem 3rem;
+    }
+
+    .jy-linear__panel,
+    .jy-linear__place {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 3rem;
+      padding: 4rem 3rem;
+    }
+
+    .jy-linear__close {
+      padding: 4rem 3rem 5rem;
+    }
   }
 
   /* --- The journey on a narrow screen --------------------------------------
-     The same five chapters and the same words. What changes is where the
-     words sit relative to the subject, how much room the closing chapter
-     needs, and the route line, which loses its labels rather than competing
-     with a headline for the width of a phone. */
+     The same eleven seconds and the same words. What changes is how much
+     ocean is on screen, where the route labels sit, and how much room the
+     closing choice needs. */
   @media (max-width: 639px) {
-    .jy[data-mode='stage'] .jy-copy {
-      padding: 4.5rem 1.25rem 4.25rem;
+    .jy-cover,
+    .jy-close {
+      padding: 4.5rem 1.25rem 4.5rem;
     }
 
-    .jy[data-mode='stage'] .jy-copy--upper {
-      padding-top: 5rem;
+    .jy-captions {
+      padding: 0 1.25rem 6rem;
     }
 
-    .jy-supporting {
-      margin-top: 0.75rem;
+    .jy-caption {
+      left: 1.25rem;
+      right: 1.25rem;
+      bottom: 6rem;
     }
 
-    .jy-actions {
-      margin-top: 1.5rem;
+    .jy-caption[data-anchor='top'] {
+      bottom: auto;
+      top: 6rem;
     }
 
     .jy-action {
@@ -821,58 +929,92 @@
       padding: 0.875rem 1rem;
     }
 
-    /* Labels alone: at this width the descriptions cost a line each and say
-       what the labels already say. */
-    .jy-destinations {
-      margin-top: 1.25rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+    .jy-choices {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: flex-start;
     }
 
-    .jy-destination__detail {
+    /* The truck's round logo sits in the middle of the vehicle, and on a
+       portrait phone the whole vehicle is in frame — so the logo lands exactly
+       where this secondary line would be. The headline, the choice and the two
+       actions carry the screen without it. The café photograph has its sign
+       high in the frame and keeps the line. */
+    .jy-close[data-choice='coffee-truck'] .jy-close__lines {
       display: none;
     }
 
-    .jy-order {
-      grid-column: 1 / -1;
+    /*
+      Dropping that line was necessary but not sufficient: it moved the words
+      down about seventy pixels and the logo was still behind them. This is the
+      rest of it, and both halves are doing work.
+
+      Taller than the frame and anchored to its foot, so there is vertical crop
+      to spend where a phone otherwise has none — the whole vehicle fits the
+      height exactly, which leaves nowhere to move the logo to. Taking the crop
+      off the bottom lifts it clear of the words.
+
+      Further left, so the logo is whole rather than sliced by the horizontal
+      crop; the panel advertising the truck's crêpes stays out of frame at this
+      framing too, which is a coincidence of the composition rather than the
+      point of it.
+    */
+    .jy[data-mode='stage'] .jy-place-photo--coffee-truck {
+      top: auto;
+      bottom: 0;
+      height: 126%;
+      object-position: 8% 50%;
     }
 
-    /* The closing chapter carries more than any other, so the truck takes a
-       band clear of the words rather than sitting behind them. */
-    .jy[data-mode='stage'] .jy-truck {
-      top: 10%;
-      bottom: auto;
-      width: 44vw;
-      height: 29%;
+    /* Labels sit tighter to their endpoints, and smaller, so neither one
+       reaches across the corridor towards the other. */
+    .jy-place {
+      font-size: 0.5rem;
+      letter-spacing: 0.18em;
     }
 
-    .jy-route {
-      left: 1.25rem;
-      right: 1.25rem;
-      bottom: 1.25rem;
-      gap: 0;
+    .jy-place--origin {
+      margin-top: 0.6rem;
     }
 
-    .jy-route__end {
-      display: none;
+    /* Below its point rather than above it: the tighter mobile framing puts
+       the coast right under the label, and open water is the only place on
+       this frame where a label covers nothing. */
+    .jy-place--destination {
+      translate: calc(-100% - 0.4rem) 1rem;
+    }
+
+    .jy-controls {
+      left: calc(1.25rem + env(safe-area-inset-left));
+      right: calc(1.25rem + env(safe-area-inset-right));
+      bottom: calc(1rem + env(safe-area-inset-bottom));
+      justify-content: space-between;
+      gap: 0.75rem;
     }
   }
 
   @media (min-width: 900px) {
-    .jy[data-mode='stage'] .jy-copy {
-      padding: 6rem 4rem 6.5rem;
+    .jy-cover,
+    .jy-close {
+      padding: 6rem 4rem 6rem;
     }
 
-    .jy[data-mode='stage'] .jy-copy--closing {
-      padding-bottom: 5rem;
+    .jy-captions {
+      padding: 0 4rem 8rem;
     }
 
-    .jy[data-mode='stage'] .jy-copy--upper {
-      padding-top: 7.5rem;
-    }
-
-    .jy-route {
+    .jy-caption {
       left: 4rem;
+      right: 4rem;
+      bottom: 8rem;
+    }
+
+    .jy-caption[data-anchor='top'] {
+      bottom: auto;
+      top: 8.5rem;
+    }
+
+    .jy-controls {
       right: 4rem;
       bottom: 2.5rem;
     }
@@ -944,41 +1086,17 @@
     opacity: 0 !important;
   }
 
-  /* The journey never becomes a sticky scroll experience for these visitors.
-     `ScrollJourney` keeps its linear mode, so no video is mounted, no footage
-     is requested, nothing is positioned and nothing is driven by scroll. This
-     is belt and braces: even if the enhanced mode were somehow reached, the
-     values below hold every layer and every beat fully visible in document
-     order, and nothing moves.
+  /* The journey never animates for these visitors. `SatelliteJourney` keeps
+     its linear mode, so no timeline runs, no video is mounted, no satellite
+     camera moves and nothing is positioned — the story is three stills, their
+     words and the destination choice, in document order.
 
      The reset at the top of this block already neutralises transitions and
-     animations site-wide; what these rules remove is the scroll-driven state
-     itself, which is neither. */
-  .jy {
-    --jy-p: 0;
-    --jy-sub: 1;
-    --jy-m0: 1;
-    --jy-m1: 1;
-    --jy-m2: 1;
-    --jy-m3: 1;
-    --jy-m4: 1;
-    --jy-c0: 1;
-    --jy-c1: 1;
-    --jy-c2: 1;
-    --jy-c3: 1;
-    --jy-c4: 1;
-    --jy-c5: 1;
-    --jy-y0: 0px;
-    --jy-y1: 0px;
-    --jy-y2: 0px;
-    --jy-y3: 0px;
-    --jy-y4: 0px;
-    --jy-y5: 0px;
-  }
-
-  .jy-copy,
-  .jy-media,
-  .jy-truck {
+     animations site-wide; these rules remove the two pieces of state the
+     timeline would otherwise own. */
+  .jy-caption,
+  .jy-layer,
+  .jy-place-photo {
     opacity: 1 !important;
     transform: none !important;
     will-change: auto !important;

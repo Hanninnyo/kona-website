@@ -1,4 +1,23 @@
-import type { SiteContent } from './types'
+import type { ScheduleBlock, SiteContent } from './types'
+
+/**
+ * The truck's week, as owner-confirmed.
+ *
+ * Three blocks, not a merged list of days, and the split is the whole point:
+ * Monday to Friday the truck is at Valley Medical Center, on Saturday it is on
+ * a rotating community route somewhere else, and on Sunday it is nowhere. A
+ * visitor who reads the weekday hours as covering Saturday drives to a
+ * hospital forecourt and finds nothing there.
+ */
+const TRUCK_SCHEDULE: ScheduleBlock[] = [
+  { label: 'Valley Medical Center', when: 'Monday–Friday · 7:00 AM–2:00 PM' },
+  {
+    label: 'Saturday community route',
+    when: 'Saturday · 8:30 AM–1:30 PM',
+    note: 'Location rotates — check the current schedule before visiting.',
+  },
+  { label: 'Sunday', when: 'Closed' },
+]
 
 /**
  * Single source of truth for business information.
@@ -93,9 +112,8 @@ export const site: SiteContent = {
       ),
       ordering: { label: 'Order from Mountain View', url: MOUNTAIN_VIEW_ORDERING },
       hours: {
-        value: [],
-        state: 'needs-owner-confirmation',
-        note: 'Café hours are not published here until the owner reconfirms them. Visitors are sent to the live Google listing instead.',
+        value: ['Monday–Friday: 7:00 AM–4:00 PM', 'Saturday–Sunday: 7:30 AM–5:00 PM'],
+        state: 'verified',
       },
     },
     {
@@ -116,11 +134,14 @@ export const site: SiteContent = {
         '751 S Bascom Ave Sobrato Pavilion San Jose CA'
       ),
       ordering: { label: 'Order from the Coffee Truck', url: COFFEE_TRUCK_ORDERING },
+      /* Flattened from the blocks above rather than written twice, so a time
+         cannot drift between the two shapes. Each line carries its own place,
+         which is what makes it safe to render as a bare list. */
       hours: {
-        value: [],
-        state: 'needs-owner-confirmation',
-        note: 'Truck schedules change. No schedule is published until the owner confirms the current one.',
+        value: TRUCK_SCHEDULE.map((block) => `${block.label}: ${block.when}`),
+        state: 'verified',
       },
+      schedule: TRUCK_SCHEDULE,
     },
   ],
 

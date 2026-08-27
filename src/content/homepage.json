@@ -7,8 +7,9 @@
   },
   "hero": {
     "headline": "Aloha from Kona Island Coffee",
-    "subheadline": "Premium Hawaiian coffee, handcrafted crêpes, and artisan pastries in the heart of the Bay Area.",
+    "subheadline": "Premium Hawaiian coffee and artisan pastries in the heart of the Bay Area.",
     "ctaText": "Get the App",
     "ctaLink": "/app"
-  }
+  },
+  "_note": "Not imported by any code; src/content/homepage.ts is the live source. Retained only as a record. The subheadline previously claimed handcrafted crepes brand-wide; crepes are sweet-only and served from the Kona Coffee Truck, not the Mountain View cafe, so the claim was removed rather than left here to be picked up later."
 }

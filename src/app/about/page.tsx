@@ -3,6 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Coffee, MapPin, Users, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { site } from '@/content/site'
+
+/* Read from the verified location record, never restated here. */
+const cafeHours = site.locations.find((l) => l.id === 'mountain-view')!.hours
 
 export const metadata: Metadata = {
   title: 'About Us — Kona Island Coffee',
@@ -205,12 +209,19 @@ export default function AboutPage() {
                 <p className="text-xl lg:text-2xl text-kona-white/90 mb-4 font-medium">
                   San Antonio Village Center · 2565 California St STE 84
                 </p>
+                {/*
+                  Crêpes are deliberately not listed here. The owner has
+                  confirmed they are served at the coffee truck only, and this
+                  paragraph is about the Mountain View storefront — listing them
+                  among what is waiting inside it would send someone to the
+                  wrong place for the thing they came for.
+                */}
                 <p className="text-lg text-kona-white/80 max-w-2xl mx-auto mb-4">
-                  Our dream of a permanent home is here. Come enjoy Hawaiian coffee, fresh crêpes,
-                  and island-inspired pastries in a cozy, welcoming space built for connection.
+                  Our dream of a permanent home is here. Come enjoy Hawaiian coffee and
+                  island-inspired pastries in a cozy, welcoming space built for connection.
                 </p>
                 <p className="text-base text-kona-white/70 max-w-xl mx-auto mb-8">
-                  Mon–Thu 6:30am–5:00pm &nbsp;·&nbsp; Fri 6:30am–6:00pm &nbsp;·&nbsp; Sat 7:30am–6:00pm &nbsp;·&nbsp; Sun 7:30am–5:00pm
+                  {cafeHours.value.join("  ·  ")}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button

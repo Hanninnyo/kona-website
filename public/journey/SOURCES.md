@@ -1,31 +1,48 @@
 # Journey media
 
-Three licensed clips, one owner-supplied take and two owner-supplied
-photographs. This file is the record of where each came from and exactly how
-it was cut.
+Two NASA satellite images, two licensed clips, one owner-supplied take and two
+owner-supplied photographs. This file is the record of where each came from
+and exactly how it was cut.
 
 ## How this media is used
 
-The journey is **scroll-controlled**. It is an optional story the visitor
-drives with their own scroll position: nothing plays on its own, nothing
-advances on a timer, and a visitor who stops scrolling stays in the chapter
-they stopped in for as long as they like. Every transition between chapters —
-media and words alike — is a function of how far they have scrolled, so
-scrolling back up runs the story exactly backwards. `Enter Kona` is on the
-first screen and again at the close, so the homepage is never more than one
-action away.
+The journey is an **optional eleven-second animation** that plays only when
+the visitor presses `Begin the Journey`. Nothing starts on its own, nothing is
+forced on a first visit and nothing is suppressed on a second — no session
+flag is written or read. `Enter Kona` is on the opening screen, on screen
+throughout the sequence, and on the closing screen, so the homepage is never
+more than one action away. `Skip` goes straight to the end; `Pause` stops the
+clock and every video where it stands.
 
-The same media is used here as in the timed arrival it replaced. **No source
-file, encode, crop, range or grade changed when the experience became
-scroll-controlled**; only the way the media is composed and transitioned did.
+The centre of it is the satellite imagery. One geographic camera windows both
+NASA images and the route overlay together, pulling back from the Kona coast
+to the whole North Pacific and then moving in on California.
 
-## What this footage is, and is not
+## What this imagery is, and is not
 
-Each piece of footage **represents** its chapter. None of it documents a
-literal shipment. The three licensed clips are atmospheric travel imagery and
-are **not** a record of our farm, our aircraft, our shipment or any particular
-flight, and no copy anywhere on the site may describe them that way. The farm
-footage is different in kind: it is our own, and it shows the farm.
+The satellite images are **real NASA Earth observation imagery**. They show
+where the journey happens. They do **not** document a shipment, a flight or
+any particular day's cargo, and no copy anywhere on the site may describe them
+that way.
+
+**The route line is a Kona Island Coffee visualisation drawn over NASA's
+photograph — it is not part of the NASA imagery.** It is the great circle
+between two verified endpoints, Kona International Airport and San Francisco
+Bay, and it represents the verified journey the coffee makes: from Kona, over
+the Pacific, to Northern California. It is not a record of a specific flight
+path, aircraft or shipment.
+
+**No NASA logo, insignia or identifier is used anywhere in the journey, and
+NASA does not endorse Kona Island Coffee.** NASA imagery is generally not
+copyrighted and may be used for editorial purposes; NASA's guidance on images
+and media is at https://www.nasa.gov/nasa-brand-center/images-and-media/ and
+its emblems may not be used in a way that implies endorsement. Nothing here
+implies any.
+
+Each piece of footage **represents** its phase. The two licensed clips are
+atmospheric imagery and are **not** a record of our farm, our aircraft, our
+shipment or any particular flight. The farm footage is different in kind: it
+is our own, and it shows the farm.
 
 What it does **not** show is roasting. There is no roasting equipment and no
 roasting activity in any frame of it. The claim that the coffee is roasted on
@@ -42,19 +59,53 @@ The coastline establishes where Kona is. It does not depict the farm property.
 
 ## Sources
 
+### NASA satellite imagery
+
+| Production files | What it shows | Original source |
+| --- | --- | --- |
+| `hawaii-wide.jpg`, `hawaii-mid.jpg` | Hawaiʻi Island, the close view | `hawaii_tmo_2014026_geo.tif` — owner-supplied, downloaded from NASA by the owner. **The exact original page URL was not retained by the owner.** The filename follows NASA Earth Observatory's convention for a Terra MODIS scene of Hawaiʻi, 2014 day 026. |
+| `pacific-wide.jpg`, `pacific-mid.jpg` | The North Pacific and North America, the wide view | NASA Blue Marble Next Generation, January, tile A1. Authoritative original: https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-base/january/world.200401.3x21600x21600.A1.jpg — source page: https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/ |
+
+The Blue Marble original is 21600 × 21600 and roughly 45 MB. It could not be
+fetched from the build environment, whose egress policy refuses every NASA
+host, so the owner downloaded it and supplied an 8000 × 8000 derivative of it
+(`world-nasa-8000.png`, 29.3 MB) as a working source. That working source was
+verified against the 2048 × 2048 reference preview the owner also supplied —
+downsampled to 2048 it differs by a mean of 3.3 (summed across three channels,
+out of 765) over 599,187 sampled pixels, which is JPEG noise and nothing else.
+
+**Neither the 45 MB original nor the 8000 px working source is committed.**
+Only the four optimised derivatives below are. Both working files live outside
+the repository.
+
+Both satellite images are **equirectangular (Plate Carrée, WGS84)**, which is
+what allows one camera to drive them together. The close view is a GeoTIFF and
+carries its own georeferencing: tie point (0, 0) at 20.6225 N, 156.9344 W with
+a pixel scale of 0.0023926° longitude and 0.0022483° latitude. The Blue Marble
+A1 tile covers longitude −180° to −90° and latitude 0° to 90°; this was
+confirmed independently by locating land pixels, which put the Hawaiian chain
+at −159.785…−154.907 longitude and 19.028…22.236 latitude against a real
+extent of −159.79…−154.81 and 18.91…22.23.
+
 ### Licensed stock
 
 | Scene    | Title                    | Credit         | Source                                              | Licence          | Downloaded |
 | -------- | ------------------------ | -------------- | --------------------------------------------------- | ---------------- | ---------- |
 | origin   | Kona coast (aerial)      | Roger Holzberg | Pexels                                              | Pexels free use  | 2026-08-24 |
-| crossing | Sea of Clouds            | Pixabay        | https://www.pexels.com/video/sea-of-clouds-855679/  | CC0 / free use   | 2026-08-24 |
+| crossing | Sea of Clouds *(no longer used)* | Pixabay | https://www.pexels.com/video/sea-of-clouds-855679/  | CC0 / free use   | 2026-08-24 |
 | arrival  | San Francisco at dawn    | Tyler Francis  | Pexels                                              | Pexels free use  | 2026-08-24 |
+
+The *Sea of Clouds* clip is **no longer used**: the satellite crossing
+replaced it, and its two encodes and two posters have been removed from this
+branch. The approved versions remain on the branches that shipped them. Its
+entry is kept here because the licence record for material this site once
+served belongs in the record whether or not the files are still present.
 
 ### Owner-supplied
 
 | Production file | Original filename | Source         | Ownership          | Supplied   | Intended use |
 | --------------- | ----------------- | -------------- | ------------------ | ---------- | ------------ |
-| `farm-wide.mp4`, `farm-tall.mp4`, `farm-wide.jpg`, `farm-tall.jpg` | `IMG_1202.mov` | Owner-supplied | Kona Island Coffee | 2026-08-25 | Chapter two of the journey, *From the farm* |
+| `farm-wide.mp4`, `farm-tall.mp4`, `farm-wide.jpg`, `farm-tall.jpg` | `IMG_1202.mov` | Owner-supplied | Kona Island Coffee | 2026-08-25 | The opening phase of the journey, under *Grown in Kona. Roasted on the farm.* |
 
 The farm footage carries its own capture metadata — an iPhone 16 Pro Max,
 iOS 18.6, recorded 2025-09-05 at 11:39 local time, with GPS at 19.5596 N,
@@ -76,8 +127,9 @@ Two further owner-supplied assets were reviewed and are **not used**:
   the roasting claim.
 
 **No AI-generated imagery is used anywhere in the journey, and no generative
-image editing was used on any asset in it.** Every frame is either licensed
-stock photography of real places or owner-supplied footage of the farm. Several AI-generated truck and café images exist
+image editing was used on any asset in it.** Every frame is either real NASA
+satellite imagery, licensed stock photography of real places, or
+owner-supplied footage and photographs. Several AI-generated truck and café images exist
 elsewhere in `public/images/` — identifiable by a four-point sparkle
 watermark, garbled signage and stripped metadata — and none of them is used
 here or may be introduced here.
@@ -148,25 +200,22 @@ Per-scene correction, applied before the shared grade:
 | Scene    | Correction                                                  |
 | -------- | ----------------------------------------------------------- |
 | origin   | `eq=brightness=0.010:contrast=1.00:saturation=0.92:gamma=1.038` |
-| crossing | `eq=contrast=0.97:saturation=0.94:gamma=1.02`                |
 | arrival  | `eq=brightness=0.015:contrast=0.97:saturation=0.88:gamma=1.04` |
 
 Crops and ranges. Every output keeps its source's native frame rate; nothing
 is slowed, stretched, looped or frame-doubled.
 
-**Chapter progression is not synchronised to any of these durations.** Scroll
-position, not playback time, decides when a chapter arrives and when it
-leaves; a take that reaches its end simply holds its last frame under the
-words until the visitor scrolls on, and a visitor who scrolls quickly may
-never see the end of one. The ranges below were chosen for what is in frame,
-not for how long anything is on screen.
+**Phase progression is not synchronised to any of these durations.** One
+clock drives the whole sequence, and each take is shown for as long as its
+phase lasts — not for as long as the clip runs. A take that reaches its end
+holds its last frame under the words until the sequence moves on. The ranges
+below were chosen for what is in frame, not for how long anything is on
+screen. Nothing is looped, slowed or stretched to fill a phase.
 
 | Output              | Range        | Crop                     | Scale     |
 | ------------------- | ------------ | ------------------------ | --------- |
 | `origin-wide.mp4`   | 13.6–18.6 s  | `1920:918:0:151`         | `1280:612` |
 | `origin-tall.mp4`   | 13.6–18.6 s  | `500:1080:500:0`         | `414:896`  |
-| `crossing-wide.mp4` | 6.0–10.6 s   | `1280:612:0:54`          | native     |
-| `crossing-tall.mp4` | 6.0–10.6 s   | `332:720:474:0`          | `414:896`  |
 | `arrival-wide.mp4`  | 0.0–2.5 s\*  | `1920:918:0:61`          | `1280:612` |
 | `arrival-tall.mp4`  | 0.0–2.5 s\*  | `500:1080:460:0`         | `414:896`  |
 | `farm-wide.mp4`     | 12.85–16.04 s | `1080:1920:0:0`         | `720:1280`  |
@@ -211,21 +260,80 @@ to keep in sync. Audio is stripped from every output.
 
 Posters are the first frame of each encode, at `-q:v 6`.
 
+## Satellite derivatives
+
+Both are cropped to the exact patch of Earth the journey uses, so the bounds
+recorded in `src/content/journey.ts` are the crop and nothing is inferred.
+
+| Output | Crop from source | Scale | Covers | Size |
+| --- | --- | --- | --- | --- |
+| `pacific-wide.jpg` | `4444:2778:1333:4111` of 8000 × 8000 | `3600:2250` | lon −165.004…−115.009, lat 12.499…43.751 | 120 KB |
+| `pacific-mid.jpg` | same crop | `1800:1125` | same | 47 KB |
+| `hawaii-wide.jpg` | `1200:750:0:84` of 1200 × 1000 | `1600:1000` | lon −156.9344…−154.0633, lat 18.7474…20.4336 | 76 KB |
+| `hawaii-mid.jpg` | same crop | `900:563` | same | 33 KB |
+
+Grades, applied before the shared grade below:
+
+```
+pacific  eq=gamma=1.44:brightness=0.030:saturation=1.55:contrast=1.02,
+         colorbalance=rs=-0.06:gs=-0.02:bs=0.10
+hawaii   eq=gamma=1.42:brightness=0.012:saturation=1.34:contrast=1.00,
+         colorbalance=rs=-0.05:bs=0.08
+```
+
+The lift is substantial and it is deliberate. Deep ocean in the Blue Marble
+source measures RGB (2, 5, 20) — very nearly black — and at the wide framing
+that is most of the frame, so ungraded it reads as an empty void rather than
+as the Pacific. The two grades bring the two oceans to within a few points of
+each other, RGB (34, 41, 65) and (28, 40, 58), so the close view dissolves
+into the wide one without a change of water. Nothing is recoloured beyond a
+lift, a saturation nudge and a shift back towards blue; no feature is moved,
+added or removed.
+
+Both are encoded `-q:v 3`, and both go through the same shared grade as the
+footage so the satellite, the coastline, the farm and the bridge read as one
+piece of work.
+
+## The route
+
+Drawn by us, over NASA's photograph. It is the great circle between:
+
+| | | |
+| --- | --- | --- |
+| Origin | Kona International Airport | 19.7388 N, 156.0456 W |
+| Destination | San Francisco Bay | 37.6213 N, 122.3790 W |
+
+Sampled at 64 points and projected into the wide image's own pixel space,
+which places its ends at (645.1, 1728.8) and (3069.3, 441.3) of 3600 × 2250 —
+on the Kona coast and in San Francisco Bay respectively, verified against the
+imagery. The overlay carries the same transform as the satellite image, so the
+line sits on the coastline by construction rather than by adjustment.
+
+It bows north because a great circle does. There is no artificial arc, no
+aircraft, no marker, no icon and no coffee bag: the whole overlay is two
+`path` elements and one small moving highlight.
+
 ## What loads, and when
 
-Only the opening chapter's media is fetched when the page opens: one poster
-and one take. Every other chapter — including its poster — is admitted to the
-layout a full viewport of scrolling before it begins to fade in, and is never
-withdrawn, so scrolling back up refetches nothing. Videos are muted, carry no
-audio track, have no controls, and are paused whenever they are outside the
-chapter they belong to, so at most two are ever decoding.
+Only the Kona coastline — one poster and one take — is needed to paint the
+opening screen. The farm take and both satellite derivatives are prepared
+during idle time behind it, and `Begin the Journey` stays disabled until they
+are in hand, so the sequence can never stall part-way through a pullback. A
+restrained line appears only if that preparation runs past a second. The
+Golden Gate take and the two destination photographs are staged once the
+sequence is running, with nine and ten seconds of warning respectively.
 
-Measured payloads, from a real browser walking the whole journey:
+Videos are muted, carry no audio track, have no controls, and are paused
+whenever their phase is not on screen. The timeline stops when the browser tab
+is hidden and resumes where it left off.
+
+Measured payloads, from a real browser running the whole sequence:
 
 | | Opening screen | Whole journey |
 | --- | --- | --- |
-| Mobile (390 px, portrait encodes) | 462 KB | 1229 KB |
-| Desktop (1440 px, landscape encodes) | 1403 KB | 2998 KB |
+| Mobile (390 px, portrait encodes) | 462 KB | 1112 KB |
+| Desktop (1440 px, landscape encodes) | 1403 KB | 2794 KB |
 
 A reduced-motion visitor and a visitor without JavaScript fetch no video at
-all: the linear story is told in posters and photographs.
+all: the linear story is told in posters, the satellite still and the two
+photographs.
