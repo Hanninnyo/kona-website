@@ -1,22 +1,30 @@
 # Journey media
 
-Two NASA satellite images, two licensed clips, one owner-supplied take and two
+Two NASA satellite images, one licensed clip, one owner-supplied take and two
 owner-supplied photographs. This file is the record of where each came from
 and exactly how it was cut.
 
 ## How this media is used
 
-The journey is an **optional eleven-second animation** that plays only when
-the visitor presses `Begin the Journey`. Nothing starts on its own, nothing is
-forced on a first visit and nothing is suppressed on a second — no session
-flag is written or read. `Enter Kona` is on the opening screen, on screen
-throughout the sequence, and on the closing screen, so the homepage is never
-more than one action away. `Skip` goes straight to the end; `Pause` stops the
-clock and every video where it stands.
+The journey is a **seventeen-second animation that starts on its own** when
+the homepage loads. It is muted, it plays inline, and it carries no audio of
+any kind. Nothing is forced on a first visit and nothing is suppressed on a
+second — no session flag is written or read, so it plays whenever the homepage
+is newly loaded or replayed from the footer. `Enter Kona` is on screen from
+the first frame to the last, so the homepage is never more than one action
+away. `Skip` goes straight to the end; `Pause` stops the clock and every video
+where it stands; `Escape` leaves.
+
+A visitor who has asked for reduced motion gets none of it: no timeline, no
+camera, no video, nothing that starts by itself — the same story as three
+stills, their words and the destination choice, in document order, with
+`Enter Kona` immediately available.
 
 The centre of it is the satellite imagery. One geographic camera windows both
 NASA images and the route overlay together, pulling back from the Kona coast
-to the whole North Pacific and then moving in on California.
+to the whole North Pacific, moving in on California, and dissolving directly
+from the map into the photograph of the Mountain View café. There is no
+landmark between the map and the café.
 
 ## What this imagery is, and is not
 
@@ -63,7 +71,7 @@ The coastline establishes where Kona is. It does not depict the farm property.
 
 | Production files | What it shows | Original source |
 | --- | --- | --- |
-| `hawaii-wide.jpg`, `hawaii-mid.jpg` | Hawaiʻi Island, the close view | `hawaii_tmo_2014026_geo.tif` — owner-supplied, downloaded from NASA by the owner. **The exact original page URL was not retained by the owner.** The filename follows NASA Earth Observatory's convention for a Terra MODIS scene of Hawaiʻi, 2014 day 026. |
+| `hawaii-wide.jpg` | Hawaiʻi Island, the close view | `hawaii_tmo_2014026_geo.tif` — owner-supplied, downloaded from NASA by the owner. **The exact original page URL was not retained by the owner.** The filename follows NASA Earth Observatory's convention for a Terra MODIS scene of Hawaiʻi, 2014 day 026. |
 | `pacific-wide.jpg`, `pacific-mid.jpg` | The North Pacific and North America, the wide view | NASA Blue Marble Next Generation, January, tile A1. Authoritative original: https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-base/january/world.200401.3x21600x21600.A1.jpg — source page: https://science.nasa.gov/earth/earth-observatory/blue-marble-next-generation/base-map/ |
 
 The Blue Marble original is 21600 × 21600 and roughly 45 MB. It could not be
@@ -93,13 +101,22 @@ extent of −159.79…−154.81 and 18.91…22.23.
 | -------- | ------------------------ | -------------- | --------------------------------------------------- | ---------------- | ---------- |
 | origin   | Kona coast (aerial)      | Roger Holzberg | Pexels                                              | Pexels free use  | 2026-08-24 |
 | crossing | Sea of Clouds *(no longer used)* | Pixabay | https://www.pexels.com/video/sea-of-clouds-855679/  | CC0 / free use   | 2026-08-24 |
-| arrival  | San Francisco at dawn    | Tyler Francis  | Pexels                                              | Pexels free use  | 2026-08-24 |
+| arrival  | San Francisco at dawn *(no longer used)* | Tyler Francis | Pexels                       | Pexels free use  | 2026-08-24 |
 
-The *Sea of Clouds* clip is **no longer used**: the satellite crossing
-replaced it, and its two encodes and two posters have been removed from this
-branch. The approved versions remain on the branches that shipped them. Its
-entry is kept here because the licence record for material this site once
-served belongs in the record whether or not the files are still present.
+Two clips are **no longer used**, and both have had their encodes and posters
+removed from this branch:
+
+- *Sea of Clouds* was replaced by the satellite crossing.
+- *San Francisco at dawn* was the Golden Gate arrival. The scene itself has
+  been removed: the route now reaches the Bay Area and the map dissolves
+  straight into the café, because the café is the arrival and a landmark on
+  the way to it was a second destination competing with the real one. Its four
+  files — `arrival-wide.mp4`, `arrival-tall.mp4`, `arrival-wide.jpg` and
+  `arrival-tall.jpg`, 392.4 kB together — are deleted.
+
+The approved versions remain on the branches that shipped them. Both entries
+are kept here because the licence record for material this site once served
+belongs in the record whether or not the files are still present.
 
 ### Owner-supplied
 
@@ -169,10 +186,26 @@ work.
 
 | Output | Crop | Scale |
 | --- | --- | --- |
-| `cafe-wide.jpg` | `1360:1700:88:180` | `720:900` |
-| `cafe-tall.jpg` | `1104:1380:216:280` | `480:600` |
+| `cafe-wide.jpg` | `1536:960:0:280` | `1600:1000` |
+| `cafe-tall.jpg` | `940:1740:300:200` | `700:1296` |
 | `truck-wide.jpg` | `945:1181:0:380` | `720:900` |
 | `truck-tall.jpg` | `945:1181:0:380` | `480:600` |
+
+**The café was re-framed on its entrance**, and the two crops are cut
+separately because one cannot serve both shapes of screen. The original is
+3 : 4. A widescreen stage can only show about half its height, and the
+distance from the top of the round sign to the foot of the doorway is more
+than that — so a single crop cannot hold the sign and the whole doorway on a
+desktop. The wide crop takes the full width of the original, starts just above
+the sign so the sign is complete and clear of the site header, and runs down
+through the awning, the glass frontage, the house number and the open door.
+The tall crop has the room the wide one does not and carries the sign, the
+door, the interior and the walkway together.
+
+Nothing above the sign is kept: the earlier framing spent its upper third on
+empty façade and roofline, which is not what arriving at a café looks like.
+Both are crops, scales and the grade below — nothing was extended, retouched
+or repainted, and no generative editing was used.
 
 Photograph grade, applied before the shared grade:
 `eq=contrast=1.16:saturation=1.06:gamma=0.95:brightness=-0.012`
@@ -187,7 +220,7 @@ Full-resolution source files are never committed. Only the encodes below are.
 
 ## Encodes
 
-Shared grade, applied to all three so the sequence cuts together — a small
+Shared grade, applied to everything so the sequence cuts together — a small
 warm shift and a highlight roll-off, nothing that would count as a look:
 
 ```
@@ -200,7 +233,6 @@ Per-scene correction, applied before the shared grade:
 | Scene    | Correction                                                  |
 | -------- | ----------------------------------------------------------- |
 | origin   | `eq=brightness=0.010:contrast=1.00:saturation=0.92:gamma=1.038` |
-| arrival  | `eq=brightness=0.015:contrast=0.97:saturation=0.88:gamma=1.04` |
 
 Crops and ranges. Every output keeps its source's native frame rate; nothing
 is slowed, stretched, looped or frame-doubled.
@@ -216,8 +248,6 @@ screen. Nothing is looped, slowed or stretched to fill a phase.
 | ------------------- | ------------ | ------------------------ | --------- |
 | `origin-wide.mp4`   | 13.6–18.6 s  | `1920:918:0:151`         | `1280:612` |
 | `origin-tall.mp4`   | 13.6–18.6 s  | `500:1080:500:0`         | `414:896`  |
-| `arrival-wide.mp4`  | 0.0–2.5 s\*  | `1920:918:0:61`          | `1280:612` |
-| `arrival-tall.mp4`  | 0.0–2.5 s\*  | `500:1080:460:0`         | `414:896`  |
 | `farm-wide.mp4`     | 12.85–16.04 s | `1080:1920:0:0`         | `720:1280`  |
 | `farm-tall.mp4`     | 12.85–16.04 s | `886:1920:97:0`         | `414:896`   |
 
@@ -225,8 +255,6 @@ The farm take is 3.20 s. Earlier than 12.85 s a figure is cropped at the
 shoulders and 16.04 s is the end of the clip, so the range cannot grow
 further. It plays out in full and then holds its last frame under the words.
 It is not looped, not slowed and not extended.
-
-\* the complete clip, at its native 23.976 fps.
 
 The farm source is HEVC Main 10 in Dolby Vision profile 8, stored 1920×1080
 with a −90° display matrix — so it *plays* as 1080×1920 portrait, and the
@@ -267,10 +295,30 @@ recorded in `src/content/journey.ts` are the crop and nothing is inferred.
 
 | Output | Crop from source | Scale | Covers | Size |
 | --- | --- | --- | --- | --- |
-| `pacific-wide.jpg` | `4444:2778:1333:4111` of 8000 × 8000 | `3600:2250` | lon −165.004…−115.009, lat 12.499…43.751 | 120 KB |
-| `pacific-mid.jpg` | same crop | `1800:1125` | same | 47 KB |
-| `hawaii-wide.jpg` | `1200:750:0:84` of 1200 × 1000 | `1600:1000` | lon −156.9344…−154.0633, lat 18.7474…20.4336 | 76 KB |
-| `hawaii-mid.jpg` | same crop | `900:563` | same | 33 KB |
+| `pacific-wide.jpg` | `4533:5511:1333:2489` of 8000 × 8000 | `3000:3647` | lon −165.00375…−114.00750, lat 0…61.99875 | 401 kB |
+| `pacific-mid.jpg` | same crop | `1500:1824` | same | 162 kB |
+| `hawaii-wide.jpg` | `1200:750:0:84` of 1200 × 1000 | `1600:1000` | lon −156.9344…−154.0633, lat 18.7474…20.4336 | 76 kB |
+
+**The Pacific derivative was re-cut, and the reason is a defect the old one
+could not avoid.** It used to cover 50.0° of longitude by 31.25° of latitude.
+Whether a map covers the stage is not a matter of framing: a window `span`
+degrees wide on a viewport of aspect *A* implies `span / A` degrees of
+latitude, so the tallest window the old crop could serve was 31.25 × *A*. At
+1024 × 768 that is 41.7° against the 48° the crossing asks for, and at
+390 × 844 it is 14.4° — which is why a black band appeared above and below the
+map as the camera pulled back, and why it was worst on a phone. The new crop
+carries 61.99875° of latitude, from the equator to Alaska, against 50.99625°
+of longitude. Together with the camera's own coverage clamp — which narrows
+the window until the latitude it implies fits inside the image, then slides it
+until it sits wholly within it — the map cannot fail to cover the stage at any
+viewport, at any moment. Nothing is overscaled to achieve that, and no vignette
+or overlay hides anything: the image simply contains the ground the camera
+asks for.
+
+`hawaii-mid.jpg` has been **deleted**. The close view is 76 kB at full size and
+it is the one image in the sequence a phone sees at close to its own pixel
+scale, so the lighter 900 × 563 encode was the softest thing on screen at the
+moment the screen was sharpest. Every viewport is now served the full file.
 
 Grades, applied before the shared grade below:
 
@@ -291,8 +339,8 @@ lift, a saturation nudge and a shift back towards blue; no feature is moved,
 added or removed.
 
 Both are encoded `-q:v 3`, and both go through the same shared grade as the
-footage so the satellite, the coastline, the farm and the bridge read as one
-piece of work.
+footage so the satellite, the coastline and the farm read as one piece of
+work.
 
 ## The route
 
@@ -316,12 +364,22 @@ aircraft, no marker, no icon and no coffee bag: the whole overlay is two
 ## What loads, and when
 
 Only the Kona coastline — one poster and one take — is needed to paint the
-opening screen. The farm take and both satellite derivatives are prepared
-during idle time behind it, and `Begin the Journey` stays disabled until they
-are in hand, so the sequence can never stall part-way through a pullback. A
-restrained line appears only if that preparation runs past a second. The
-Golden Gate take and the two destination photographs are staged once the
-sequence is running, with nine and ten seconds of warning respectively.
+first frame, and it is in the markup the server sends, which is what lets the
+sequence start on a picture rather than on a wait. Everything after it is
+fetched behind that picture while it plays.
+
+The ground under the whole stage carries a 253-byte blur of the coastline,
+inline in the stylesheet, so the fraction of a second between the first paint
+and that poster's decode is a dark suggestion of the coast rather than an
+empty screen.
+
+Because nothing is clicked to start, readiness is enforced by the clock
+instead of by a button. Three gates stand in the timeline — the farm take at
+2.2 s, both satellite derivatives at 5.2 s, the two destination photographs at
+15.2 s — and if what a gate needs has not arrived the clock holds there while
+the coastline keeps playing, resuming the instant it lands. On any ordinary
+connection nothing ever holds; what the gates guarantee is that a slow one
+degrades into a longer coastline rather than into a blank screen or a jump.
 
 Videos are muted, carry no audio track, have no controls, and are paused
 whenever their phase is not on screen. The timeline stops when the browser tab
@@ -329,10 +387,13 @@ is hidden and resumes where it left off.
 
 Measured payloads, from a real browser running the whole sequence:
 
-| | Opening screen | Whole journey |
+| | First paint | Whole journey |
 | --- | --- | --- |
-| Mobile (390 px, portrait encodes) | 462 KB | 1112 KB |
-| Desktop (1440 px, landscape encodes) | 1403 KB | 2794 KB |
+| Mobile (390 px, portrait encodes) | 40 kB | 1357 kB |
+| Desktop (1440 px, landscape encodes) | 95 kB | 3329 kB |
+
+First paint is one poster — the Kona coastline — and nothing else. Everything
+else is fetched behind it while it plays.
 
 A reduced-motion visitor and a visitor without JavaScript fetch no video at
 all: the linear story is told in posters, the satellite still and the two

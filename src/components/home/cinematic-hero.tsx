@@ -47,16 +47,17 @@ export function CinematicHero() {
         </p>
 
         {/*
-          An h2, not an h1. The journey above the homepage opens with the
-          document's only h1; this is the first section under it. The visual
-          weight is unchanged — only the level.
+          The document's h1. The journey that plays over this page has no
+          opening screen and therefore no heading of its own to carry the
+          level — it starts already in motion — so the page's own headline is
+          where the outline begins.
         */}
-        <h2
+        <h1
           id="hero-heading"
           className="mt-5 max-w-4xl font-display text-display-lg font-light text-sand-50"
         >
           {hero.headline}
-        </h2>
+        </h1>
 
         <p className="mt-6 max-w-xl font-body text-lede text-sand-100/85">
           {hero.place}

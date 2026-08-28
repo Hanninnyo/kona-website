@@ -382,7 +382,12 @@ export interface JourneyFootage {
  */
 export interface JourneySatellite {
   wide: JourneyFrame
-  mid: JourneyFrame
+  /**
+   * A lighter encode for narrow screens. Present only where the saving is
+   * worth having — the close view of Hawaiʻi is small enough, and seen close
+   * enough to its own pixel scale on a phone, that it is served whole.
+   */
+  mid?: JourneyFrame
   /** Degrees. `north`/`south` are latitudes, `west`/`east` longitudes. */
   bounds: { north: number; south: number; west: number; east: number }
   description: string
@@ -419,21 +424,22 @@ export interface JourneyDestination {
 export interface JourneyContent {
   /** A concise introduction announced once to assistive technology. */
   intro: string
-  cover: {
-    eyebrow: string
-    headline: string
-    beginLabel: string
-  }
+  /**
+   * The heading over the linear story. Seen only by the visitors who never
+   * get the animation — reduced motion, and no JavaScript — because everyone
+   * else is already inside the sequence when the page paints.
+   */
+  lead: { eyebrow: string; headline: string }
   /** The words over each phase. No paragraphs; these are titles. */
   captions: {
+    /** The opening title, two equal lines over the coastline. */
+    kona: string[]
     farm: string[]
     pacific: { primary: string; secondary: string }
-    california: string
   }
   footage: {
     coastline: JourneyFootage
     farm: JourneyFootage
-    california: JourneyFootage
   }
   satellite: { island: JourneySatellite; pacific: JourneySatellite }
   photos: { cafe: JourneyPhoto; truck: JourneyPhoto }

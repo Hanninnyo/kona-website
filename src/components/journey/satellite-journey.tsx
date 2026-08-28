@@ -9,21 +9,21 @@ import {
   placement,
   point,
   pointAt,
-  resolve,
   routeLength,
   routePath,
   routePoints,
+  viewFor,
   type Frame,
 } from '@/lib/journey/timeline'
 
 /* ==========================================================================
    The Kona journey
 
-   An optional eleven-second sequence that plays only when the visitor asks
-   for it, driven by one requestAnimationFrame loop and one pure function of
-   elapsed time. React state changes about six times in the whole experience —
-   never per frame. Everything that moves is written straight to a ref's
-   `style` as a transform or an opacity.
+   A seventeen-second sequence that starts on its own, driven by one
+   requestAnimationFrame loop and one pure function of elapsed time. React
+   state changes a handful of times in the whole experience — never per frame.
+   Everything that moves is written straight to a ref's `style` as a transform
+   or an opacity.
 
    Two modes, and the linear one is what the server sends:
 
@@ -35,42 +35,60 @@ import {
    `stage`  — the animation, mounted on the client only.
    ========================================================================== */
 
-const { cover, captions, footage, satellite, photos, destinations, close, controls } = journey
+const { lead, captions, footage, satellite, photos, destinations, close, controls } = journey
 
-/** Below this width the portrait encodes and the lighter satellite files. */
+/** Below this width the portrait encodes and the lighter satellite file. */
 const NARROW = '(max-width: 699px)'
 
 /**
- * On a narrow screen the camera is pulled in slightly, so the corridor still
- * occupies most of the width rather than sitting small in the middle of it.
- * The route stays geographically exact either way — this scales the window,
- * not the geography.
+ * Which encode of the wide map to use.
+ *
+ * Only the Pacific map has a lighter one. The close view of Hawaiʻi is 77 kB
+ * at full size and is the one image in the sequence a phone sees at close to
+ * its own pixel scale, so it is served whole to everybody: halving it would
+ * save forty kilobytes and cost the only sharp thing on screen.
  */
-const NARROW_SPAN = 0.86
+const pacificFrame = (narrow: boolean) =>
+  (narrow ? satellite.pacific.mid : null) ?? satellite.pacific.wide
+
+/**
+ * What has to be in hand before the clock may pass each moment.
+ *
+ * This is what lets the sequence start immediately without ever stalling
+ * halfway through. The coastline is in the markup the server sends, so the
+ * first frame is a picture rather than a spinner and the timeline can begin
+ * at once; everything after it is fetched behind that picture. If something
+ * is not ready when its moment arrives the clock holds at the gate — the
+ * coastline stays on screen and keeps playing — and resumes the instant the
+ * asset lands. In practice, on any ordinary connection, nothing here ever
+ * holds; what it guarantees is that a slow one degrades into a longer
+ * coastline rather than into a blank screen or a jump.
+ */
+const GATES: { t: number; need: string[] }[] = [
+  { t: 2.2, need: ['farm'] },
+  { t: 5.2, need: ['island', 'pacific'] },
+  { t: 15.2, need: ['photos'] },
+]
 
 type Mode = 'linear' | 'stage'
-type Phase = 'cover' | 'playing' | 'destination'
+type Phase = 'playing' | 'destination'
 type Choice = (typeof destinations)[number]['id']
 
 export function SatelliteJourney() {
   const [mode, setMode] = useState<Mode>('linear')
   const [variant, setVariant] = useState<'wide' | 'tall' | null>(null)
   const [narrow, setNarrow] = useState(false)
-  const [phase, setPhase] = useState<Phase>('cover')
+  const [phase, setPhase] = useState<Phase>('playing')
   const [paused, setPaused] = useState(false)
-  /**
-   * Which asset set is loaded, rather than a bare boolean.
-   *
-   * Keying it this way means readiness is *derived* from the current variant
-   * rather than reset by an effect: rotating a phone changes the key, which
-   * makes `ready` false again on its own, with no synchronous setState in an
-   * effect and no window where a stale `true` could let the sequence start on
-   * media it does not have.
-   */
-  const [readyKey, setReadyKey] = useState<string | null>(null)
-  /** Only shown if preparation actually takes a moment. */
-  const [preparing, setPreparing] = useState(false)
   const [choice, setChoice] = useState<Choice>('mountain-view')
+  /**
+   * Bumped by Replay. The clock effect keys off it, so asking for the journey
+   * again restarts it — and restarts it *playing* — without any stored flag
+   * and without a second code path for "starting again".
+   */
+  const [run, setRun] = useState(0)
+  /** The two destination photographs, put into the document mid-flight. */
+  const [staged, setStaged] = useState(false)
   /**
    * True once the client has decided which mode applies.
    *
@@ -86,7 +104,6 @@ export function SatelliteJourney() {
 
   const sectionRef = useRef<HTMLElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
-  const beginRef = useRef<HTMLButtonElement>(null)
   const layerRefs = useRef<Record<string, HTMLElement | null>>({})
   const captionRefs = useRef<Record<string, HTMLElement | null>>({})
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({})
@@ -101,9 +118,17 @@ export function SatelliteJourney() {
     videoRefs.current[id] = node
   }, [])
 
-
-  const assetKey = mode === 'stage' && variant ? `${variant}:${narrow ? 'n' : 'w'}` : null
-  const ready = assetKey !== null && readyKey === assetKey
+  /**
+   * What has loaded.
+   *
+   * A ref rather than state because the only reader is the animation loop,
+   * which is already running: a picture arriving must let the clock through
+   * the next gate, not re-render the component.
+   */
+  const loaded = useRef<Set<string>>(new Set())
+  const markLoaded = useCallback((what: string) => {
+    loaded.current.add(what)
+  }, [])
 
   /** Seconds of the sequence played so far. The only clock. */
   const elapsed = useRef(0)
@@ -116,6 +141,13 @@ export function SatelliteJourney() {
   const pathD = useMemo(() => routePath(path), [path])
   const pathLen = useMemo(() => routeLength(path), [path])
 
+  /* Rotating a phone crosses the breakpoint and changes every encode, so what
+     was in hand a moment ago is not what the sequence now needs. Emptied here
+     rather than during render, and before the effect below refills it. */
+  useEffect(() => {
+    loaded.current = new Set()
+  }, [variant, narrow])
+
   /* ------------------------------------------------------------------ mode */
   useEffect(() => {
     const still = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -124,7 +156,8 @@ export function SatelliteJourney() {
     const decide = () => {
       setNarrow(small.matches)
       // A visitor who has asked for less motion keeps the linear story: no
-      // timeline, no camera, no video, no animation loop at all.
+      // timeline, no camera, no video, no animation loop at all — and no
+      // autoplay, which is the whole point of the preference.
       setMode(still.matches ? 'linear' : 'stage')
       setVariant(still.matches ? null : small.matches ? 'tall' : 'wide')
       setResolved(true)
@@ -141,74 +174,56 @@ export function SatelliteJourney() {
 
   /* --------------------------------------------------------------- loading */
   /*
-    Only the coastline is needed to paint the opening screen. The farm take
-    and the close satellite view are prepared during idle time behind it, and
-    the wide satellite view has to be in hand before Begin will start
-    anything — the sequence must never stall halfway through a pullback.
+    Started as soon as the client knows which encodes apply, and never in the
+    way: the coastline is already on screen and already playing, so the rest
+    arrives behind a moving picture rather than in front of a message about
+    loading. The satellite images announce themselves through their own `img`
+    elements, which are in the document at zero opacity from the first client
+    render; only the farm take needs asking.
   */
   useEffect(() => {
-    if (mode !== 'stage' || !variant || !assetKey) return
-    const need = new Set(['farm', 'island', 'pacific'])
-    const markReady = (key: string) => {
-      need.delete(key)
-      if (need.size === 0) setReadyKey(assetKey)
+    if (mode !== 'stage' || !variant) return
+    const farm = videoRefs.current.farm
+    if (!farm) {
+      markLoaded('farm')
+      return
     }
-    const hint = window.setTimeout(() => setPreparing(true), 1000)
-
-    const load = () => {
-      const island = new Image()
-      island.onload = island.onerror = () => markReady('island')
-      island.src = narrow ? satellite.island.mid.src : satellite.island.wide.src
-
-      const pacific = new Image()
-      pacific.onload = pacific.onerror = () => markReady('pacific')
-      pacific.src = narrow ? satellite.pacific.mid.src : satellite.pacific.wide.src
-
-      const farm = videoRefs.current.farm
-      if (farm) {
-        const src = footage.farm[variant].src
-        if (farm.getAttribute('src') !== src) {
-          farm.src = src
-          farm.load()
-        }
-        if (farm.readyState >= 2) markReady('farm')
-        else {
-          const done = () => markReady('farm')
-          farm.addEventListener('loadeddata', done, { once: true })
-          farm.addEventListener('error', done, { once: true })
-        }
-      } else {
-        markReady('farm')
-      }
+    const src = footage.farm[variant].src
+    if (farm.getAttribute('src') !== src) {
+      farm.src = src
+      farm.load()
     }
-
-    const idle = window.requestIdleCallback?.(load, { timeout: 1200 })
-    const fallback = idle === undefined ? window.setTimeout(load, 200) : undefined
+    if (farm.readyState >= 2) {
+      markLoaded('farm')
+      return
+    }
+    const done = () => markLoaded('farm')
+    farm.addEventListener('loadeddata', done, { once: true })
+    farm.addEventListener('error', done, { once: true })
     return () => {
-      window.clearTimeout(hint)
-      if (idle !== undefined) window.cancelIdleCallback?.(idle)
-      if (fallback !== undefined) window.clearTimeout(fallback)
+      farm.removeEventListener('loadeddata', done)
+      farm.removeEventListener('error', done)
     }
-  }, [mode, variant, narrow, assetKey])
+  }, [mode, variant, markLoaded])
 
-  /* Later media is staged once the sequence is running — the Golden Gate has
-     nine seconds of warning, the photographs ten. */
+  /* The photographs are put into the document once the crossing is under way,
+     seven seconds before the café is needed. */
   useEffect(() => {
-    if (phase !== 'playing' || !variant) return
-    const gg = videoRefs.current.california
-    if (gg && !gg.getAttribute('src')) {
-      gg.src = footage.california[variant].src
-      gg.load()
-    }
+    if (!staged || !variant) return
+    let left = 2
     for (const photo of [photos.cafe, photos.truck]) {
       const img = new Image()
+      img.onload = img.onerror = () => {
+        left -= 1
+        if (left === 0) markLoaded('photos')
+      }
       img.src = narrow ? photo.tall.src : photo.wide.src
     }
-  }, [phase, variant, narrow])
+  }, [staged, variant, narrow, markLoaded])
 
   /* -------------------------------------------------------------- painting */
   const apply = useCallback(
-    (f: Frame) => {
+    (f: Frame, t: number) => {
       const stage = stageRef.current
       if (!stage) return
       const w = stage.clientWidth
@@ -220,36 +235,37 @@ export function SatelliteJourney() {
         if (el) el.style.opacity = value.toFixed(4)
       }
 
-      const span = f.camera.span * (narrow ? NARROW_SPAN : 1)
-      const view = resolve({ ...f.camera, span }, w, h)
+      /* One call, and it is the same one the coverage check runs: the camera
+         for this moment, narrowed and slid until the wide map is guaranteed
+         to cover the whole stage at this exact aspect ratio. Nothing
+         downstream can reintroduce an uncovered edge, because everything
+         downstream is placed relative to this view. */
+      const view = viewFor(t, w, h, narrow)
 
       const island = layerRefs.current.islandImage
       if (island) {
-        island.style.transform = placement(
-          view,
-          satellite.island.bounds,
-          narrow ? satellite.island.mid.width : satellite.island.wide.width,
-        )
+        island.style.transform = placement(view, satellite.island.bounds, satellite.island.wide.width)
       }
       const pacific = layerRefs.current.pacificImage
       if (pacific) {
         pacific.style.transform = placement(
           view,
           satellite.pacific.bounds,
-          narrow ? satellite.pacific.mid.width : satellite.pacific.wide.width,
+          pacificFrame(narrow).width,
         )
       }
 
       /* The overlay shares the wide image's geography, so it is placed by the
          same call — which is what guarantees the line sits on the coastline
-         rather than near it. `vector-effect` keeps the stroke one pixel wide
-         however far the camera has zoomed. */
+         rather than near it. */
       const svg = routeRef.current
       if (svg) {
         svg.style.transform = placement(view, satellite.pacific.bounds, satellite.pacific.wide.width)
         svg.style.opacity = f.route.opacity.toFixed(4)
       }
-      const sx = (view.ppd * (satellite.pacific.bounds.east - satellite.pacific.bounds.west)) / satellite.pacific.wide.width
+      const sx =
+        (view.ppd * (satellite.pacific.bounds.east - satellite.pacific.bounds.west)) /
+        satellite.pacific.wide.width
 
       /* Everything about the stroke is expressed in the overlay's own user
          units and divided by the camera's scale, so the line stays one
@@ -304,14 +320,10 @@ export function SatelliteJourney() {
 
       /* Playing only while it is on screen. Everything else is paused, so at
          most one take is ever decoding. */
-      for (const [key, layer] of [
-        ['coastline', 'coastline'],
-        ['farm', 'farm'],
-        ['california', 'california'],
-      ] as const) {
+      for (const key of ['coastline', 'farm'] as const) {
         const video = videoRefs.current[key]
         if (!video) continue
-        const visible = f.layers[layer] > 0.01
+        const visible = f.layers[key] > 0.01
         if (visible && video.paused && video.readyState >= 2) {
           void video.play().catch(() => {})
         } else if (!visible && !video.paused) {
@@ -322,17 +334,20 @@ export function SatelliteJourney() {
     [narrow, path, pathLen],
   )
 
-  /* ------------------------------------------------------------- the clock */
+  /* ------------------------------------------------------------- the clock
+     Started by mounting, not by a button. There is no first screen to get
+     past: the coastline is already on the page when this runs, and this is
+     what sets it moving. */
   useEffect(() => {
     if (mode !== 'stage') return
-    /* The cover holds the first frame; the destination holds the last. */
-    if (phase !== 'playing') {
-      apply(frameAt(phase === 'cover' ? 0 : DURATION))
+    /* The destination holds the last frame. */
+    if (phase === 'destination') {
+      apply(frameAt(DURATION), DURATION)
       return
     }
     if (paused) {
       for (const v of Object.values(videoRefs.current)) v?.pause()
-      apply(frameAt(elapsed.current))
+      apply(frameAt(elapsed.current), elapsed.current)
       return
     }
 
@@ -340,9 +355,21 @@ export function SatelliteJourney() {
     const step = (now: number) => {
       const dt = Math.min((now - last.current) / 1000, 0.1)
       last.current = now
-      elapsed.current = Math.min(elapsed.current + dt, DURATION)
-      apply(frameAt(elapsed.current))
-      if (elapsed.current >= DURATION) {
+
+      let next = Math.min(elapsed.current + dt, DURATION)
+      /* Hold at the first gate whose assets have not arrived. The gates are
+         in order, so the earliest unmet one wins. */
+      for (const gate of GATES) {
+        if (next > gate.t && !gate.need.every((k) => loaded.current.has(k))) {
+          next = Math.min(next, gate.t)
+          break
+        }
+      }
+      elapsed.current = next
+
+      if (next >= 8 && !staged) setStaged(true)
+      apply(frameAt(next), next)
+      if (next >= DURATION) {
         setPhase('destination')
         return
       }
@@ -350,15 +377,15 @@ export function SatelliteJourney() {
     }
     frame.current = requestAnimationFrame(step)
     return () => cancelAnimationFrame(frame.current)
-  }, [mode, phase, paused, apply])
+  }, [mode, phase, paused, staged, run, apply])
 
   /* Repaint on resize so the camera keeps its geography when the box changes. */
   useEffect(() => {
     if (mode !== 'stage') return
-    const onResize = () => apply(frameAt(phase === 'cover' ? 0 : elapsed.current))
+    const onResize = () => apply(frameAt(elapsed.current), elapsed.current)
     window.addEventListener('resize', onResize, { passive: true })
     return () => window.removeEventListener('resize', onResize)
-  }, [mode, phase, apply])
+  }, [mode, apply])
 
   /* A tab nobody is looking at does not run the sequence or decode video. */
   useEffect(() => {
@@ -379,39 +406,35 @@ export function SatelliteJourney() {
   }, [mode, paused])
 
   /* ------------------------------------------------------------- controls */
-  const begin = useCallback(() => {
-    elapsed.current = 0
-    autoPaused.current = false
-    setPaused(false)
-    setPhase('playing')
-  }, [])
-
   const skip = useCallback(() => {
     elapsed.current = DURATION
     setPaused(false)
+    setStaged(true)
     setPhase('destination')
   }, [])
 
-  const reset = useCallback(() => {
+  /**
+   * Replay, from the footer. A plain link that also asks the journey to start
+   * again — from the first frame, playing, with no stored flag anywhere and
+   * no second path through the code.
+   */
+  const restart = useCallback(() => {
     elapsed.current = 0
     autoPaused.current = false
-    setPaused(false)
-    setPhase('cover')
     for (const v of Object.values(videoRefs.current)) {
       if (!v) continue
       v.pause()
       if (v.currentTime && v.readyState >= 1) v.currentTime = 0
     }
-    window.requestAnimationFrame(() => beginRef.current?.focus())
+    setPaused(false)
+    setPhase('playing')
+    setRun((n) => n + 1)
   }, [])
 
-  /* Replay, from the footer. A plain link that also asks the journey to go
-     back to its first frame — without storage, and without playing. */
   useEffect(() => {
-    const onReplay = () => reset()
-    window.addEventListener('kona:journey-reset', onReplay)
-    return () => window.removeEventListener('kona:journey-reset', onReplay)
-  }, [reset])
+    window.addEventListener('kona:journey-reset', restart)
+    return () => window.removeEventListener('kona:journey-reset', restart)
+  }, [restart])
 
   const onKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
@@ -432,10 +455,9 @@ export function SatelliteJourney() {
 
   /*
     Escape is listened for on the document rather than on the section, because
-    by the time the sequence is running there is usually nothing inside the
-    journey holding focus: `Begin the Journey` is the last thing the visitor
-    touched, and it goes away when the sequence starts. A key that means "let
-    me out" has to work from wherever focus happens to be.
+    nothing inside the journey holds focus while it plays: it starts on its
+    own, so the visitor has touched nothing. A key that means "let me out" has
+    to work from wherever focus happens to be.
 
     It is bound only while the sequence is actually playing, and it stands
     aside for the header — the ordering chooser closes on Escape too, and the
@@ -454,11 +476,7 @@ export function SatelliteJourney() {
   }, [mode, phase])
 
   const selected = destinations.find((d) => d.id === choice) ?? destinations[0]
-  /* The Golden Gate and the two photographs are put into the document once
-     the sequence is running — nine and ten seconds before they are needed. */
-  const staged = phase !== 'cover'
   const showStage = mode === 'stage'
-  const onCover = phase === 'cover'
   const showDestination = phase === 'destination'
 
   return (
@@ -470,7 +488,7 @@ export function SatelliteJourney() {
       data-phase={phase}
       data-resolved={resolved ? '' : undefined}
       tabIndex={-1}
-      aria-labelledby="journey-start"
+      aria-label={lead.eyebrow}
       aria-describedby="journey-intro"
       onKeyDown={showStage ? onKeyDown : undefined}
     >
@@ -487,17 +505,16 @@ export function SatelliteJourney() {
       */}
       <noscript
         dangerouslySetInnerHTML={{
-          __html: `<style>.jy:not([data-resolved]) .jy-linear{display:block}</style>`,
+          __html: `<style>.jy:not([data-resolved]) .jy-linear,.jy:not([data-resolved]) .jy-lead{display:block}.jy:not([data-resolved]) .jy-stage{display:none}</style>`,
         }}
       />
 
       {/*
         The stage is rendered by the server as well as the client, so the Kona
         coastline is in the markup that paints first rather than something
-        React adds a moment later. Everything inside it that needs a decision —
-        which encode, whether the satellite is loaded — waits for one; the
-        poster does not. A reduced-motion visitor's copy of it is removed once
-        the client has decided, having cost them one image.
+        React adds a moment later — which is what lets the sequence start on
+        a picture instead of on a wait. Everything inside it that needs a
+        decision waits for one; the poster does not.
       */}
       <div ref={stageRef} className="jy-stage">
           <div className="jy-ground" aria-hidden="true" />
@@ -524,10 +541,80 @@ export function SatelliteJourney() {
             }}
             style={{ zIndex: 2 }}
           >
-            {/* Prepared during idle time, not at first paint: the coastline is
-                the only thing the opening screen needs to be on the wire. */}
             {variant ? (
               <Scene id="farm" media={footage.farm} variant={variant} register={registerVideo} />
+            ) : null}
+          </div>
+
+          {/* --------------------------------------------- the destination
+              Below the map, not above it. It comes up to full opacity while
+              the settled map still covers the stage, and the map then
+              dissolves away to reveal it — so the last transition of the
+              sequence is the same kind as every other one, and the café
+              arrives rather than cuts. */}
+          <div
+            className="jy-layer jy-layer--dest"
+            aria-hidden="true"
+            data-layer="destination"
+            ref={(n) => {
+              layerRefs.current.destination = n
+            }}
+            style={{ zIndex: 3 }}
+          >
+            {(staged ? destinations : []).map((d) => {
+              const photo = d.id === 'mountain-view' ? photos.cafe : photos.truck
+              return (
+                <picture key={d.id}>
+                  <source media={NARROW} srcSet={photo.tall.src} />
+                  <img
+                    className={`jy-place-photo jy-place-photo--${d.id}`}
+                    data-shown={choice === d.id ? 'true' : 'false'}
+                    src={photo.wide.src}
+                    alt=""
+                    width={photo.wide.width}
+                    height={photo.wide.height}
+                    decoding="async"
+                  />
+                </picture>
+              )
+            })}
+          </div>
+
+          <div
+            className="jy-layer jy-layer--sat"
+            aria-hidden="true"
+            data-layer="pacific"
+            ref={(n) => {
+              layerRefs.current.pacific = n
+            }}
+            style={{ zIndex: 4 }}
+          >
+            {variant ? (
+              /* eslint-disable-next-line @next/next/no-img-element --
+                 Deliberately not `next/image`. The camera positions this by
+                 its exact encoded pixel width against a known geographic
+                 extent; an optimiser that resizes it silently would move the
+                 map out from under the route. */
+              <img
+                className="jy-sat"
+                ref={(n) => {
+                  layerRefs.current.pacificImage = n
+                }}
+                src={pacificFrame(narrow).src}
+                alt=""
+                width={pacificFrame(narrow).width}
+                height={pacificFrame(narrow).height}
+                decoding="async"
+                fetchPriority="high"
+                onLoad={() => markLoaded('pacific')}
+                onError={() => markLoaded('pacific')}
+                style={
+                  {
+                    '--nat-w': `${pacificFrame(narrow).width}px`,
+                    '--nat-h': `${pacificFrame(narrow).height}px`,
+                  } as React.CSSProperties
+                }
+              />
             ) : null}
           </div>
 
@@ -538,60 +625,27 @@ export function SatelliteJourney() {
             ref={(n) => {
               layerRefs.current.island = n
             }}
-            style={{ zIndex: 4 }}
+            style={{ zIndex: 5 }}
           >
-            {ready ? (
-              /* eslint-disable-next-line @next/next/no-img-element --
-                 Deliberately not `next/image`. The camera positions this by
-                 its exact encoded pixel width against a known geographic
-                 extent; an optimiser that resizes it silently would move
-                 Hawaiʻi out from under the route. */
+            {variant ? (
+              /* eslint-disable-next-line @next/next/no-img-element -- see above. */
               <img
                 className="jy-sat"
                 ref={(n) => {
                   layerRefs.current.islandImage = n
                 }}
-                src={narrow ? satellite.island.mid.src : satellite.island.wide.src}
+                src={satellite.island.wide.src}
                 data-feather="true"
                 alt=""
-                width={narrow ? satellite.island.mid.width : satellite.island.wide.width}
-                height={narrow ? satellite.island.mid.height : satellite.island.wide.height}
+                width={satellite.island.wide.width}
+                height={satellite.island.wide.height}
                 decoding="async"
+                onLoad={() => markLoaded('island')}
+                onError={() => markLoaded('island')}
                 style={
                   {
-                    '--nat-w': `${narrow ? satellite.island.mid.width : satellite.island.wide.width}px`,
-                    '--nat-h': `${narrow ? satellite.island.mid.height : satellite.island.wide.height}px`,
-                  } as React.CSSProperties
-                }
-              />
-            ) : null}
-          </div>
-
-          <div
-            className="jy-layer jy-layer--sat"
-            aria-hidden="true"
-            data-layer="pacific"
-            ref={(n) => {
-              layerRefs.current.pacific = n
-            }}
-            style={{ zIndex: 3 }}
-          >
-            {ready ? (
-              /* eslint-disable-next-line @next/next/no-img-element -- see above. */
-              <img
-                className="jy-sat"
-                ref={(n) => {
-                  layerRefs.current.pacificImage = n
-                }}
-                src={narrow ? satellite.pacific.mid.src : satellite.pacific.wide.src}
-                alt=""
-                width={narrow ? satellite.pacific.mid.width : satellite.pacific.wide.width}
-                height={narrow ? satellite.pacific.mid.height : satellite.pacific.wide.height}
-                decoding="async"
-                style={
-                  {
-                    '--nat-w': `${narrow ? satellite.pacific.mid.width : satellite.pacific.wide.width}px`,
-                    '--nat-h': `${narrow ? satellite.pacific.mid.height : satellite.pacific.wide.height}px`,
+                    '--nat-w': `${satellite.island.wide.width}px`,
+                    '--nat-h': `${satellite.island.wide.height}px`,
                   } as React.CSSProperties
                 }
               />
@@ -603,7 +657,7 @@ export function SatelliteJourney() {
               between two verified airports, one hairline wide, with a single
               small glint travelling along it. No marker, no aircraft, no
               icon of any kind. */}
-          <div className="jy-routes" aria-hidden="true" style={{ zIndex: 5 }}>
+          <div className="jy-routes" aria-hidden="true" style={{ zIndex: 6 }}>
             <svg
               ref={routeRef}
               className="jy-route"
@@ -638,54 +692,6 @@ export function SatelliteJourney() {
           </div>
 
           <div
-            className="jy-layer"
-            aria-hidden="true"
-            data-layer="california"
-            ref={(n) => {
-              layerRefs.current.california = n
-            }}
-            style={{ zIndex: 6 }}
-          >
-            {staged ? (
-              <Scene
-                id="california"
-                media={footage.california}
-                variant={variant}
-                register={registerVideo}
-              />
-            ) : null}
-          </div>
-
-          {/* ----------------------------------------------- the destination */}
-          <div
-            className="jy-layer jy-layer--dest"
-            aria-hidden="true"
-            data-layer="destination"
-            ref={(n) => {
-              layerRefs.current.destination = n
-            }}
-            style={{ zIndex: 7 }}
-          >
-            {(staged ? destinations : []).map((d) => {
-              const photo = d.id === 'mountain-view' ? photos.cafe : photos.truck
-              return (
-                <picture key={d.id}>
-                  <source media={NARROW} srcSet={photo.tall.src} />
-                  <img
-                    className={`jy-place-photo jy-place-photo--${d.id}`}
-                    data-shown={choice === d.id ? 'true' : 'false'}
-                    src={photo.wide.src}
-                    alt=""
-                    width={photo.wide.width}
-                    height={photo.wide.height}
-                    decoding="async"
-                  />
-                </picture>
-              )
-            })}
-          </div>
-
-          <div
             className="jy-veil jy-veil--bottom"
             aria-hidden="true"
             style={{ zIndex: 8 }}
@@ -704,6 +710,17 @@ export function SatelliteJourney() {
 
           {/* ---------------------------------------------------- the words */}
           <div className="jy-captions" aria-hidden={showDestination} style={{ zIndex: 9 }}>
+            <p
+              className="jy-caption jy-caption--title"
+              data-anchor={CAPTION_ANCHORS.kona}
+              ref={(n) => {
+                captionRefs.current.kona = n
+              }}
+            >
+              {captions.kona.map((line) => (
+                <span key={line}>{line}</span>
+              ))}
+            </p>
             <p
               className="jy-caption jy-caption--title"
               data-anchor={CAPTION_ANCHORS.farm}
@@ -725,15 +742,6 @@ export function SatelliteJourney() {
               <span>{captions.pacific.primary}</span>
               <span className="jy-caption__sub">{captions.pacific.secondary}</span>
             </p>
-            <p
-              className="jy-caption jy-caption--title"
-              data-anchor={CAPTION_ANCHORS.california}
-              ref={(n) => {
-                captionRefs.current.california = n
-              }}
-            >
-              <span>{captions.california}</span>
-            </p>
           </div>
 
           {/* A live region so the sequence is followable without seeing it. */}
@@ -741,8 +749,12 @@ export function SatelliteJourney() {
             {phase === 'playing' ? journey.summary : ''}
           </p>
 
-          {/* ------------------------------------------------- the controls */}
-          {phase === 'playing' ? (
+          {/* ------------------------------------------------- the controls
+              On screen from the first frame, because the journey is now the
+              first thing that happens: whoever did not ask for it must be
+              able to stop it or leave immediately, and small understated
+              controls in the corner are how. */}
+          {showStage && !showDestination ? (
             <div className="jy-controls" style={{ zIndex: 11 }}>
               <button type="button" className="jy-control" onClick={() => setPaused((p) => !p)}>
                 {paused ? controls.play : controls.pause}
@@ -802,38 +814,22 @@ export function SatelliteJourney() {
           ) : null}
       </div>
 
-      {/* -------------------------------------------------------- the cover */}
-      <div className="jy-cover" data-hidden={showStage && !onCover ? 'true' : 'false'}>
-        <p className="jy-eyebrow">{cover.eyebrow}</p>
-        <h1 id="journey-start" className="jy-headline">
-          {cover.headline}
-        </h1>
+      {/* --------------------------------------------------------- the lead
+          The heading over the linear story, and the only place the journey
+          asks anything of anyone. It exists for the two visitors who never
+          see the animation — reduced motion, and no JavaScript — so it is
+          hidden for everybody else rather than fading out over the stage. */}
+      <div className="jy-lead">
+        <p className="jy-eyebrow">{lead.eyebrow}</p>
+        <h2 className="jy-headline">{lead.headline}</h2>
         <div className="jy-actions">
-          {showStage ? (
-            <button
-              ref={beginRef}
-              type="button"
-              className="jy-action jy-action--primary"
-              onClick={begin}
-              disabled={!ready}
-              aria-describedby={preparing && !ready ? 'journey-preparing' : undefined}
-            >
-              {cover.beginLabel}
-            </button>
-          ) : (
-            <a href="#journey-story" className="jy-action jy-action--primary">
-              {journey.continueLabel}
-            </a>
-          )}
+          <a href="#journey-story" className="jy-action jy-action--primary">
+            {journey.continueLabel}
+          </a>
           <a href="#home-content" className="jy-action">
             {journey.enterLabel}
           </a>
         </div>
-        {showStage && preparing && !ready ? (
-          <p id="journey-preparing" className="jy-preparing" role="status">
-            Preparing the journey…
-          </p>
-        ) : null}
       </div>
 
       {/* ------------------------------------------------------ linear story
@@ -841,6 +837,14 @@ export function SatelliteJourney() {
           carries the complete story and every verified action, so nothing
           meaningful depends on the animation running. */}
       <div className="jy-linear" id="journey-story">
+        <Still
+          wide={footage.coastline.wide.poster}
+          narrowSrc={footage.coastline.tall.poster}
+          width={footage.coastline.wide.width}
+          height={footage.coastline.wide.height}
+          description={footage.coastline.description}
+          lines={captions.kona}
+        />
         <Still
           wide={footage.farm.wide.poster}
           narrowSrc={footage.farm.tall.poster}
@@ -851,20 +855,12 @@ export function SatelliteJourney() {
         />
         <Still
           wide={satellite.pacific.wide.src}
-          narrowSrc={satellite.pacific.mid.src}
+          narrowSrc={pacificFrame(true).src}
           width={satellite.pacific.wide.width}
           height={satellite.pacific.wide.height}
           description={satellite.pacific.description}
           lines={[captions.pacific.primary]}
           sub={captions.pacific.secondary}
-        />
-        <Still
-          wide={footage.california.wide.poster}
-          narrowSrc={footage.california.tall.poster}
-          width={footage.california.wide.width}
-          height={footage.california.wide.height}
-          description={footage.california.description}
-          lines={[captions.california]}
         />
 
         <div className="jy-linear__close">

@@ -236,8 +236,8 @@
   }
 
   /* --- The Kona journey ----------------------------------------------------
-     An optional eleven-second sequence that plays only when the visitor asks
-     for it, over the top of the homepage.
+     A seventeen-second sequence that starts on its own, over the top of the
+     homepage.
 
      Two modes, one section. `data-mode="linear"` is what the server sends and
      what a reduced-motion visitor keeps: three stills, their words and the
@@ -270,13 +270,34 @@
     isolation: isolate;
   }
 
-  /* The solid ground under every layer. Nothing that fades can reveal the
-     page behind it, or white, or black — only this. */
+  /* The ground under every layer. Nothing that fades can reveal the page
+     behind it, or white, or black — only this.
+
+     It carries a 253-byte, 32 x 16 pixel blur of the Kona coastline, inline
+     in this stylesheet. That exists for one window: the sequence now starts
+     the moment the page paints, and the coastline poster is 95 kB, so between
+     the first paint and the poster's decode there was a fraction of a second
+     of flat espresso black. A journey that begins on its own must not begin
+     on an empty screen, and this is a few hundred bytes in a file the browser
+     already has rather than another request. The scale does the blurring; the
+     filter only softens what is left of the 32-pixel grid. */
   .jy-ground {
     position: absolute;
     inset: 0;
     z-index: 0;
     background-color: var(--color-pacific-950);
+    background-image:
+      linear-gradient(
+        color-mix(in srgb, var(--color-pacific-950) 58%, transparent),
+        color-mix(in srgb, var(--color-pacific-950) 58%, transparent)
+      ),
+      url('data:image/jpeg;base64,/9j//gAQTGF2YzYwLjMxLjEwMgD/2wBDAAgYGBwYHCEhISEhISckJygoKCcnJycoKCgrKyszMzMrKysoKCsrMDAzMzc5NzQ0MzQ5OTw8PEhIRUVUVFdnZ3z/xABcAAADAQEAAAAAAAAAAAAAAAADBgUHBAEBAQAAAAAAAAAAAAAAAAAAAgMQAAMAAQMFAQAAAAAAAAAAAAABAhESIWFSIjKBkUERAQEAAAAAAAAAAAAAAAAAAAAB/8AAEQgAEAAgAwEiAAIRAAMRAP/aAAwDAQACEQMRAD8AzlJ/h1Ss7amnwBnqfvABPubDBMkThed/SzNctiirwUIvcsL/2Q==');
+    background-size: cover;
+    background-position: center;
+    /* Held down towards the ground colour. The blur is there to say a picture
+       is coming, not to be looked at, and the opening words sit over it. */
+    filter: blur(18px);
+    transform: scale(1.08);
   }
 
   /* --- Picture layers ------------------------------------------------------
@@ -416,15 +437,26 @@
     font-size: 0.5625rem;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-gold-400) 82%, transparent);
+    color: color-mix(in srgb, var(--color-gold-400) 96%, transparent);
     white-space: nowrap;
-    /* The Bay Area label sits over a bright, snow-covered landmass; Kona's
-       sits over near-black water. A tight halo — the cartographer's trick —
-       carries both without putting a chip or a plate on the map. */
+    /*
+      A tight halo — the cartographer's trick — rather than a chip or a plate
+      on the map. Both labels have to survive whatever is under them: Bay Area
+      sits beside a snow-lit coast, and Kona sits on the island itself once
+      the camera has pulled back far enough to make it small.
+
+      The first two layers are the same near-opaque two-pixel shadow twice
+      over. That is what makes this measurable rather than merely pretty: one
+      pass leaves the glyph carrying against green land at about 3.3:1, and
+      the second deepens the core of the halo to where the label is painted on
+      its own ground and clears AA on every viewport.
+    */
     text-shadow:
-      0 0 3px color-mix(in srgb, var(--color-pacific-950) 96%, transparent),
-      0 0 7px color-mix(in srgb, var(--color-pacific-950) 88%, transparent),
-      0 1px 2px color-mix(in srgb, var(--color-pacific-950) 92%, transparent);
+      0 0 2px color-mix(in srgb, var(--color-pacific-950) 99%, transparent),
+      0 0 2px color-mix(in srgb, var(--color-pacific-950) 99%, transparent),
+      0 0 5px color-mix(in srgb, var(--color-pacific-950) 95%, transparent),
+      0 0 9px color-mix(in srgb, var(--color-pacific-950) 84%, transparent),
+      0 1px 2px color-mix(in srgb, var(--color-pacific-950) 94%, transparent);
     opacity: 0;
     will-change: transform, opacity;
   }
@@ -439,17 +471,6 @@
 
   .jy-place--destination {
     translate: calc(-100% - 0.5rem) -1.4rem;
-    /* Lifted to match Kona's presence, and only that far. Kona's label sits on
-       near-black water and needs nothing; this one sits beside a snow-lit
-       coast, where the same ink reads a stop quieter. The size, the weight and
-       the colour are unchanged — what changes is how much of it survives the
-       ground behind it. */
-    color: color-mix(in srgb, var(--color-gold-400) 96%, transparent);
-    text-shadow:
-      0 0 2px color-mix(in srgb, var(--color-pacific-950) 98%, transparent),
-      0 0 5px color-mix(in srgb, var(--color-pacific-950) 94%, transparent),
-      0 0 10px color-mix(in srgb, var(--color-pacific-950) 82%, transparent),
-      0 1px 2px color-mix(in srgb, var(--color-pacific-950) 94%, transparent);
   }
 
   /* --- The destination composition -----------------------------------------
@@ -474,10 +495,11 @@
     opacity: 1;
   }
 
-  /* The entrance is the subject, with enough of the round sign above it to
-     recognise the place — and the sign clear of the site header. */
+  /* The café's two crops already frame the entrance — the round sign, the
+     awning, the glass and the open door — so there is nothing left here to
+     nudge: what the crop chose is what should be on screen, centred. */
   .jy-place-photo--mountain-view {
-    object-position: 50% 30%;
+    object-position: 50% 50%;
   }
 
   /*
@@ -578,40 +600,18 @@
     color: color-mix(in srgb, var(--color-ink-inverse) 92%, transparent);
   }
 
-  /* --- Cover ---------------------------------------------------------------
-     The opening screen. `Begin the Journey` and `Enter Kona` are offered
-     together, and the second is never a dismissal: it is a link to the
-     homepage, and it works from the first frame onward. */
-  .jy-cover {
-    position: absolute;
-    inset: 0;
-    z-index: 12;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 5rem 1.5rem 5.5rem;
-    transition: opacity 520ms var(--ease-calm);
-    /* Its own ground. The opening screen is the one place with no timeline
-       behind it — it waits as long as the visitor does — so what makes the
-       headline readable cannot be something the sequence fades in. */
-    background: linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-pacific-950) 93%, transparent) 0%,
-      color-mix(in srgb, var(--color-pacific-950) 87%, transparent) 30%,
-      color-mix(in srgb, var(--color-pacific-950) 64%, transparent) 50%,
-      color-mix(in srgb, var(--color-pacific-950) 24%, transparent) 68%,
-      transparent 86%
-    );
+  /* --- The lead ------------------------------------------------------------
+     The heading over the linear story. It belongs to the two visitors who
+     never see the animation — reduced motion, and no JavaScript — so it is a
+     block of text at the top of a column, not a screen with a button on it.
+     For everyone else the sequence has already started and there is nothing
+     here to show. */
+  .jy-lead {
+    padding: 7.5rem 1.5rem 3rem;
   }
 
-  .jy-cover > * {
-    max-width: 34rem;
-  }
-
-  .jy-cover[data-hidden='true'] {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
+  .jy-lead > * {
+    max-width: 46rem;
   }
 
   .jy-eyebrow {
@@ -630,15 +630,6 @@
     letter-spacing: -0.015em;
     color: var(--color-ink-inverse);
     text-wrap: balance;
-  }
-
-  .jy-preparing {
-    margin-top: 1rem;
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-ink-inverse) 62%, transparent);
   }
 
   /* --- Actions ------------------------------------------------------------- */
@@ -742,9 +733,10 @@
     padding: 5rem 1.5rem 5.5rem;
     /* Its own ground, rather than the veil the sequence uses: this screen has
        no timeline behind it and stays until the visitor chooses, so what is
-       under the words must not depend on a clock that has stopped. Weighted
-       to the lower half, which leaves the café sign and the truck's logo in
-       clear air at the top of the frame. */
+       under the words must not depend on a clock that has stopped.
+
+       Weighted to the lower half, where the words are. On a narrow screen the
+       words cross the whole frame, so this is all there is. */
     background: linear-gradient(
       to top,
       color-mix(in srgb, var(--color-pacific-950) 95%, transparent) 0%,
@@ -754,6 +746,22 @@
       color-mix(in srgb, var(--color-pacific-950) 16%, transparent) 78%,
       transparent 90%
     );
+    /* The words settle onto the photograph rather than appearing on it. The
+       map has just finished dissolving away underneath them, and a hard
+       arrival at that moment would read as a slide change — which is the one
+       thing the last transition is built to avoid. */
+    animation: jy-settle 760ms var(--ease-calm) both;
+  }
+
+  @keyframes jy-settle {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 12px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .jy-close > * {
@@ -819,24 +827,16 @@
      The `noscript` rule in the component hands it back to anyone with no
      script to make that decision. */
   .jy:not([data-resolved]) .jy-linear,
-  .jy[data-mode='stage'] .jy-linear {
+  .jy:not([data-resolved]) .jy-lead,
+  .jy[data-mode='stage'] .jy-linear,
+  .jy[data-mode='stage'] .jy-lead {
     display: none;
   }
 
-  /* Everything above is the animation. These are the overrides that turn it
-     back into an editorial column for a reduced-motion visitor. */
+  /* Everything above is the animation. This is what turns it back into an
+     editorial column for a reduced-motion visitor. */
   .jy[data-mode='linear'][data-resolved] .jy-stage {
     display: none;
-  }
-
-  .jy[data-mode='linear'][data-resolved] .jy-cover {
-    position: static;
-    padding: 7.5rem 1.5rem 3rem;
-    background: none;
-  }
-
-  .jy[data-mode='linear'][data-resolved] .jy-cover > * {
-    max-width: 46rem;
   }
 
   .jy-linear__panel,
@@ -882,7 +882,7 @@
   }
 
   @media (min-width: 900px) {
-    .jy[data-mode='linear'][data-resolved] .jy-cover {
+    .jy-lead {
       padding: 9rem 3rem 3rem;
     }
 
@@ -900,11 +900,11 @@
   }
 
   /* --- The journey on a narrow screen --------------------------------------
-     The same eleven seconds and the same words. What changes is how much
+     The same seventeen seconds and the same words. What changes is how much
      ocean is on screen, where the route labels sit, and how much room the
      closing choice needs. */
   @media (max-width: 639px) {
-    .jy-cover,
+    .jy-lead,
     .jy-close {
       padding: 4.5rem 1.25rem 4.5rem;
     }
@@ -994,9 +994,39 @@
   }
 
   @media (min-width: 900px) {
-    .jy-cover,
     .jy-close {
       padding: 6rem 4rem 6rem;
+    }
+
+    /*
+      On a wide screen the words occupy a column down the left and the
+      photograph has room to be looked at beside them — so the ground goes
+      where the words are instead of over everything.
+
+      This is the difference between a readable screen and a dark one. The
+      café's open door is the whole point of the last frame; a scrim heavy
+      enough to carry text across the full width puts that door in shadow to
+      solve a problem that only exists in the left third. Two gradients: a
+      firm one under the column, and a light lift along the foot so the
+      closing line and the truck's wheels do not sit on bare photograph.
+    */
+    .jy-close {
+      background:
+        linear-gradient(
+          to right,
+          color-mix(in srgb, var(--color-pacific-950) 93%, transparent) 0%,
+          color-mix(in srgb, var(--color-pacific-950) 88%, transparent) 26%,
+          color-mix(in srgb, var(--color-pacific-950) 62%, transparent) 44%,
+          color-mix(in srgb, var(--color-pacific-950) 24%, transparent) 60%,
+          transparent 74%
+        ),
+        linear-gradient(
+          to top,
+          color-mix(in srgb, var(--color-pacific-950) 62%, transparent) 0%,
+          color-mix(in srgb, var(--color-pacific-950) 34%, transparent) 26%,
+          color-mix(in srgb, var(--color-pacific-950) 12%, transparent) 46%,
+          transparent 64%
+        );
     }
 
     .jy-captions {
