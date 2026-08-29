@@ -159,8 +159,8 @@ export const journey: JourneyContent = {
         'The Mountain View café entrance, its door open beneath the round Kona Island Coffee sign.',
     },
     truck: {
-      wide: { src: '/journey/truck-wide.jpg', width: 720, height: 900 },
-      tall: { src: '/journey/truck-tall.jpg', width: 480, height: 600 },
+      wide: { src: '/journey/truck-wide.jpg', width: 1600, height: 1000 },
+      tall: { src: '/journey/truck-tall.jpg', width: 700, height: 1296 },
       description: 'The Kona coffee truck with its service window open and a customer ordering.',
     },
   },
