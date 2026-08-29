@@ -59,8 +59,22 @@ const CAMERA_WIDE: (Camera & { t: number })[] = [
      detail rather than a change of picture. */
   { t: 7.0, lat: 19.66, lon: -155.8, span: 1.72 },
   { t: 8.5, lat: 19.62, lon: -155.55, span: 4.2 },
-  { t: 11.0, lat: 22.6, lon: -150.2, span: 13.0 },
-  { t: 13.0, lat: 25.8, lon: -144.5, span: 26.0 },
+  /*
+     Four keyframes where there were two, and they track the great circle
+     rather than the ocean at large. The corridor bows north, and a camera that
+     climbs and widens more slowly than the line is drawn puts the leading edge
+     off the top or the right of the frame around two thirds of the way across
+     — which is precisely how a route drawn at a straight rate gets lost. Each
+     of these is the framing that holds Kona and the leading edge with a
+     fourteen per cent margin at the tightest aspect this camera serves.
+
+     The pullback is still one continuous decelerating move: 4.2° to 40° with
+     no step and no reversal anywhere in it.
+  */
+  { t: 10.0, lat: 22.1, lon: -152.7, span: 10.5 },
+  { t: 11.0, lat: 23.8, lon: -150.0, span: 18.1 },
+  { t: 12.0, lat: 25.4, lon: -147.1, span: 25.2 },
+  { t: 13.0, lat: 26.9, lon: -144.0, span: 33.3 },
   { t: 14.5, lat: 28.68, lon: -139.21, span: 40.0 },
   /* Comes to rest on California a full second before the map begins to
      dissolve, so the last thing the map does is settle rather than vanish
@@ -72,9 +86,10 @@ const CAMERA_NARROW: (Camera & { t: number })[] = [
   { t: 5.5, lat: 19.59, lon: -155.99, span: 0.62 },
   { t: 7.0, lat: 19.68, lon: -155.9, span: 1.6 },
   { t: 8.5, lat: 19.62, lon: -155.6, span: 4.6 },
-  { t: 11.0, lat: 22.5, lon: -152.5, span: 9.0 },
-  { t: 13.0, lat: 28.0, lon: -142.0, span: 15.0 },
-  { t: 14.5, lat: 35.0, lon: -128.5, span: 20.0 },
+  { t: 10.0, lat: 21.0, lon: -151.4, span: 9.0 },
+  { t: 11.0, lat: 22.8, lon: -146.9, span: 13.0 },
+  { t: 13.0, lat: 27.4, lon: -135.7, span: 17.0 },
+  { t: 14.5, lat: 29.8, lon: -126.8, span: 20.0 },
   { t: 16.0, lat: 36.6, lon: -125.0, span: 12.0 },
 ]
 
@@ -117,7 +132,7 @@ const CAPTIONS = [
   /* Over the wide Pacific the route runs from the lower left to the upper
      right, which puts Hawaiʻi in the bottom-left corner — exactly where these
      words would otherwise sit. They go to the top, over open ocean. */
-  { key: 'pacific', anchor: 'top', in: [9.6, 10.3], out: [14.2, 14.9] },
+  { key: 'pacific', anchor: 'top', in: [8.8, 9.5], out: [14.2, 14.9] },
 ] as const
 
 export type CaptionKey = (typeof CAPTIONS)[number]['key']
@@ -152,19 +167,30 @@ export function frameAt(t: number): Frame {
 
   const route = {
     /*
-      Eased *in*, not out, and this is the whole point of it. The line is drawn
-      while the camera is still pulling back, so the frame is widening
-      underneath it. Anything that starts fast sends the leading edge past the
-      right-hand edge of the frame within half a second and draws the rest of
-      the Pacific off-screen: the visitor sees a finished line appear rather
-      than a line being drawn, and the glint travels where nobody can see it.
-      Starting slow and accelerating keeps the head inside the frame the whole
-      way, arriving at the Bay Area as the camera settles.
+      Eased *in*, and the exponent is the whole argument.
+
+      The line is drawn while the camera is still pulling back, so the frame is
+      widening underneath it. Anything that starts fast sends the leading edge
+      past the right-hand edge within half a second and draws the rest of the
+      Pacific off-screen: the visitor sees a finished line appear rather than a
+      line being drawn. That is what the ease-in is for.
+
+      But squaring it overcorrected. At p² the first second of the crossing
+      moves the head barely three per cent of the way, which reads as an ocean
+      nobody is doing anything with — the phase has started and nothing has
+      visibly happened. p^1.25 is the smallest exponent that still holds the
+      head inside the frame at every viewport, and it puts roughly a tenth of
+      the line on screen within the first half second, so the Pacific arriving
+      and the journey starting are the same moment.
+
+      Beginning at 8.75 rather than 9.5 does the rest: the wide map becomes
+      legible at about 8.5, and the line starts moving a quarter of a second
+      later instead of a second later.
     */
-    progress: seg(t, 9.5, 14.5) ** 2,
-    /* Gone well before the map begins to dissolve, so the line is never left
-       floating over the photograph underneath it. */
-    opacity: Math.min(seg(t, 9.2, 10.2), 1 - seg(t, 14.9, 15.6)),
+    progress: seg(t, 8.7, 14.45),
+    /* Up with the line, not before it; gone well before the map begins to
+       dissolve, so it is never left floating over the photograph underneath. */
+    opacity: Math.min(seg(t, 8.55, 9.15), 1 - seg(t, 14.9, 15.6)),
   }
 
   const captions = {} as Record<CaptionKey, { opacity: number; shift: number }>

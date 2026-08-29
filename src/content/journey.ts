@@ -132,7 +132,7 @@ export const journey: JourneyContent = {
     },
     pacific: {
       wide: { src: '/journey/pacific-wide.jpg', width: 3000, height: 3647 },
-      mid: { src: '/journey/pacific-mid.jpg', width: 1500, height: 1824 },
+      mid: { src: '/journey/pacific-mid.jpg', width: 2000, height: 2431 },
       bounds: { north: 61.99875, south: 0, west: -165.00375, east: -114.0075 },
       description:
         'A NASA satellite view of the eastern North Pacific, from the equator to Alaska, with the Hawaiian Islands to the south-west and the coast of California to the north-east.',

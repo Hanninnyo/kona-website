@@ -162,6 +162,60 @@ Both originals are 1536 × 2048. They were delivered inside
 `kona-destination-photos.zip`, extracted outside the repository, and only the
 derivatives below are committed.
 
+The close view is feathered at its margins — eighteen per cent on the left and
+right, nine on the top and bottom — so its rectangle does not end on a line
+once its brightness matches the tile beneath. Hawaiʻi occupies 30–74% of that
+image's width and 9.7–91% of its height, so neither margin reaches the land,
+and a mask lowers opacity rather than blurring anything.
+
+Cutting the close view taller, to the full 1000 rows of its source, was tried
+and reverted. It moves the top edge further from Upolu Point and allows a
+wider margin, but it also makes the whole rectangle larger on screen, so its
+edge sits in open water for longer: measured, the worst coherent straight step
+on a phone went from 2.3 to 3.2. The measurement decided it.
+
+### The straight-seam check
+
+`seamcheck.mjs`, kept with the working sources, samples the overlap window
+from about 7.8 to 10.6 seconds on all five viewports and looks for what a seam
+actually is: a row or column that differs from its neighbour by about the same
+amount all the way along. It averages the signed difference along the line and
+divides by the mean absolute difference, so a genuine step scores near 1.0 for
+coherence while anything textured scores far lower. It scans whole lines and
+also halves and quarters, because the edge of a rectangle covering part of the
+frame is every bit as straight as one crossing all of it. It scans **open
+water only** — a coastline is a large step that happens to run straight for a
+couple of hundred pixels, and without that restriction the check spends its
+time rediscovering the Big Island. The page's own words are hidden while it
+measures, since a headline is a perfectly coherent bright band.
+
+Measured with the same check, before and after, over the same window:
+
+| Viewport | Committed build | Revised |
+| --- | --- | --- |
+| 1440 × 900 | 1.49 | 1.28 |
+| 1280 × 800 | 1.76 | 1.80 |
+| 1024 × 768 | 1.99 | 1.84 |
+| 768 × 1024 | 2.31 | 1.72 |
+| 390 × 844 | 3.72 | 2.25 |
+| frames over 2.0 | **41 of 128** | **0 of 107** |
+
+**The truck was re-framed to show the whole vehicle.** The earlier crop —
+945 x 1181 of the same original — was a close view of the service window that
+read as cramped beside the café. Both crops now carry the complete trailer:
+the round Kona Island Coffee mark, the Hot / Cold / Blended / Specialty panel,
+the crêpes and best-sellers boards, the open service window with a customer at
+it, both wheels, the A-frame menu and the forecourt around it.
+
+Four other truck images exist in `public/images/`. Three of them —
+`coffee-truck.jpg`, `truck/truck-hero.jpg` and `truck/truck-service.jpg` —
+carry the four-point sparkle watermark of a generative model and are excluded
+on sight. The fourth, `2023-first-coffee-truck-launch.jpg`, is authentic and
+by far the widest source available at 7952 x 5304, and it was rejected on
+content rather than provenance: it shows the opposite side of the trailer, so
+it has neither the service window nor the crêpes panel, both of which this
+destination is required to keep.
+
 **The truck photograph carries older menu graphics** — a printed panel
 advertising crepes, and an A-frame board — which no longer reflect what is
 served. The crop pushes that panel to the edge of frame and leaves the A-frame
@@ -188,8 +242,8 @@ work.
 | --- | --- | --- |
 | `cafe-wide.jpg` | `1536:960:0:280` | `1600:1000` |
 | `cafe-tall.jpg` | `940:1740:300:200` | `700:1296` |
-| `truck-wide.jpg` | `945:1181:0:380` | `720:900` |
-| `truck-tall.jpg` | `945:1181:0:380` | `480:600` |
+| `truck-wide.jpg` | `1536:960:0:430` | `1600:1000` |
+| `truck-tall.jpg` | `936:1734:0:314` | `700:1296` |
 
 **The café was re-framed on its entrance**, and the two crops are cut
 separately because one cannot serve both shapes of screen. The original is
@@ -296,7 +350,7 @@ recorded in `src/content/journey.ts` are the crop and nothing is inferred.
 | Output | Crop from source | Scale | Covers | Size |
 | --- | --- | --- | --- | --- |
 | `pacific-wide.jpg` | `4533:5511:1333:2489` of 8000 × 8000 | `3000:3647` | lon −165.00375…−114.00750, lat 0…61.99875 | 401 kB |
-| `pacific-mid.jpg` | same crop | `1500:1824` | same | 162 kB |
+| `pacific-mid.jpg` | same crop | `2000:2431` | same | 240 kB |
 | `hawaii-wide.jpg` | `1200:750:0:84` of 1200 × 1000 | `1600:1000` | lon −156.9344…−154.0633, lat 18.7474…20.4336 | 76 kB |
 
 **The Pacific derivative was re-cut, and the reason is a defect the old one
@@ -315,6 +369,18 @@ viewport, at any moment. Nothing is overscaled to achieve that, and no vignette
 or overlay hides anything: the image simply contains the ground the camera
 asks for.
 
+**`pacific-mid.jpg` was re-cut larger, and the reason is measurable.** At
+1500 × 1824 its deep ocean carried visible JPEG block quantisation: averaged
+across a flat nine-hundred-pixel band, the row-to-row step at every eighth row
+was 0.55 luminance points against roughly zero at the other seven, and the
+worst such row measured 1.79 at a coherence of 1.00 — a perfectly straight
+full-width edge, which is what an eight-pixel DCT grid looks like once a very
+dark, very smooth gradient is stretched across a phone. On screen it read as a
+horizontal line across the ocean during the crossing. At 2000 × 2431 the worst
+row is 1.00 and the tile is magnified less, which puts it under anything
+visible. The wide tile never had the problem: it is large enough that a block
+spans less sky.
+
 `hawaii-mid.jpg` has been **deleted**. The close view is 76 kB at full size and
 it is the one image in the sequence a phone sees at close to its own pixel
 scale, so the lighter 900 × 563 encode was the softest thing on screen at the
@@ -328,6 +394,47 @@ pacific  eq=gamma=1.44:brightness=0.030:saturation=1.55:contrast=1.02,
 hawaii   eq=gamma=1.42:brightness=0.012:saturation=1.34:contrast=1.00,
          colorbalance=rs=-0.05:bs=0.08
 ```
+
+### Sitting the close view's water on the wide view's water
+
+The two grades above brought the two oceans to within a few points **on
+average**, and an average was not enough. The MODIS scene carries a smooth
+haze-and-glint gradient across its water: measured against the Blue Marble
+tile at the same points on the Earth, its ocean matched to within four
+luminance points west of the island and was **up to twenty-one points
+brighter** to the east and south. That gradient is why the close image's
+rectangle was visible as it faded — no single gain corrects a gradient, and
+the eye finds a straight edge in a flat sea at a difference far smaller than
+twenty-one points.
+
+So the correction is built as a field, by `oceanfit.mjs`, kept with the
+working sources outside this repository:
+
+1. For every water pixel of the graded close image, take the difference
+   against the Blue Marble tile at the same latitude and longitude.
+2. Collect those differences on a coarse 100 x 63 grid and smooth them
+   heavily, carrying the weights alongside the sums so the field crosses the
+   island without the island pulling it anywhere.
+3. Damp each cell towards no correction in proportion to how much water
+   actually supports it, and clamp what is left.
+4. Subtract the field, masked to water.
+5. Repeat once with a tighter kernel, to take out what the first pass was too
+   smooth to follow.
+
+Water is separated from land by the one channel relation that divides them
+cleanly in this scene — water is bluer than it is green, B minus G of +13 to
++19, where land runs -18 to -47 — and the mask is feathered so no coastline
+acquires an edge of its own.
+
+After it the same eight sample points differ by **-7.2 to +5.0** rather than
+-4.2 to +21.0, and at the rendered boundary the close image's edges measure
+**0.4, -1.2 and under 1.1 luminance points** against the tile beneath, where
+they measured 13.9, 7.2 and 16.4.
+
+**This is a colour correction and nothing else.** No feature is moved, added,
+removed, extended or repainted, and no generative editing of any kind was
+used. The island itself is untouched: the mask excludes it, and a mask lowers
+opacity, it does not blur.
 
 The lift is substantial and it is deliberate. Deep ocean in the Blue Marble
 source measures RGB (2, 5, 20) — very nearly black — and at the wide framing
@@ -389,12 +496,12 @@ Measured payloads, from a real browser running the whole sequence:
 
 | | First paint | Whole journey |
 | --- | --- | --- |
-| Mobile (390 px, portrait encodes) | 40 kB | 1357 kB |
-| Desktop (1440 px, landscape encodes) | 95 kB | 3329 kB |
+| Mobile (390 px, portrait encodes) | 40 kB | 1597 kB |
+| Desktop (1440 px, landscape encodes) | 95 kB | 3517 kB |
 
 First paint is one poster — the Kona coastline — and nothing else. Everything
 else is fetched behind it while it plays.
 
-A reduced-motion visitor and a visitor without JavaScript fetch no video at
+A reduced-motion visitor fetches 1221 kB and no video at
 all: the linear story is told in posters, the satellite still and the two
 photographs.

@@ -360,12 +360,60 @@
      sees as the camera pulls back is detail falling away — not one photograph
      stopping and another starting. */
   .jy-sat[data-feather='true'] {
-    /* A margin feather rather than a vignette: the island reaches almost to
-       the top and bottom of its own frame, so anything shaped like an ellipse
-       would eat the southern tip. Eight per cent on each side is enough to
-       lose the rectangle and not enough to touch the land. */
-    --feather: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    /*
+      A margin feather rather than a vignette: the island reaches almost to the
+      top and bottom of its own frame, so anything shaped like an ellipse would
+      eat the southern tip.
+
+      Wider across than down, because the frame is not square and the land is
+      not centred in it. Hawaiʻi occupies roughly 30–74% of this image's width
+      and 9.7–91% of its height, so eighteen per cent on the left and right is
+      free while nine is all the top and bottom can spare — Upolu Point, the
+      island's northern tip, sits at 9.7% of the height.
+
+      Cutting the close view taller, to the full height of its source, was
+      tried and reverted: it moves the top edge further from the land and
+      allows a wider margin, but it also makes the whole rectangle larger on
+      screen, so its edge sits in open water for longer. Measured, that was
+      worse — a coherent step of 3.2 rather than 2.3 on a phone — and the
+      measurement is what decided it.
+
+      Neither margin touches the land: a mask lowers opacity at the margin, it
+      does not blur anything.
+
+      The ramp is stepped rather than linear. A straight ramp has a corner in
+      it at each end, and a corner in a gradient over a large flat sea is
+      exactly what the eye finds — this eases in and out instead, which is what
+      keeps the close image's own sea texture from ending on a visible line
+      once its brightness matches the tile underneath.
+    */
+    --feather:
+      linear-gradient(
+        to right,
+        transparent 0%,
+        rgb(0 0 0 / 0.12) 4.5%,
+        rgb(0 0 0 / 0.5) 9%,
+        rgb(0 0 0 / 0.88) 13.5%,
+        #000 18%,
+        #000 82%,
+        rgb(0 0 0 / 0.88) 86.5%,
+        rgb(0 0 0 / 0.5) 91%,
+        rgb(0 0 0 / 0.12) 95.5%,
+        transparent 100%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgb(0 0 0 / 0.1) 2.4%,
+        rgb(0 0 0 / 0.45) 4.8%,
+        rgb(0 0 0 / 0.85) 7.2%,
+        #000 9.2%,
+        #000 90.5%,
+        rgb(0 0 0 / 0.85) 93%,
+        rgb(0 0 0 / 0.5) 95.5%,
+        rgb(0 0 0 / 0.12) 98%,
+        transparent 100%
+      );
     -webkit-mask-image: var(--feather);
     mask-image: var(--feather);
     -webkit-mask-composite: source-in;
@@ -502,22 +550,11 @@
     object-position: 50% 50%;
   }
 
-  /*
-    Two axes doing two different jobs, because a portrait photograph in a
-    landscape frame is cropped horizontally on a phone and vertically on a
-    desktop, never both.
-
-    On a wide screen only the vertical value bites: at 45% the round logo
-    landed in the bottom third, under the heaviest part of the ground and
-    behind the closing copy, and the trailer read as a close-up of a service
-    window. At 72% the logo sits in clear air above the words with the wheels
-    below it, so what is on screen reads as the truck.
-
-    On a phone only the horizontal value bites, and 38% is what keeps the
-    panel advertising items the business no longer serves out of frame.
-  */
+  /* Both truck crops now frame the whole trailer — the round logo, the
+     service window, the menu panels, both wheels and the ground it stands on
+     — so there is nothing left to nudge here either. */
   .jy-place-photo--coffee-truck {
-    object-position: 38% 72%;
+    object-position: 50% 50%;
   }
 
   /* --- The ground under the words ------------------------------------------
@@ -935,35 +972,26 @@
       align-items: flex-start;
     }
 
-    /* The truck's round logo sits in the middle of the vehicle, and on a
-       portrait phone the whole vehicle is in frame — so the logo lands exactly
-       where this secondary line would be. The headline, the choice and the two
-       actions carry the screen without it. The café photograph has its sign
-       high in the frame and keeps the line. */
+    /*
+      The truck photograph used to be enlarged to 126% and anchored to the foot
+      of the frame, to lift its round logo clear of these words. The portrait
+      crop now carries the whole trailer with the forecourt below it, so the
+      enlargement is gone: what is on screen is the photograph at its own
+      scale.
+
+      What is left is a phone-sized problem. The round logo sits low on the
+      trailer, the trailer fills a portrait frame, and the closing block wants
+      the lower half — so the words are moved rather than the picture. Dropping
+      the secondary line and tightening the foot lowers the block by about
+      seventy pixels, which is what puts it under the logo instead of across
+      it. The café photograph has its sign high in the frame and keeps both.
+    */
     .jy-close[data-choice='coffee-truck'] .jy-close__lines {
       display: none;
     }
 
-    /*
-      Dropping that line was necessary but not sufficient: it moved the words
-      down about seventy pixels and the logo was still behind them. This is the
-      rest of it, and both halves are doing work.
-
-      Taller than the frame and anchored to its foot, so there is vertical crop
-      to spend where a phone otherwise has none — the whole vehicle fits the
-      height exactly, which leaves nowhere to move the logo to. Taking the crop
-      off the bottom lifts it clear of the words.
-
-      Further left, so the logo is whole rather than sliced by the horizontal
-      crop; the panel advertising the truck's crêpes stays out of frame at this
-      framing too, which is a coincidence of the composition rather than the
-      point of it.
-    */
-    .jy[data-mode='stage'] .jy-place-photo--coffee-truck {
-      top: auto;
-      bottom: 0;
-      height: 126%;
-      object-position: 8% 50%;
+    .jy-close[data-choice='coffee-truck'] {
+      padding-bottom: 2.75rem;
     }
 
     /* Labels sit tighter to their endpoints, and smaller, so neither one
@@ -1010,6 +1038,45 @@
       firm one under the column, and a light lift along the foot so the
       closing line and the truck's wheels do not sit on bare photograph.
     */
+    /*
+      The truck's copy goes to the other side, and this is placement rather
+      than taste. The round Kona logo is on the left of the trailer, the
+      trailer is on the left of every authentic photograph of its service
+      side, and the closing column is on the left of the frame — so on a wide
+      screen the words land squarely on the logo. Nothing about the crop can
+      fix that without cropping away the trailer this revision exists to show,
+      so the words move instead and the ground moves with them.
+    */
+    .jy-close[data-choice='coffee-truck'] {
+      align-items: flex-end;
+      text-align: right;
+      background:
+        linear-gradient(
+          to left,
+          color-mix(in srgb, var(--color-pacific-950) 93%, transparent) 0%,
+          color-mix(in srgb, var(--color-pacific-950) 88%, transparent) 26%,
+          color-mix(in srgb, var(--color-pacific-950) 62%, transparent) 44%,
+          color-mix(in srgb, var(--color-pacific-950) 24%, transparent) 60%,
+          transparent 74%
+        ),
+        linear-gradient(
+          to top,
+          color-mix(in srgb, var(--color-pacific-950) 62%, transparent) 0%,
+          color-mix(in srgb, var(--color-pacific-950) 34%, transparent) 26%,
+          color-mix(in srgb, var(--color-pacific-950) 12%, transparent) 46%,
+          transparent 64%
+        );
+    }
+
+    .jy-close[data-choice='coffee-truck'] .jy-choices,
+    .jy-close[data-choice='coffee-truck'] .jy-actions {
+      justify-content: flex-end;
+    }
+
+    .jy-close[data-choice='coffee-truck'] .jy-control--close {
+      align-self: flex-end;
+    }
+
     .jy-close {
       background:
         linear-gradient(
