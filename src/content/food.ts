@@ -21,7 +21,19 @@
 export interface FoodItem {
   id: string
   name: string
-  image: { src: string; alt: string }
+  image: {
+    src: string
+    alt: string
+    /**
+     * A background-removed derivative — local, non-generative segmentation
+     * (rembg), never generative fill — for the dark product presentation.
+     * Every source pixel it shows is a real pixel from `src`. Deliberately
+     * absent on the dragonfruit chimney cake: its hand, stretched spiral and
+     * café setting are the point of that photograph, and cutting it out would
+     * remove exactly what makes it work.
+     */
+    cutout?: string
+  }
   /** True for the one large, dominant photograph; false for supporting items. */
   dominant: boolean
 }
@@ -42,6 +54,7 @@ export const foodItems: FoodItem[] = [
     image: {
       src: '/images/food/mango-haupia-chia-pudding.jpg',
       alt: 'A jar of Mango Haupia Chia Pudding, mango spread over coconut chia pudding, Kona Island Coffee label on the jar.',
+      cutout: '/images/food/cutouts/mango-haupia-chia-pudding.webp',
     },
     dominant: false,
   },
@@ -51,6 +64,7 @@ export const foodItems: FoodItem[] = [
     image: {
       src: '/images/food/ube-banana-bread.jpg',
       alt: 'A loaf of Ube Banana Bread.',
+      cutout: '/images/food/cutouts/ube-banana-bread.webp',
     },
     dominant: false,
   },
@@ -60,6 +74,7 @@ export const foodItems: FoodItem[] = [
     image: {
       src: '/images/food/hawaiian-bread.jpg',
       alt: 'A loaf of Hawaiian Bread.',
+      cutout: '/images/food/cutouts/hawaiian-bread.webp',
     },
     dominant: false,
   },

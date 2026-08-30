@@ -27,7 +27,11 @@ export function BringKonaHome() {
   return (
     <section
       aria-labelledby="bring-kona-home-heading"
-      className="scroll-mt-24 bg-espresso-900 py-24 text-sand-50 sm:py-32"
+      className="scroll-mt-24 py-24 text-sand-50 sm:py-32"
+      style={{
+        background:
+          'radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--color-koa-600) 30%, transparent) 0%, transparent 55%), var(--color-espresso-900)',
+      }}
     >
       <div className="mx-auto max-w-page px-5 sm:px-8">
         <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-gold-400">
@@ -108,6 +112,7 @@ function BeanDetail({ bean }: { bean: Bean }) {
       <h3 className="mt-3 font-display text-4xl font-light text-sand-50 sm:text-5xl">
         {bean.name}
       </h3>
+      <p className="mt-2 font-body text-sm text-sand-100/70">{bean.descriptor}</p>
 
       <dl className="mt-8 flex flex-col gap-3">
         {bean.prices.map((price) => (

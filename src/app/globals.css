@@ -35,10 +35,13 @@
   --color-palm-600: #3A4A3D;
 
   /* --- Find Your Kona quiz accents -----------------------------------------
-     Scoped to the quiz section only, never used site-wide — the premium,
-     restrained palette above stays the site's default everywhere else. */
+     Scoped to the quiz section and the other dark, product-led homepage
+     sections that borrow its restrained atmosphere colors — never used for
+     site-wide UI chrome. --color-quiz-ocean is Blue Hawaii's own accent,
+     distinct from the greener quiz-turquoise. */
   --color-quiz-ube: #7C5A9E;
   --color-quiz-turquoise: #2F8F8A;
+  --color-quiz-ocean: #1E5A82;
   --color-quiz-coral: #E07856;
   --color-quiz-mango: #E0A83E;
   --color-quiz-coconut: #F6EFE3;

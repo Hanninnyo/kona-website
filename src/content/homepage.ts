@@ -139,9 +139,11 @@ export const homepage: HomepageContent = {
           'Find our original mobile coffee experience at Valley Medical Center and selected community stops.',
         place: `${coffeeTruck.address.street}, ${coffeeTruck.address.unit} · ${coffeeTruck.address.city}`,
         primary: {
-          // Names the destination rather than promising a live locator: the
-          // truck also serves community stops, and no verified current
-          // schedule exists to send anyone to.
+          // Named for exactly where this URL goes — Valley Medical Center,
+          // the weekday stop — not a generic "find the truck" that would
+          // mislead a visitor on Saturday, when the truck is on a separate,
+          // rotating community route with no verified URL of its own (see
+          // the truck panel in `destination-canvas.tsx`).
           label: 'Directions to VMC',
           href: coffeeTruck.directionsUrl,
           external: true,

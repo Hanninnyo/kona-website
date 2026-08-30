@@ -16,10 +16,19 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  * macadamia garnish stay visible; real iced service uses a flat lid. Full
  * provenance is recorded in `public/hero/SOURCES.md`.
  *
- * The desktop master already frames the cup in the right half of the frame
- * with dark negative space on the left — the copy overlays it there
- * deliberately, because the source composition already supports it. The
- * mobile crop is tighter and does not have that negative space (it is
+ * The desktop master frames the cup in the right ~60% of the 1920×1080 frame
+ * (its left edge sits at roughly x=770, i.e. 40% in), with dark negative
+ * space filling the left side — every word and action lives inside that
+ * space, never over the cup, its marbling, garnish or logo. The section is
+ * locked to the source's own `aspect-video` (16:9) rather than a viewport-
+ * height band: `object-cover` only ever needs to crop top/bottom letterboxing
+ * at that ratio, never the left/right edges, so the 40%-wide negative space
+ * stays exactly 40% of the frame at every width instead of shrinking as a
+ * tall, narrow viewport would otherwise force a center-cropped `object-cover`
+ * to eat into it. The copy column's `max-w-[min(28rem,34vw)]` stays
+ * comfortably inside that fixed 40%, safe zone confirmed at 1440/1280/1024/768.
+ *
+ * The mobile crop is tighter and does not have that negative space (it is
  * centred on the cup so the garnish and logo stay full-frame), so overlaying
  * the same copy there read poorly in review — text sitting across the drink
  * itself. Below `sm`, the layout instead stacks: the video/poster fills a
@@ -27,13 +36,24 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  * it, never over the image. That is a deliberate mobile-only composition
  * change, not a stretch or a crop of the desktop frame.
  *
- * Video only ever mounts once `useReducedMotion` resolves it should — the
- * same pattern `SatelliteJourney` and `SectionReveal` use elsewhere in this
- * codebase, so a `prefers-reduced-motion` visitor never gets an element that
- * autoplays and has to be stopped after the fact. The poster image is
- * rendered unconditionally underneath it, and `<noscript>` hides the video
- * markup outright, so a script-disabled browser is left with exactly the
- * still and the (already plain, always-functional) actions below.
+ * The server-rendered HTML — and the client's very first hydration pass —
+ * never contain a `<video>` element at all, only the poster. `useReducedMotion`
+ * is backed by `useSyncExternalStore`, whose server snapshot is hard-coded to
+ * `false` (the server has no media queries): gating the video on that value
+ * directly would put a `<video preload="auto" autoPlay>` tag in the literal
+ * HTML the browser parses before any JS runs, so a `prefers-reduced-motion`
+ * visitor's browser would start fetching the 1.8 MB commercial immediately
+ * and only have React remove the element a moment later — the fetch is
+ * already in flight by then. Instead, `canMountVideo` starts `false` on
+ * both server and first client render (identical markup, no hydration
+ * mismatch) and flips true only inside a post-hydration effect, which is the
+ * first point a real `prefers-reduced-motion` read is safe to act on. A
+ * `prefers-reduced-motion` visitor's `showVideo` then never becomes true, so
+ * the video's `<source>` tags are never inserted into the DOM and the
+ * browser never requests them — not merely a hidden-but-fetched element, an
+ * absent one. The poster image is rendered unconditionally underneath it, so
+ * every visitor — reduced motion, no JS, or the instant before hydration —
+ * sees the real drink from first paint.
  *
  * The commercial has no audio track. No "Sound On" control is rendered — a
  * control for a track that does not exist would be a lie the first time
@@ -44,9 +64,23 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
 export function LatteHero() {
   const prefersReducedMotion = useReducedMotion()
   const [videoFailed, setVideoFailed] = useState(false)
+  // False on the server and on the client's first render — matching exactly,
+  // so hydration never has to reconcile a server/client mismatch — and true
+  // only from this point on, once it is actually safe to read and act on the
+  // real `prefers-reduced-motion` value. See the block comment above.
+  const [canMountVideo, setCanMountVideo] = useState(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
-  const showVideo = !prefersReducedMotion && !videoFailed
+  useEffect(() => {
+    // Deliberate: React's own documented pattern for rendering something
+    // only after the client has mounted, which is exactly what a correct
+    // `prefers-reduced-motion` read requires here (see the block comment
+    // above) — not the derived-state anti-pattern this rule targets.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCanMountVideo(true)
+  }, [])
+
+  const showVideo = canMountVideo && !prefersReducedMotion && !videoFailed
 
   useEffect(() => {
     const video = videoRef.current
@@ -110,62 +144,74 @@ export function LatteHero() {
 
       <h1
         id="hero-heading"
-        className="mt-5 max-w-xl font-display text-display-lg font-light text-sand-50"
+        className="mt-5 font-display text-[clamp(1.75rem,1.1rem+2.6vw,2.75rem)] font-light leading-[1.08] text-sand-50"
       >
-        Meet the Kona Island Latte
+        Meet the
+        <br />
+        Kona Island Latte
       </h1>
 
-      <p className="mt-6 max-w-md font-body text-lede text-sand-100/85">
+      <p className="mt-5 font-body text-base leading-relaxed text-sand-100/85 sm:text-lg">
         Macadamia. Coconut. Espresso.
         <br />
         Made for your island escape.
       </p>
 
-      <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+      <div className="mt-8 flex flex-wrap items-center gap-3">
         <OrderChooser
           solid={false}
           label="Order Yours"
           align="left"
-          triggerClassName="inline-flex min-h-14 items-center justify-center gap-2 rounded-panel bg-sand-50 px-7 py-3.5 font-body text-sm text-charcoal-900 transition-colors duration-200 hover:bg-white"
+          triggerClassName="inline-flex min-h-14 items-center justify-center gap-2 whitespace-nowrap rounded-panel bg-sand-50 px-5 py-3.5 font-body text-sm text-charcoal-900 transition-colors duration-200 hover:bg-white"
         />
 
         <Link
           href="/menu-preview"
-          className="inline-flex items-center justify-center rounded-panel border border-sand-50/45 px-7 py-3.5 font-body text-sm text-sand-50 transition-colors duration-200 hover:border-sand-50 hover:bg-sand-50/10"
+          className="inline-flex items-center justify-center whitespace-nowrap rounded-panel border border-sand-50/40 px-5 py-3.5 font-body text-sm text-sand-100/90 transition-colors duration-200 hover:border-sand-50 hover:text-sand-50"
         >
           Explore the Menu
         </Link>
       </div>
-
-      <p className="mt-8">
-        <Link
-          href="/our-kona-journey"
-          className="inline-flex items-center gap-2 font-body text-sm text-sand-100/80 underline decoration-sand-100/40 underline-offset-4 transition-colors hover:text-sand-50 hover:decoration-sand-50"
-        >
-          Discover Our Kona Journey
-          <span aria-hidden="true">→</span>
-        </Link>
-      </p>
     </>
+  )
+
+  const journeyLink = (
+    <Link
+      href="/our-kona-journey"
+      className="inline-flex items-center gap-2 font-body text-sm text-sand-100/70 underline decoration-sand-100/30 underline-offset-4 transition-colors hover:text-sand-50 hover:decoration-sand-50"
+    >
+      Discover Our Kona Journey
+      <span aria-hidden="true">→</span>
+    </Link>
   )
 
   return (
     // One media block and one copy block, in the DOM exactly once — CSS
     // repositions them per breakpoint rather than the component rendering
     // two separate video/picture instances, which would fetch the hero twice.
-    <section aria-labelledby="hero-heading" className="relative bg-charcoal-900 sm:min-h-[88svh]">
-      <div className="relative h-[52svh] min-h-[22rem] overflow-hidden sm:absolute sm:inset-0 sm:h-auto sm:min-h-0">
+    // `sm:aspect-video` locks the container to the source master's own 16:9
+    // ratio so `object-cover` never has to crop the left/right edges — see
+    // the block comment above for why that matters to the copy's safe zone.
+    <section aria-labelledby="hero-heading" className="relative bg-charcoal-900 sm:aspect-video">
+      <div className="relative h-[52svh] min-h-[22rem] overflow-hidden sm:absolute sm:inset-0 sm:h-full sm:min-h-0">
         {media}
         {/* Only overlaid on desktop, where the master's own negative space
-            supports it. Mobile's copy sits below the media instead. */}
+            supports it. Mobile's copy sits below the media instead. Stops
+            at 42% of the frame width — just past the cup's own left edge at
+            40% — so the scrim never dims the drink itself. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 hidden bg-gradient-to-r from-charcoal-900/80 via-charcoal-900/25 to-transparent sm:block"
+          className="absolute inset-0 hidden sm:block"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(27,25,23,0.85) 0%, rgba(27,25,23,0.55) 22%, rgba(27,25,23,0.18) 38%, transparent 42%)',
+          }}
         />
       </div>
 
-      <div className="relative px-5 pb-14 pt-10 sm:mx-auto sm:flex sm:min-h-[88svh] sm:max-w-page sm:items-end sm:px-8 sm:pb-24 sm:pt-40">
-        {actions}
+      <div className="relative px-5 pb-14 pt-10 sm:absolute sm:inset-0 sm:flex sm:flex-col sm:justify-between sm:px-8 sm:pb-[clamp(1.5rem,4vw,2.5rem)] sm:pt-[clamp(4.5rem,9vw,7rem)] lg:pl-12">
+        <div className="sm:max-w-[min(28rem,34vw)]">{actions}</div>
+        <p className="mt-8 sm:mt-0 sm:max-w-[min(28rem,34vw)]">{journeyLink}</p>
       </div>
     </section>
   )

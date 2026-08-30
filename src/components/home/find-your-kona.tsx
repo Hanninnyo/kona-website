@@ -20,17 +20,16 @@ const KonaQuiz = dynamic(() =>
  * not an inert control — exactly the convention the site's other
  * JavaScript-dependent interaction already uses.
  *
- * This replaces the three-question bean-and-drink consultation that used to
- * live here (`coffee-discovery.tsx`, `discovery.ts`) with a drink-only
- * five-question quiz. That module is untouched and still fully verified; it
- * is simply no longer mounted on the homepage.
+ * Dark, color-responsive ground (`bg-espresso-900`), matching the rest of the
+ * product-led homepage — the quiz itself layers a reactive atmosphere and a
+ * live drink-cutout visual on top of it (see `kona-quiz.tsx`).
  */
 export function FindYourKona() {
   return (
     <section
       id="find-your-kona"
       aria-labelledby="quiz-heading"
-      className="scroll-mt-24 bg-surface-sunken py-24 sm:py-32"
+      className="scroll-mt-24 bg-espresso-900 py-24 sm:py-32"
     >
       <noscript>
         <style>{'[data-quiz-interactive]{display:none !important}'}</style>
@@ -38,14 +37,16 @@ export function FindYourKona() {
 
       <div className="mx-auto max-w-page px-5 sm:px-8">
         <div className="max-w-editorial">
-          <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-accent">
+          <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-gold-400">
             {quizContent.eyebrow}
           </p>
           <h2
             id="quiz-heading"
-            className="mt-5 font-display text-display-md font-light text-ink"
+            className="mt-5 font-display text-display-md font-light text-sand-50"
           >
-            {quizContent.heading}
+            Your Next Favorite Drink
+            <br />
+            Is Five Taps Away.
           </h2>
         </div>
 
@@ -54,11 +55,11 @@ export function FindYourKona() {
         </div>
 
         <noscript>
-          <p className="mt-8 max-w-editorial font-body text-lede text-ink-soft">
+          <p className="mt-8 max-w-editorial font-body text-lede text-sand-100/80">
             {quizContent.supportingLine}{' '}
             <a
               href="/menu-preview"
-              className="underline decoration-line-strong underline-offset-4 hover:decoration-accent"
+              className="underline decoration-sand-100/40 underline-offset-4 hover:decoration-gold-400"
             >
               View the menu
             </a>

@@ -42,7 +42,19 @@ export interface Drink {
   /** One sentence, drawn only from confirmed ingredients or the product's own name. */
   description: string
   temperature: ('hot' | 'iced')[]
-  image: { src: string; alt: string; fromCommercialStill?: boolean }
+  image: {
+    src: string
+    alt: string
+    fromCommercialStill?: boolean
+    /**
+     * A background-removed derivative of the same photograph — local,
+     * non-generative segmentation (rembg), never generative fill — for the
+     * dark product-stage presentation. Every source pixel it shows is a real
+     * pixel from `src`; only the background is gone. Undefined for drinks
+     * without a clean derivative.
+     */
+    cutout?: string
+  }
   /** Shown in the signature-drink showcase's own selector. Kona Island Latte is optional there. */
   inShowcase: boolean
 }
@@ -59,6 +71,7 @@ export const drinks: Drink[] = [
       src: '/images/drinks/kona-island-latte.jpg',
       alt: 'An iced Kona Island Latte, macadamia and espresso marbling through the milk, macadamia shavings on top.',
       fromCommercialStill: true,
+      cutout: '/images/drinks/cutouts/kona-island-latte.webp',
     },
     inShowcase: true,
   },
@@ -71,6 +84,7 @@ export const drinks: Drink[] = [
     image: {
       src: '/images/drinks/captain-cook.jpg',
       alt: 'A hot Captain Cook latte in a paper cup, dusted with cinnamon.',
+      cutout: '/images/drinks/cutouts/captain-cook.webp',
     },
     inShowcase: true,
   },
@@ -83,6 +97,7 @@ export const drinks: Drink[] = [
     image: {
       src: '/images/drinks/hilo-ube.jpg',
       alt: 'An iced Hilo Ube latte, its violet color layered under whipped cream.',
+      cutout: '/images/drinks/cutouts/hilo-ube.webp',
     },
     inShowcase: true,
   },
@@ -95,6 +110,7 @@ export const drinks: Drink[] = [
     image: {
       src: '/images/drinks/nutella-latte.jpg',
       alt: 'An iced Nutella Latte, chocolate-hazelnut swirled through espresso and milk over ice.',
+      cutout: '/images/drinks/cutouts/nutella-latte.webp',
     },
     inShowcase: true,
   },
@@ -107,6 +123,7 @@ export const drinks: Drink[] = [
     image: {
       src: '/images/drinks/island-coco-refresher.jpg',
       alt: 'An Island Coco Refresher, espresso layered over coconut water and ice.',
+      cutout: '/images/drinks/cutouts/island-coco-refresher.webp',
     },
     inShowcase: true,
   },
@@ -119,6 +136,7 @@ export const drinks: Drink[] = [
     image: {
       src: '/images/drinks/blue-hawaii-refresher.jpg',
       alt: 'A Blue Hawaii Refresher, layered blue and orange over ice.',
+      cutout: '/images/drinks/cutouts/blue-hawaii-refresher.webp',
     },
     inShowcase: true,
   },

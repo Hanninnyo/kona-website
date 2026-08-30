@@ -103,3 +103,30 @@ export function recommendDrinks(answers: QuizAnswers): QuizRecommendation | null
 export function allPossibleResults(): DrinkId[] {
   return drinks.map((d) => d.id)
 }
+
+export interface LiveRankEntry {
+  drink: Drink
+  score: number
+  /** True once a temperature answer rules this drink out entirely. */
+  eliminated: boolean
+}
+
+/**
+ * A live, in-progress ranking from whatever subset of questions has been
+ * answered so far — used only to drive the intro/question stage's reactive
+ * drink visual (fading out temperature-eliminated drinks, brightening likely
+ * matches). Never used to reveal or imply the final result early: with no
+ * answers yet every drink scores 0 and none is eliminated, so the visual
+ * starts neutral.
+ */
+export function getLiveRanking(answers: QuizAnswers): LiveRankEntry[] {
+  const temperature = requiredTemperature(answers)
+  const visitorTags = collectTagWeights(answers)
+  return drinks
+    .map((drink) => ({
+      drink,
+      score: score(drink, visitorTags),
+      eliminated: temperature !== undefined && !drink.temperature.includes(temperature),
+    }))
+    .sort((a, b) => b.score - a.score)
+}

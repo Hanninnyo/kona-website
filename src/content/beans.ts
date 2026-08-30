@@ -29,6 +29,13 @@ export interface Bean {
   id: string
   name: string
   classification: '100% Kona' | 'Hawaiian, not Kona'
+  /**
+   * A factual descriptor line — origin, roast and any added flavor — never a
+   * tasting note (acidity, body, aroma, sweetness, fruit or chocolate
+   * character). None of those has been owner-confirmed for any bean here, so
+   * none is implied. Kauaʻi Decaf omits a roast level for the same reason.
+   */
+  descriptor: string
   prices: BeanPrice[]
 }
 
@@ -37,6 +44,7 @@ export const beans: Bean[] = [
     id: 'private-estate',
     name: 'Private Estate',
     classification: '100% Kona',
+    descriptor: '100% Kona · Medium roast',
     prices: [
       { size: '8 oz', amount: 38 },
       { size: '1 lb', amount: 70 },
@@ -46,6 +54,7 @@ export const beans: Bean[] = [
     id: 'peaberry',
     name: 'Peaberry',
     classification: '100% Kona',
+    descriptor: '100% Kona · Medium roast · Rare peaberry selection',
     prices: [
       { size: '8 oz', amount: 46 },
       { size: '1 lb', amount: 84 },
@@ -55,6 +64,7 @@ export const beans: Bean[] = [
     id: 'chocolate-macadamia',
     name: 'Chocolate Macadamia',
     classification: '100% Kona',
+    descriptor: 'Flavored 100% Kona · Chocolate and macadamia',
     prices: [
       { size: '8 oz', amount: 40 },
       { size: '1 lb', amount: 75 },
@@ -64,6 +74,7 @@ export const beans: Bean[] = [
     id: 'hazelnut',
     name: 'Hazelnut',
     classification: '100% Kona',
+    descriptor: 'Flavored 100% Kona · Hazelnut',
     prices: [
       { size: '8 oz', amount: 40 },
       { size: '1 lb', amount: 75 },
@@ -73,6 +84,7 @@ export const beans: Bean[] = [
     id: 'kauai-decaf',
     name: 'Kauaʻi Decaf',
     classification: 'Hawaiian, not Kona',
+    descriptor: 'Hawaiian coffee · Decaffeinated',
     prices: [
       { size: '8 oz', amount: 40 },
       { size: '1 lb', amount: 75 },
