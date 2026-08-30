@@ -1,98 +1,69 @@
-import Link from 'next/link'
-import { CoffeeDiscovery } from '@/components/home/coffee-discovery'
-import { SectionReveal } from '@/components/section-reveal'
-import { discovery } from '@/content/discovery'
+import dynamic from 'next/dynamic'
+import { quizContent } from '@/content/kona-quiz'
+
+// Code-split from the homepage's initial JS: the quiz's interaction and
+// scoring logic loads as its own chunk, fetched alongside rather than bundled
+// into the shared homepage bundle every visitor downloads regardless of
+// whether they ever open the quiz. `ssr: true` (the default) is kept, so the
+// server-rendered HTML — and the no-JS `<noscript>` fallback below it — are
+// unaffected; only the JS delivery is split.
+const KonaQuiz = dynamic(() =>
+  import('@/components/home/kona-quiz').then((m) => m.KonaQuiz)
+)
 
 /**
- * Find Your Kona — the section shell.
+ * Find Your Kona — the five-question drink quiz, section shell.
  *
- * A Server Component: the eyebrow, heading and the whole bean collection are
- * in the initial HTML, so the section is readable and indexable before any
- * JavaScript runs.
+ * A Server Component: the eyebrow and heading are in the initial HTML.
+ * Without JavaScript the guided interaction cannot run, so the `<noscript>`
+ * block hides it and leaves a plain link to the menu — a real destination,
+ * not an inert control — exactly the convention the site's other
+ * JavaScript-dependent interaction already uses.
  *
- * Without JavaScript the guided interaction cannot work, so rather than
- * leaving an inert Begin button, the `<noscript>` block hides the interactive
- * panel and presents the collection itself — five coffees with their real
- * classification, roast and flavour. That is a useful destination in its own
- * right, not an apology.
+ * This replaces the three-question bean-and-drink consultation that used to
+ * live here (`coffee-discovery.tsx`, `discovery.ts`) with a drink-only
+ * five-question quiz. That module is untouched and still fully verified; it
+ * is simply no longer mounted on the homepage.
  */
 export function FindYourKona() {
   return (
     <section
       id="find-your-kona"
-      aria-labelledby="discovery-heading"
+      aria-labelledby="quiz-heading"
       className="scroll-mt-24 bg-surface-sunken py-24 sm:py-32"
     >
       <noscript>
-        {/* Scoped to this section, and parsed only when scripting is off. */}
-        <style>{`[data-discovery-interactive]{display:none !important}`}</style>
+        <style>{'[data-quiz-interactive]{display:none !important}'}</style>
       </noscript>
 
       <div className="mx-auto max-w-page px-5 sm:px-8">
-        <SectionReveal className="max-w-editorial">
+        <div className="max-w-editorial">
           <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-accent">
-            {discovery.eyebrow}
+            {quizContent.eyebrow}
           </p>
           <h2
-            id="discovery-heading"
+            id="quiz-heading"
             className="mt-5 font-display text-display-md font-light text-ink"
           >
-            {discovery.heading}
+            {quizContent.heading}
           </h2>
-        </SectionReveal>
+        </div>
 
-        <SectionReveal className="mt-8">
-          <CoffeeDiscovery />
-        </SectionReveal>
+        <div data-quiz-interactive className="mt-8">
+          <KonaQuiz />
+        </div>
 
         <noscript>
-          <div className="mt-2">
-            <p className="max-w-editorial font-body text-lede text-ink-soft">
-              {discovery.intro}
-            </p>
-
-            <h3 className="mt-14 font-display text-display-sm font-light text-ink">
-              {discovery.fallback.heading}
-            </h3>
-            <p className="mt-4 max-w-editorial font-body text-base leading-relaxed text-ink-soft">
-              {discovery.fallback.intro}
-            </p>
-
-            <ul className="mt-10 grid gap-px overflow-hidden rounded-frame border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-              {discovery.beans.map((bean) => (
-                <li key={bean.id} className="bg-surface-raised p-7">
-                  <h4 className="font-display text-2xl font-normal text-ink">
-                    {bean.name}
-                  </h4>
-                  <p className="mt-3 font-body text-sm text-ink-muted">
-                    {bean.classification} · {bean.roast} roast
-                  </p>
-                  <p className="mt-4 font-body text-base leading-relaxed text-ink">
-                    {bean.flavor}
-                  </p>
-                  {bean.availability && (
-                    <p className="mt-4 font-body text-sm leading-relaxed text-ink">
-                      {bean.availability}
-                    </p>
-                  )}
-                  {bean.clarification && (
-                    <p className="mt-4 border-l-2 border-highlight pl-4 font-body text-sm leading-relaxed text-ink-soft">
-                      {bean.clarification}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-10">
-              <Link
-                href={discovery.result.viewMenu.href}
-                className="inline-flex min-h-14 items-center justify-center rounded-panel bg-surface-inverse px-8 py-4 font-body text-sm tracking-wide text-ink-inverse"
-              >
-                {discovery.result.viewMenu.label}
-              </Link>
-            </div>
-          </div>
+          <p className="mt-8 max-w-editorial font-body text-lede text-ink-soft">
+            {quizContent.supportingLine}{' '}
+            <a
+              href="/menu-preview"
+              className="underline decoration-line-strong underline-offset-4 hover:decoration-accent"
+            >
+              View the menu
+            </a>
+            .
+          </p>
         </noscript>
       </div>
     </section>

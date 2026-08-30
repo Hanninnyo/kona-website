@@ -54,8 +54,11 @@ export const site: SiteContent = {
   navigation: [
     {
       label: 'Experience',
-      href: '/#experience',
-      description: 'The three principles behind every cup',
+      // Repointed from the homepage's old "Three principles" section, which
+      // is no longer mounted there, to the signature-drink showcase that
+      // replaced it as the homepage's own discovery moment.
+      href: '/#signature-drinks',
+      description: 'Find your island favorite',
     },
     { label: 'Coffee', href: '/coffee' },
     {
@@ -64,6 +67,7 @@ export const site: SiteContent = {
       description: 'Full menu and online ordering',
     },
     { label: 'Our Story', href: '/story' },
+    { label: 'Our Kona Journey', href: '/our-kona-journey' },
     { label: 'Visit', href: '/locations', description: 'Café and coffee truck' },
   ],
 

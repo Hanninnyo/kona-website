@@ -28,9 +28,21 @@ interface OrderChooserProps {
   /** True once the header sits on a solid surface rather than over the hero. */
   solid: boolean
   className?: string
+  /** Overrides the trigger label. Defaults to the header's own copy. */
+  label?: string
+  /** Overrides the trigger's own visual treatment for use outside the header. */
+  triggerClassName?: string
+  /** Anchors the panel to the left instead of the right of the trigger. */
+  align?: 'left' | 'right'
 }
 
-export function OrderChooser({ solid, className = '' }: OrderChooserProps) {
+export function OrderChooser({
+  solid,
+  className = '',
+  label,
+  triggerClassName,
+  align = 'right',
+}: OrderChooserProps) {
   const [open, setOpen] = useState(false)
   const panelId = useId()
   const rootRef = useRef<HTMLDivElement | null>(null)
@@ -73,20 +85,48 @@ export function OrderChooser({ solid, className = '' }: OrderChooserProps) {
 
   return (
     <div ref={rootRef} onBlurCapture={onBlurCapture} className={`relative ${className}`}>
+      {/* The trigger below opens a disclosure entirely via onClick, so it is
+          inert without JavaScript. `<noscript>` hides it and substitutes the
+          two ordering links directly, plain and already functional, matching
+          the convention `find-your-kona.tsx` uses for its own interaction. */}
+      <noscript>
+        <style>{`[data-order-chooser-trigger="${panelId}"]{display:none !important}`}</style>
+        <span className="inline-flex flex-wrap gap-2">
+          {site.orderDestinations.map((destination) => (
+            <a
+              key={destination.href}
+              href={destination.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={
+                triggerClassName ??
+                'inline-flex min-h-11 items-center gap-2 rounded-panel border px-5 py-2.5 font-body text-sm'
+              }
+            >
+              {destination.label}
+            </a>
+          ))}
+        </span>
+      </noscript>
+
       <button
         ref={triggerRef}
+        data-order-chooser-trigger={panelId}
         type="button"
         onClick={() => setOpen((wasOpen) => !wasOpen)}
         aria-expanded={open}
         aria-controls={panelId}
-        className={[
-          'inline-flex min-h-11 items-center gap-2 rounded-panel border px-5 py-2.5 font-body text-sm transition-colors duration-200',
-          solid
-            ? 'border-ink/25 text-ink hover:border-accent hover:text-accent'
-            : 'border-sand-50/45 text-sand-50 hover:border-sand-50 hover:bg-sand-50/10',
-        ].join(' ')}
+        className={
+          triggerClassName ??
+          [
+            'inline-flex min-h-11 items-center gap-2 rounded-panel border px-5 py-2.5 font-body text-sm transition-colors duration-200',
+            solid
+              ? 'border-ink/25 text-ink hover:border-accent hover:text-accent'
+              : 'border-sand-50/45 text-sand-50 hover:border-sand-50 hover:bg-sand-50/10',
+          ].join(' ')
+        }
       >
-        {site.primaryAction.label}
+        {label ?? site.primaryAction.label}
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -106,7 +146,9 @@ export function OrderChooser({ solid, className = '' }: OrderChooserProps) {
       {open && (
         <div
           id={panelId}
-          className="discovery-enter absolute right-0 top-full z-10 mt-2 w-72 rounded-frame border border-line bg-surface-raised p-2 shadow-panel"
+          className={`discovery-enter absolute top-full z-10 mt-2 w-72 rounded-frame border border-line bg-surface-raised p-2 shadow-panel ${
+            align === 'left' ? 'left-0' : 'right-0'
+          }`}
         >
           <p
             id={`${panelId}-label`}

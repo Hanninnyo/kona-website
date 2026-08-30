@@ -21,6 +21,7 @@ const Footer: React.FC = () => {
   const quickLinks = [
     { label: 'Coffee', href: '/coffee' },
     { label: 'Our Story', href: '/story' },
+    { label: 'Our Kona Journey', href: '/our-kona-journey' },
     { label: 'Catering', href: '/catering' },
     { label: 'Locations', href: '/locations' },
     { label: 'Order Online', href: 'https://kona-island-coffee-102495.square.site/' },
@@ -30,7 +31,12 @@ const Footer: React.FC = () => {
     { label: 'Gift Cards', href: '/gift-cards' },
     { label: 'Loyalty Program', href: '/loyalty' },
     { label: 'Contact Us', href: '/contact' },
-    { label: 'Privacy Policy', href: '/privacy' },
+    // 'Privacy Policy' pointed at /privacy, a route that does not exist —
+    // temporarily omitted rather than left as a dead link or backed by
+    // invented legal copy. This implementation collects and transmits no
+    // customer information, so nothing here depends on it yet, but a real,
+    // reviewed privacy page is required before any customer-data collection
+    // (the quiz's save flow, loyalty enrollment, etc.) is activated.
     { label: 'Terms of Service', href: '/terms' },
   ]
 

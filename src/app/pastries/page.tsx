@@ -16,7 +16,7 @@ const PastriesPage: React.FC = () => {
       hawaiianName: "Malassada",
       description: "Traditional Portuguese-Hawaiian donuts, light and fluffy, rolled in cinnamon sugar",
       price: "$3.25",
-      image: "/images/malasada.jpg",
+      image: null as string | null,
       tags: ["Traditional", "Sweet", "Fresh Daily"],
       pairsWith: ["Kona Estate Blend", "Hawaiian Latte"]
     },
@@ -25,7 +25,7 @@ const PastriesPage: React.FC = () => {
       hawaiianName: "Haupia Tart",
       description: "Coconut pudding tart with macadamia nut crust and tropical fruit garnish",
       price: "$5.95",
-      image: "/images/haupia-tart.jpg",
+      image: null,
       tags: ["Coconut", "Gluten-Free Option", "Signature"],
       pairsWith: ["Cold Brew", "Tropical Latte"]
     },
@@ -34,7 +34,7 @@ const PastriesPage: React.FC = () => {
       hawaiianName: "Keke Kope Kona",
       description: "Moist coffee cake infused with our signature Kona blend and streusel topping",
       price: "$4.50",
-      image: "/images/kona-coffee-cake.jpg",
+      image: null,
       tags: ["Coffee Infused", "House Made", "Popular"],
       pairsWith: ["Any Espresso Drink", "French Press"]
     },
@@ -43,7 +43,7 @@ const PastriesPage: React.FC = () => {
       hawaiianName: "Keke Hala Kahuli",
       description: "Classic Hawaiian dessert with caramelized pineapple and maraschino cherries",
       price: "$4.25",
-      image: "/images/pineapple-upside-down.jpg",
+      image: null,
       tags: ["Tropical", "Seasonal", "Island Classic"],
       pairsWith: ["Medium Roast", "Iced Coffee"]
     }
@@ -106,15 +106,8 @@ const PastriesPage: React.FC = () => {
       <VolcanicSteam />
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-br from-kona-brown/20 to-kona-teal/20 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/pastries-hero.jpg"
-            alt="Fresh Pastries and Crepes"
-            fill
-            className="object-cover opacity-20"
-            sizes="100vw"
-          />
-        </div>
+        {/* No authentic pastries-hero photograph exists; the section keeps its
+            gradient ground rather than a broken image path. */}
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -176,15 +169,24 @@ const PastriesPage: React.FC = () => {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <Card className="overflow-hidden border-0 shadow-kona-soft hover:shadow-kona-medium transition-shadow h-full">
-                  <div className="relative h-48">
-                    <Image
-                      src={pastry.image}
-                      alt={pastry.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    />
-                  </div>
+                  {pastry.image ? (
+                    <div className="relative h-48">
+                      <Image
+                        src={pastry.image}
+                        alt={pastry.name}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                      />
+                    </div>
+                  ) : (
+                    // No authentic photograph exists for this item. A deliberate
+                    // typographic panel, not a broken image path or an empty box.
+                    <div className="flex h-48 flex-col items-center justify-center gap-2 bg-kona-brown/10 text-kona-espresso/50">
+                      <ChefHat className="h-8 w-8" aria-hidden="true" />
+                      <span className="font-hawaiian-script text-sm">Photo coming soon</span>
+                    </div>
+                  )}
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>

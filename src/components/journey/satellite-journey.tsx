@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import { journey } from '@/content/journey'
 import {
   CAPTION_ANCHORS,
@@ -469,7 +470,7 @@ export function SatelliteJourney() {
       if (event.key !== 'Escape' || event.defaultPrevented) return
       if (document.activeElement?.closest('header')) return
       event.preventDefault()
-      window.location.hash = '#home-content'
+      window.location.href = '/'
     }
     document.addEventListener('keydown', onEscape)
     return () => document.removeEventListener('keydown', onEscape)
@@ -762,9 +763,9 @@ export function SatelliteJourney() {
               <button type="button" className="jy-control" onClick={skip}>
                 {controls.skip}
               </button>
-              <a href="#home-content" className="jy-control">
+              <Link href="/" className="jy-control">
                 {journey.enterLabel}
-              </a>
+              </Link>
             </div>
           ) : null}
 
@@ -807,9 +808,9 @@ export function SatelliteJourney() {
                   <span key={line}>{line}</span>
                 ))}
               </p>
-              <a href="#home-content" className="jy-control jy-control--close">
+              <Link href="/" className="jy-control jy-control--close">
                 {journey.enterLabel}
-              </a>
+              </Link>
             </div>
           ) : null}
       </div>
@@ -826,9 +827,9 @@ export function SatelliteJourney() {
           <a href="#journey-story" className="jy-action jy-action--primary">
             {journey.continueLabel}
           </a>
-          <a href="#home-content" className="jy-action">
+          <Link href="/" className="jy-action">
             {journey.enterLabel}
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -907,9 +908,9 @@ export function SatelliteJourney() {
               <span key={line}>{line}</span>
             ))}
           </p>
-          <a href="#home-content" className="jy-action">
+          <Link href="/" className="jy-action">
             {journey.enterLabel}
-          </a>
+          </Link>
         </div>
       </div>
 

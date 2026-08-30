@@ -1,368 +1,134 @@
-"use client"
-
-import React from 'react'
+import type { Metadata } from 'next'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
-import { Coffee, Mountain, Leaf, Award, Heart, Globe } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { CoffeeBeanParticles } from '@/components/volcano-effects'
+import { beans, bringKonaHome } from '@/content/beans'
+import { site } from '@/content/site'
 
-const CoffeePage: React.FC = () => {
-  const coffeeOrigins = [
-    {
-      name: "Hualalai Estate",
-      region: "North Kona",
-      altitude: "1,500-2,000 ft",
-      notes: "Chocolate, caramel, citrus",
-      process: "Washed",
-      image: "/images/hualalai-estate.jpg"
-    },
-    {
-      name: "Mauna Loa Slopes",
-      region: "South Kona",
-      altitude: "2,000-3,000 ft",
-      notes: "Nutty, smooth, vanilla",
-      process: "Natural",
-      image: "/images/mauna-loa-slopes.jpg"
-    },
-    {
-      name: "Holualoa Village",
-      region: "Central Kona",
-      altitude: "1,400-1,800 ft",
-      notes: "Floral, bright, honey",
-      process: "Honey",
-      image: "/images/holualoa-village.jpg"
-    }
-  ]
-
-  const roastProfiles = [
-    {
-      name: "Light Roast",
-      hawaiianName: "Lā Hou (New Day)",
-      description: "Bright and crisp with pronounced acidity and floral notes",
-      temperature: "385-400°F",
-      color: "bg-amber-200",
-      characteristics: ["Floral", "Bright", "Fruity", "High Acidity"]
-    },
-    {
-      name: "Medium Roast",
-      hawaiianName: "Lā Awakea (Midday)",
-      description: "Balanced sweetness with chocolate and caramel undertones",
-      temperature: "410-430°F",
-      color: "bg-amber-600",
-      characteristics: ["Balanced", "Chocolate", "Caramel", "Smooth"]
-    },
-    {
-      name: "Dark Roast",
-      hawaiianName: "Lā Ahiahi (Evening)",
-      description: "Rich and bold with deep, smoky flavors",
-      temperature: "440-450°F",
-      color: "bg-amber-900",
-      characteristics: ["Bold", "Smoky", "Low Acidity", "Full Body"]
-    }
-  ]
-
-  const brewGuides = [
-    {
-      method: "Pour Over",
-      hawaiianName: "Wai Ninini (Pouring Water)",
-      ratio: "1:15",
-      time: "3-4 minutes",
-      grind: "Medium-fine",
-      icon: Coffee
-    },
-    {
-      method: "French Press",
-      hawaiianName: "Kaomi (Press)",
-      ratio: "1:12",
-      time: "4 minutes",
-      grind: "Coarse",
-      icon: Coffee
-    },
-    {
-      method: "Cold Brew",
-      hawaiianName: "Kope Anu (Cold Coffee)",
-      ratio: "1:8",
-      time: "12-24 hours",
-      grind: "Extra coarse",
-      icon: Coffee
-    }
-  ]
-
-  return (
-    <div className="pt-20 min-h-screen bg-kona-white relative overflow-hidden">
-      <CoffeeBeanParticles />
-      {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-r from-kona-brown/20 to-kona-teal/20 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src="/images/kona-coffee-plantation.jpg"
-            alt=""   // ← changed from "Hawaiian Kona Coffee"
-          />
-        </div>
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="font-league-spartan text-4xl md:text-6xl font-bold text-kona-espresso mb-6">
-              100% Hawaiian Kona Coffee
-            </h1>
-            <p className="text-kona-espresso/80 text-lg md:text-xl mb-8 leading-relaxed">
-              From the volcanic slopes of Mauna Loa to your cup, experience the world&apos;s most exclusive coffee terroir
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Badge variant="default" className="text-sm px-4 py-2">
-                <Award className="w-4 h-4 mr-2" />
-                Estate Grown
-              </Badge>
-              <Badge variant="teal" className="text-sm px-4 py-2">
-                <Leaf className="w-4 h-4 mr-2" />
-                Sustainably Sourced
-              </Badge>
-              <Badge variant="secondary" className="text-sm px-4 py-2">
-                <Mountain className="w-4 h-4 mr-2" />
-                Single Origin
-              </Badge>
-            </div>
-            {/* Photo under the hero badges */}
-<div className="mt-8 flex justify-center">
-  <div className="relative w-full max-w-4xl h-80 md:h-[420px] lg:h-[500px] rounded-kona overflow-hidden shadow-kona-medium">
-    <Image
-      src="/images/kona-coffee-hero.jpg"
-      alt="Kona coffee beans and farm in Hawaiʻi"
-      fill
-      className="object-cover"
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
-    />
-  </div>
-</div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Coffee Origins */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-4">
-              Our Partner Farms
-            </h2>
-            <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              Direct relationships with multigenerational Hawaiian families who have perfected the art of Kona coffee cultivation
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {coffeeOrigins.map((origin, index) => (
-              <motion.div
-                key={origin.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="overflow-hidden border-0 shadow-kona-soft hover:shadow-kona-medium transition-shadow">
-                  <div className="relative h-48">
-                    <Image
-                      src={origin.image}
-                      alt={origin.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                    />
-                  </div>
-                  <CardHeader>
-                    <CardTitle className="text-xl text-kona-espresso">
-                      {origin.name}
-                    </CardTitle>
-                    <p className="text-kona-brown font-medium">{origin.region}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-kona-espresso/70">Altitude:</span>
-                        <span className="text-sm font-medium">{origin.altitude}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-kona-espresso/70">Process:</span>
-                        <span className="text-sm font-medium">{origin.process}</span>
-                      </div>
-                      <div>
-                        <span className="text-sm text-kona-espresso/70">Tasting Notes:</span>
-                        <p className="text-sm font-medium text-kona-brown">{origin.notes}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Roast Profiles */}
-      <section className="py-16 bg-kona-taupe/10">
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-4">
-              Roast Profiles
-            </h2>
-            <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              Each roast level reveals different characteristics of our premium Kona beans
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {roastProfiles.map((roast, index) => (
-              <motion.div
-                key={roast.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="border-0 shadow-kona-soft hover:shadow-kona-medium transition-shadow h-full">
-                  <CardHeader className="text-center">
-                    <div className={`w-16 h-16 ${roast.color} rounded-full mx-auto mb-4 flex items-center justify-center`}>
-                      <Coffee className="w-8 h-8 text-white" />
-                    </div>
-                    <CardTitle className="text-xl text-kona-espresso">
-                      {roast.name}
-                    </CardTitle>
-                    <p className="font-hawaiian-script text-kona-teal">
-                      {roast.hawaiianName}
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-kona-espresso/80 mb-4">{roast.description}</p>
-                    <div className="mb-4">
-                      <span className="text-sm text-kona-espresso/70">Temperature: </span>
-                      <span className="text-sm font-medium">{roast.temperature}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {roast.characteristics.map((char) => (
-                        <Badge key={char} variant="secondary" className="text-xs">
-                          {char}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Brew Guides */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="font-league-spartan text-3xl md:text-4xl font-bold text-kona-espresso mb-4">
-              Brewing Guides
-            </h2>
-            <p className="text-kona-espresso/70 text-lg max-w-2xl mx-auto">
-              Unlock the full potential of your Kona coffee with these time-tested brewing methods
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {brewGuides.map((guide, index) => (
-              <motion.div
-                key={guide.method}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="border-0 shadow-kona-soft hover:shadow-kona-medium transition-shadow text-center h-full">
-                  <CardHeader>
-                    <div className="w-16 h-16 bg-kona-brown/10 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <guide.icon className="w-8 h-8 text-kona-brown" />
-                    </div>
-                    <CardTitle className="text-xl text-kona-espresso">
-                      {guide.method}
-                    </CardTitle>
-                    <p className="font-hawaiian-script text-kona-teal">
-                      {guide.hawaiianName}
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3 text-left">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-kona-espresso/70">Ratio:</span>
-                        <span className="text-sm font-medium">{guide.ratio}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-kona-espresso/70">Time:</span>
-                        <span className="text-sm font-medium">{guide.time}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-kona-espresso/70">Grind:</span>
-                        <span className="text-sm font-medium">{guide.grind}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-kona-espresso text-kona-white">
-        <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto"
-          >
-            <Heart className="w-12 h-12 text-kona-teal mx-auto mb-4" />
-            <h2 className="font-league-spartan text-3xl md:text-4xl font-bold mb-4">
-              Experience True Kona Coffee
-            </h2>
-            <p className="text-lg text-kona-white/90 mb-8">
-              Taste the difference that authentic Hawaiian terroir makes. Order our premium single-origin Kona coffee today.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="teal" size="lg" asChild>
-                <a href="/menu">Shop Kona Coffee</a>
-              </Button>
-              <Button variant="outline" size="lg" className="border-kona-white text-kona-white hover:bg-kona-white hover:text-kona-espresso">
-                Learn About Subscription
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-    </div>
-  )
+export const metadata: Metadata = {
+  title: '100% Kona Coffee | Kona Island Coffee',
+  description: 'Retail Kona coffee, available for pickup at our Mountain View café.',
 }
 
-export default CoffeePage
+/**
+ * The retail coffee page.
+ *
+ * Replaces an earlier version that described three farms (Hualalai Estate,
+ * Mauna Loa Slopes, Holualoa Village) with invented altitudes, tasting notes
+ * and processing methods, plus roast-temperature and brew-ratio tables —
+ * none of it owner-confirmed, none of it connected to anything this business
+ * actually sells. None of that is preserved; keeping it to minimize the diff
+ * would have kept sending visitors to fictional content.
+ *
+ * The five products and prices here are the same owner-confirmed data the
+ * homepage's "Bring Kona Home" section uses (`@/content/beans`), read once
+ * rather than duplicated. No package photography exists for any of them, so
+ * this stays typography-led, anchored by the one authentic farm photograph
+ * already used elsewhere on the site — no placeholder bags, no generated
+ * packaging.
+ *
+ * Purchase path, owner-confirmed: Mountain View pickup only, ordered through
+ * the Mountain View Square account. No shipping, delivery, subscription or
+ * truck-ordering claim appears, because none is confirmed.
+ */
+export default function CoffeePage() {
+  const mountainView = site.locations.find((l) => l.id === 'mountain-view')!
+  const groups = bringKonaHome.groups.map((group) => ({
+    ...group,
+    beans: group.beanIds.map((id) => beans.find((b) => b.id === id)!),
+  }))
+
+  return (
+    <main>
+      <section className="relative flex min-h-[60svh] items-end overflow-hidden bg-charcoal-900">
+        <div className="absolute inset-0">
+          <Image
+            src="/images/kona-coffee-hero.jpg"
+            alt="Kona coffee beans and farm on Hawaiʻi Island."
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-t from-charcoal-900/90 via-charcoal-900/40 to-charcoal-900/10"
+          />
+        </div>
+        <div className="relative mx-auto w-full max-w-page px-5 pb-16 pt-32 sm:px-8 sm:pb-24">
+          <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-gold-400">
+            100% Kona Coffee
+          </p>
+          <h1 className="mt-5 max-w-xl font-display text-display-lg font-light text-sand-50">
+            Bring Kona Home
+          </h1>
+          <p className="mt-6 max-w-md font-body text-lede text-sand-100/85">
+            Grown and roasted on Hawaiʻi Island.
+          </p>
+        </div>
+      </section>
+
+      <section aria-labelledby="coffee-products-heading" className="bg-espresso-900 py-24 text-sand-50 sm:py-32">
+        <div className="mx-auto max-w-page px-5 sm:px-8">
+          <h2 id="coffee-products-heading" className="sr-only">
+            Our coffees
+          </h2>
+
+          <div className="flex flex-col gap-16">
+            {groups.map((group) => (
+              <div key={group.label}>
+                <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-gold-400">
+                  {group.label}
+                </p>
+                <ul className="mt-8 grid gap-x-10 gap-y-12 sm:grid-cols-2">
+                  {group.beans.map((bean) => (
+                    <li key={bean.id} className="border-t border-sand-50/15 pt-6">
+                      <h3 className="font-display text-3xl font-light text-sand-50 sm:text-4xl">
+                        {bean.name}
+                      </h3>
+                      <dl className="mt-5 flex flex-col gap-2">
+                        {bean.prices.map((price) => (
+                          <div
+                            key={price.size}
+                            className="flex items-baseline justify-between border-b border-sand-50/10 pb-2 font-body"
+                          >
+                            <dt className="text-sand-100/75">{price.size}</dt>
+                            <dd className="text-lg text-sand-50">${price.amount.toFixed(2)}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 flex flex-col gap-4">
+            <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-sand-100/60">
+              {bringKonaHome.availabilityLabel}
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <a
+                href={bringKonaHome.action.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-14 items-center justify-center rounded-panel border border-sand-50/45 px-8 py-4 font-body text-sm tracking-wide text-sand-50 transition-colors duration-200 hover:border-sand-50 hover:bg-sand-50/10"
+              >
+                {bringKonaHome.action.label}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+              <a
+                href={mountainView.directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-14 items-center justify-center rounded-panel border border-sand-50/20 px-8 py-4 font-body text-sm tracking-wide text-sand-100/85 transition-colors duration-200 hover:border-sand-50/45 hover:text-sand-50"
+              >
+                Visit Mountain View
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
