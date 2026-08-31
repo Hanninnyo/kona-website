@@ -76,15 +76,12 @@ export function SiteFooter() {
                 </li>
               ))}
               <li>
-                <a
+                <Link
                   href={site.giftCardsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="font-body text-sm text-ink-inverse transition-colors duration-200 hover:text-gold-400"
                 >
                   Gift Cards
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

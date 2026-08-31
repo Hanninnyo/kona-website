@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { OrderChooser } from '@/components/order-chooser'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -92,6 +92,22 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  * element mounts so its returned promise can be inspected; a rejection shows
  * one small centered play control over the poster — never the default
  * state, and it never appears for a browser that autoplayed successfully.
+ *
+ * The play attempt is keyed off the mounted DOM node itself, not off
+ * `showVideo`. A `ref` callback (rather than a plain `useRef`) turns "the
+ * video element exists" into real React state, so the effect that calls
+ * `.play()` cannot run before that node exists — it has nothing to depend on
+ * until React hands it one. Depending on `showVideo` alone relies on ref
+ * attachment and this effect landing in the same commit, which usually
+ * holds but isn't the thing actually guaranteeing readiness. The native
+ * `autoplay` attribute stays (never the only thing relied on — see below),
+ * but the element is inserted with `preload="auto"` and no guarantee of
+ * `readyState` yet, so the first explicit `.play()` call can land before any
+ * data has arrived and be silently dropped by some engines rather than
+ * queued. `loadeddata` and `canplay` listeners retry the same attempt once
+ * more data is actually available, so a drop at `readyState === 0` isn't the
+ * end of it. Only a genuine rejection — not just "hasn't started yet" — sets
+ * `autoplayBlocked`.
  */
 export function LatteHero() {
   const prefersReducedMotion = useReducedMotion()
@@ -104,7 +120,15 @@ export function LatteHero() {
   // True only once a real, observed autoplay rejection occurs — never the
   // default rendered state. See the block comment above.
   const [autoplayBlocked, setAutoplayBlocked] = useState(false)
-  const videoRef = useRef<HTMLVideoElement | null>(null)
+  // The mounted <video> node, as React state rather than a plain ref, so the
+  // play-attempt effect below can depend on the node actually existing
+  // instead of inferring it from `showVideo`. Set by the `ref` callback
+  // passed to the element — React calls that callback with the real node
+  // only once it is in the DOM, and with `null` once it's removed.
+  const [videoNode, setVideoNode] = useState<HTMLVideoElement | null>(null)
+  const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
+    setVideoNode(node)
+  }, [])
 
   useEffect(() => {
     // Deliberate: React's own documented pattern for rendering something
@@ -117,28 +141,61 @@ export function LatteHero() {
 
   const showVideo = canMountVideo && !prefersReducedMotion && !videoFailed
 
+  // Depends on the mounted node itself (see the block comment above), not on
+  // `showVideo` alone — this cannot run until React has actually handed the
+  // ref callback a real element.
   useEffect(() => {
-    const video = videoRef.current
-    if (!showVideo || !video) return
+    if (!showVideo || !videoNode) return
+
+    let settled = false
 
     // Resets the flag for a fresh mount (e.g. after reduced-motion toggles
     // off and back on) before the actual play attempt below decides it.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setAutoplayBlocked(false)
-    video.play().catch(() => setAutoplayBlocked(true))
+
+    const attemptPlay = () => {
+      if (settled || !videoNode.paused) return
+      videoNode.play().then(
+        () => {
+          settled = true
+        },
+        () => {
+          // Only a genuine rejection reaches here — `loadeddata`/`canplay`
+          // retry the same attempt first, so this never fires just because
+          // the element wasn't ready yet on the very first try.
+          if (!settled) setAutoplayBlocked(true)
+        },
+      )
+    }
+    const onPlaying = () => {
+      settled = true
+      setAutoplayBlocked(false)
+    }
+
+    attemptPlay()
+    videoNode.addEventListener('loadeddata', attemptPlay)
+    videoNode.addEventListener('canplay', attemptPlay)
+    videoNode.addEventListener('playing', onPlaying)
 
     const onVisibility = () => {
-      if (document.hidden) video.pause()
-      else video.play().catch(() => setAutoplayBlocked(true))
+      if (document.hidden) videoNode.pause()
+      else attemptPlay()
     }
     document.addEventListener('visibilitychange', onVisibility)
-    return () => document.removeEventListener('visibilitychange', onVisibility)
-  }, [showVideo])
+
+    return () => {
+      settled = true
+      videoNode.removeEventListener('loadeddata', attemptPlay)
+      videoNode.removeEventListener('canplay', attemptPlay)
+      videoNode.removeEventListener('playing', onPlaying)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [showVideo, videoNode])
 
   const retryPlayback = () => {
-    const video = videoRef.current
-    if (!video) return
-    video.play().then(
+    if (!videoNode) return
+    videoNode.play().then(
       () => setAutoplayBlocked(false),
       () => setAutoplayBlocked(true)
     )
@@ -168,11 +225,12 @@ export function LatteHero() {
 
       {showVideo && (
         <video
-          ref={videoRef}
+          ref={setVideoRef}
           data-hero-video
           className="absolute inset-0 h-full w-full object-cover"
           autoPlay
           muted
+          loop
           playsInline
           preload="auto"
           poster="/hero/latte-hero-desktop.jpg"

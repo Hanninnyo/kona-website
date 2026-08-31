@@ -29,7 +29,16 @@ const TRUCK_SCHEDULE: ScheduleBlock[] = [
 
 const MOUNTAIN_VIEW_ORDERING = 'https://www.orderkonamountainview.com/'
 const COFFEE_TRUCK_ORDERING = 'https://kona-island-coffee.square.site/'
-const GIFT_CARDS = 'https://app.squareup.com/gift/MLJAP1MDQXKAP/order'
+/*
+ * Two separate Square gift-card programs, owner-confirmed as location-
+ * specific and not interchangeable: a Mountain View café card cannot be
+ * redeemed at the truck, and a truck card cannot be redeemed at the café.
+ * Never collapse these back into one general "gift cards" URL — that is
+ * exactly the ambiguity `/gift-cards` exists to resolve before a customer
+ * picks a purchase link.
+ */
+const MOUNTAIN_VIEW_GIFT_CARD = 'https://app.squareup.com/gift/MLJN9CK6F24ZV/order'
+const COFFEE_TRUCK_GIFT_CARD = 'https://app.squareup.com/gift/MLJAP1MDQXKAP/order'
 
 function googleMapsSearch(query: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
@@ -149,7 +158,11 @@ export const site: SiteContent = {
     },
   ],
 
-  giftCardsUrl: GIFT_CARDS,
+  // Every general "Gift Cards" link on the site points here, never straight
+  // to a Square page — the two programs are not interchangeable, and a
+  // visitor needs to choose before they land on either checkout. See
+  // `/gift-cards`.
+  giftCardsUrl: '/gift-cards',
 
   contact: {
     phone: {
@@ -172,5 +185,10 @@ export const site: SiteContent = {
 export const orderingUrls = {
   mountainView: MOUNTAIN_VIEW_ORDERING,
   coffeeTruck: COFFEE_TRUCK_ORDERING,
-  giftCards: GIFT_CARDS,
+} as const
+
+/** The two location-specific Square gift-card checkouts. See `/gift-cards`. */
+export const giftCardUrls = {
+  mountainView: MOUNTAIN_VIEW_GIFT_CARD,
+  coffeeTruck: COFFEE_TRUCK_GIFT_CARD,
 } as const
