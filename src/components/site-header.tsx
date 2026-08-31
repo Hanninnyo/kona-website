@@ -211,23 +211,42 @@ export function SiteHeader() {
         >
           <nav aria-label="Primary (mobile)" className="mx-auto max-w-page px-5 py-4 sm:px-8">
             <ul className="flex flex-col">
-              {site.navigation.map((item) => (
-                <li key={item.href} className="border-b border-line last:border-b-0">
-                  <Link
-                    href={item.href}
-                    onClick={closeMenu}
-                    aria-current={pathname === item.href ? 'page' : undefined}
-                    className="block py-4 font-display text-2xl text-ink"
-                  >
-                    {item.label}
-                    {item.description && (
-                      <span className="mt-0.5 block font-body text-sm text-ink-muted">
-                        {item.description}
-                      </span>
-                    )}
-                  </Link>
-                </li>
-              ))}
+              {site.navigation.map((item) =>
+                item.href === '/gift-cards' ? (
+                  // A plain anchor, not `next/link`: this item exists so a
+                  // visitor sees the café-vs-truck chooser before either
+                  // Square checkout, and a hard navigation is the one thing
+                  // that guarantees the tap lands on the current server-
+                  // rendered `/gift-cards` rather than anything the client
+                  // router might have cached from before this page existed.
+                  <li key={item.href} className="border-b border-line last:border-b-0">
+                    <a
+                      href="/gift-cards"
+                      onClick={closeMenu}
+                      aria-current={pathname === item.href ? 'page' : undefined}
+                      className="block py-4 font-display text-2xl text-ink"
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ) : (
+                  <li key={item.href} className="border-b border-line last:border-b-0">
+                    <Link
+                      href={item.href}
+                      onClick={closeMenu}
+                      aria-current={pathname === item.href ? 'page' : undefined}
+                      className="block py-4 font-display text-2xl text-ink"
+                    >
+                      {item.label}
+                      {item.description && (
+                        <span className="mt-0.5 block font-body text-sm text-ink-muted">
+                          {item.description}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                )
+              )}
             </ul>
 
             {/* No nested disclosure here: on a panel this size both

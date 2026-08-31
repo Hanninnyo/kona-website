@@ -76,12 +76,15 @@ export function SiteFooter() {
                 </li>
               ))}
               <li>
-                <Link
-                  href={site.giftCardsUrl}
+                {/* A plain anchor, not `next/link` — see the same choice in
+                    the mobile menu (`site-header.tsx`): a hard navigation to
+                    the café-vs-truck chooser, guaranteed. */}
+                <a
+                  href="/gift-cards"
                   className="font-body text-sm text-ink-inverse transition-colors duration-200 hover:text-gold-400"
                 >
                   Gift Cards
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

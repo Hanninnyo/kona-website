@@ -81,15 +81,22 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  *    viewport height. A later pass made it `aspect-[3/4]` instead — the
  *    master's exact native ratio, so nothing was cropped — but on a real
  *    phone that meant a full-width 3:4 box (up to ~575px tall on a large
- *    phone), which read as the cup filling nearly the entire screen with the
- *    copy pushed almost out of the first viewport. The stage is now a fixed
- *    band, `clamp(25rem,55svh,34rem)` tall regardless of width, and the
- *    poster/video sit inside it at `object-contain` with a `6%` inset (so
- *    each media file scales to ~88% of the box) instead of filling it edge
- *    to edge — the full cup stays legible without the box itself dominating
- *    the screen. The poster and video still share one identical className,
- *    so swapping one for the other cannot change width, height, object-fit,
- *    object-position or scale, and still cannot shift layout.
+ *    phone), which read as the cup filling nearly the entire screen. A pass
+ *    after that shrank the *band* to `clamp(25rem,55svh,34rem)` but still let
+ *    the media fill it edge to edge via percentage padding, which still read
+ *    as too large and too close to the phone's own edges. The band is now
+ *    `clamp(26.875rem,53svh,28.75rem)` — 430–460px, not 400–544px — and the
+ *    poster/video are centered inside it at a fixed `clamp(17.5rem,74vw,
+ *    21rem)` width (≈289px at 390px, well short of the 390px viewport) with
+ *    `aspect-[3/4]` deriving the height from that width, so the drink reads
+ *    as a centered product shot with real espresso-black margin on every
+ *    side, the way the desktop composition already frames it, rather than a
+ *    photo stretched to the glass. The poster and video still share one
+ *    identical className, so swapping one for the other cannot change
+ *    width, height, object-fit, object-position or scale, and still cannot
+ *    shift layout. None of this touches the `sm:` and up rules, which stay
+ *    exactly the absolute/inset-0/h-full/w-full/object-cover box the
+ *    approved desktop composition already used.
  *
  * `autoplayBlocked` covers the remaining case a fixed box can't: a browser
  * that declines the autoplay attempt outright (some in-app/embedded
@@ -268,7 +275,7 @@ export function LatteHero() {
           alt=""
           aria-hidden="true"
           fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-contain p-[6%] sm:object-cover sm:p-0"
+          className="absolute left-1/2 top-1/2 aspect-[3/4] w-[clamp(17.5rem,74vw,21rem)] -translate-x-1/2 -translate-y-1/2 object-contain sm:inset-0 sm:aspect-auto sm:h-full sm:w-full sm:translate-x-0 sm:translate-y-0 sm:object-cover"
         />
       </picture>
 
@@ -278,7 +285,7 @@ export function LatteHero() {
           ref={setVideoRef}
           data-hero-video
           src={videoSrc}
-          className="absolute inset-0 h-full w-full object-contain p-[6%] sm:object-cover sm:p-0"
+          className="absolute left-1/2 top-1/2 aspect-[3/4] w-[clamp(17.5rem,74vw,21rem)] -translate-x-1/2 -translate-y-1/2 object-contain sm:inset-0 sm:aspect-auto sm:h-full sm:w-full sm:translate-x-0 sm:translate-y-0 sm:object-cover"
           autoPlay
           muted
           loop
@@ -370,10 +377,11 @@ export function LatteHero() {
       {/* A fixed band below `sm`, not an aspect ratio — see the block
           comment above for why a full-width 3:4 box read as too large on a
           real phone. `bg-charcoal-900` matches the section's own ground so
-          the `object-contain` letterboxing this stage now needs is never a
-          visible seam. At `sm:` and up the section's own `aspect-video`
-          takes over and this box just fills it, unchanged from before. */}
-      <div className="relative h-[clamp(25rem,55svh,34rem)] overflow-hidden bg-charcoal-900 sm:absolute sm:inset-0 sm:h-full">
+          the centered, `object-contain`ed media below reads as espresso-
+          black negative space around the drink, never a visible seam. At
+          `sm:` and up the section's own `aspect-video` takes over and this
+          box just fills it, unchanged from before. */}
+      <div className="relative h-[clamp(26.875rem,53svh,28.75rem)] overflow-hidden bg-charcoal-900 sm:absolute sm:inset-0 sm:h-full">
         {media}
         {/* Only overlaid on desktop, where the master's own negative space
             supports it. Mobile's copy sits below the media instead. Stops
