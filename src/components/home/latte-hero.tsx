@@ -60,6 +60,38 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  * someone tapped it. `data-hero-video` is reserved so a future pass can
  * target this element to add a real mute/unmute control once sound design
  * exists, without otherwise restructuring the component.
+ *
+ * Two fixes from a correction pass, both proven against the committed files
+ * rather than guessed:
+ *
+ * 1. The poster's and video's own `<source media="...">` breakpoint used to
+ *    read 699px while the layout around it switches from the mobile stacked
+ *    composition to the desktop overlay at Tailwind's `sm:` (640px). Between
+ *    640–699px that meant the desktop overlay layout rendered while the
+ *    *mobile* portrait (810×1080) video/poster were still selected — a
+ *    portrait source stretched into a 16:9-ish overlay box, `object-cover`
+ *    zooming in until only the cup's rim and logo filled the entire frame.
+ *    Reproduced and screenshotted at 650px before this fix. The breakpoint
+ *    below is now 639px, exactly matching `sm:`, so the two switches can
+ *    never straddle different sources again.
+ *
+ * 2. The mobile stage used to be an arbitrary `52svh` band, whose aspect
+ *    ratio matched neither the mobile master's own 3:4 (810×1080) framing.
+ *    `object-cover` inside a mismatched box crops unpredictably depending on
+ *    viewport height. It is now `aspect-[3/4]` — the mobile master's exact
+ *    native ratio — so the full frame (cup, garnish, logo) always fills the
+ *    box with zero cropping, at any width, and the poster and video (built
+ *    from the same master, same ratio) always occupy the identical box:
+ *    swapping one for the other cannot change width, height, aspect ratio or
+ *    object position, so it cannot shift layout.
+ *
+ * `autoplayBlocked` covers the remaining case a fixed box can't: a browser
+ * that declines the autoplay attempt outright (some in-app/embedded
+ * webviews, or a first load before the page has any user activation on
+ * certain mobile browsers). `video.play()` is called explicitly once the
+ * element mounts so its returned promise can be inspected; a rejection shows
+ * one small centered play control over the poster — never the default
+ * state, and it never appears for a browser that autoplayed successfully.
  */
 export function LatteHero() {
   const prefersReducedMotion = useReducedMotion()
@@ -69,6 +101,9 @@ export function LatteHero() {
   // only from this point on, once it is actually safe to read and act on the
   // real `prefers-reduced-motion` value. See the block comment above.
   const [canMountVideo, setCanMountVideo] = useState(false)
+  // True only once a real, observed autoplay rejection occurs — never the
+  // default rendered state. See the block comment above.
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false)
   const videoRef = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
@@ -86,13 +121,28 @@ export function LatteHero() {
     const video = videoRef.current
     if (!showVideo || !video) return
 
+    // Resets the flag for a fresh mount (e.g. after reduced-motion toggles
+    // off and back on) before the actual play attempt below decides it.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setAutoplayBlocked(false)
+    video.play().catch(() => setAutoplayBlocked(true))
+
     const onVisibility = () => {
       if (document.hidden) video.pause()
-      else video.play().catch(() => {})
+      else video.play().catch(() => setAutoplayBlocked(true))
     }
     document.addEventListener('visibilitychange', onVisibility)
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [showVideo])
+
+  const retryPlayback = () => {
+    const video = videoRef.current
+    if (!video) return
+    video.play().then(
+      () => setAutoplayBlocked(false),
+      () => setAutoplayBlocked(true)
+    )
+  }
 
   const media = (
     <>
@@ -103,7 +153,10 @@ export function LatteHero() {
           viewport is ever requested; `next/image` cannot make that guarantee
           across two swapped instances. */}
       <picture>
-        <source media="(max-width: 699px)" srcSet="/hero/latte-hero-mobile.jpg" />
+        {/* 639px, not 700 — exactly Tailwind's `sm:` breakpoint that the
+            layout below switches on, so this can never select a different
+            source than the one the surrounding composition was built for. */}
+        <source media="(max-width: 639px)" srcSet="/hero/latte-hero-mobile.jpg" />
         <img
           src="/hero/latte-hero-desktop.jpg"
           alt=""
@@ -125,9 +178,24 @@ export function LatteHero() {
           poster="/hero/latte-hero-desktop.jpg"
           onError={() => setVideoFailed(true)}
         >
-          <source media="(max-width: 699px)" src="/hero/latte-hero-mobile.mp4" type="video/mp4" />
+          <source media="(max-width: 639px)" src="/hero/latte-hero-mobile.mp4" type="video/mp4" />
           <source src="/hero/latte-hero-desktop.mp4" type="video/mp4" />
         </video>
+      )}
+
+      {showVideo && autoplayBlocked && (
+        <button
+          type="button"
+          onClick={retryPlayback}
+          aria-label="Play video"
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <span className="flex size-16 items-center justify-center rounded-full bg-charcoal-900/60 text-sand-50 ring-1 ring-sand-50/40 backdrop-blur-sm transition-colors hover:bg-charcoal-900/75">
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="ml-1 h-6 w-6" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+        </button>
       )}
 
       <noscript>
@@ -193,7 +261,12 @@ export function LatteHero() {
     // ratio so `object-cover` never has to crop the left/right edges — see
     // the block comment above for why that matters to the copy's safe zone.
     <section aria-labelledby="hero-heading" className="relative bg-charcoal-900 sm:aspect-video">
-      <div className="relative h-[52svh] min-h-[22rem] overflow-hidden sm:absolute sm:inset-0 sm:h-full sm:min-h-0">
+      {/* `aspect-[3/4]` matches the mobile master's own 810×1080 framing
+          exactly, so `object-cover` never has anything to crop below `sm` —
+          the full cup, garnish and logo always fill the box. At `sm:` and up
+          the section's own `aspect-video` takes over and this box just
+          fills it. */}
+      <div className="relative aspect-[3/4] overflow-hidden sm:absolute sm:inset-0 sm:aspect-auto sm:h-full">
         {media}
         {/* Only overlaid on desktop, where the master's own negative space
             supports it. Mobile's copy sits below the media instead. Stops

@@ -16,10 +16,17 @@ import { site } from '@/content/site'
  * The truck photo is the one authentic photograph available — the two other
  * truck images in `public/images/truck` are AI-generated (visible generator
  * watermark) and are deliberately never used, here or anywhere else on the
- * site. It is a wide launch photo, not a portrait product shot, so each
- * panel uses `object-position` to keep the round Kona logo and the service
- * window in frame rather than the frame's default center crop, which would
- * cut the logo out entirely on a tall panel.
+ * site. It shows both Hanna and Jorge, one on each far side of a very wide
+ * (7952×5304, ~1.5:1) launch photo — too wide for any `object-cover` crop
+ * inside a portrait panel to keep both of them in frame at once; a crop
+ * tight enough to show the round logo cut Jorge out entirely, and centering
+ * cropped both of them. So the truck panel doesn't crop at all: the full,
+ * uncropped photograph sits in its own `object-contain` zone (real pixels,
+ * no re-crop, no re-composition), with a heavily blurred, dark-tinted copy
+ * of the very same photo filling the space `contain` leaves empty — never a
+ * flat void, never a second photo. The schedule and actions live in a solid
+ * panel below the image zone, in normal flow rather than overlaid on it, so
+ * text can never sit across either of their faces.
  *
  * Sweet crêpes are a truck-only fact enforced at the content layer
  * (`food.ts`, `/pastries`) and are not referenced here at all.
@@ -99,21 +106,43 @@ export function DestinationCanvas() {
           </div>
         </div>
 
-        {/* Truck panel */}
-        <div className="relative aspect-[4/5] overflow-hidden rounded-frame bg-charcoal-900 sm:aspect-[3/4] lg:aspect-[4/5]">
-          <Image
-            src={truck.image.src!}
-            alt={truck.image.alt}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover"
-            style={{ objectPosition: '92% center' }}
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-t from-charcoal-900/95 via-charcoal-900/45 to-transparent"
-          />
-          <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+        {/* Truck panel — image zone (full uncropped photo over a blurred
+            fill) and text zone are separate flex children in normal flow,
+            not stacked layers, so the schedule can never overlap either
+            person in the photo. Below `lg` the panel's height is organic
+            (image zone's own min-height plus the text block's natural
+            height) rather than a fixed aspect ratio: the schedule here runs
+            three entries deep, and locking to the café panel's aspect ratio
+            on a narrow phone left it barely 7px of image — the photo would
+            all but vanish. At `lg:` the panel is wide enough that the same
+            aspect ratio leaves the image zone comfortable room, so it
+            matches the café panel exactly, keeping both equally prominent. */}
+        <div className="flex flex-col overflow-hidden rounded-frame bg-charcoal-900 lg:aspect-[4/5]">
+          <div className="relative min-h-56 flex-1 sm:min-h-64 lg:min-h-0">
+            {/* Blurred, dark-tinted fill — the same photograph, never a
+                second image — so `object-contain`'s empty margins are never
+                a flat void. Strictly decorative. */}
+            <Image
+              aria-hidden="true"
+              src={truck.image.src!}
+              alt=""
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="scale-110 object-cover blur-2xl"
+            />
+            <div aria-hidden="true" className="absolute inset-0 bg-charcoal-900/55" />
+            {/* The complete, uncropped photograph — real pixels, no crop,
+                no re-composition — so both Hanna and Jorge stay in frame. */}
+            <Image
+              src={truck.image.src!}
+              alt={truck.image.alt}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="relative object-contain"
+            />
+          </div>
+
+          <div className="bg-gradient-to-b from-charcoal-900 to-espresso-900 p-6 sm:p-8">
             <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-gold-400">
               Kona Coffee Truck
             </p>

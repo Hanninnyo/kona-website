@@ -1,9 +1,10 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import Image from 'next/image'
 import { showcaseDrinks, type DrinkId } from '@/content/drinks'
 import { OrderChooser } from '@/components/order-chooser'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 /**
  * Find Your Island Favorite — the signature-drink showcase.
@@ -40,10 +41,41 @@ const ATMOSPHERE: Record<DrinkId, string> = {
     'radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--color-gold-500) 30%, transparent) 0%, color-mix(in srgb, var(--color-espresso-700) 55%, transparent) 45%, transparent 72%)',
 }
 
+// Hilo Ube opens the showcase — the hero above already sells the Kona Island
+// Latte, so this section's first impression is a different drink. Looked up
+// by id rather than a hardcoded index so it stays correct if the declaration
+// order in `drinks.ts` (which the quiz's tie-breaks depend on) ever changes.
+const DEFAULT_DRINK_ID: DrinkId = 'hilo-ube'
+
 export function SignatureDrinks() {
-  const [activeIndex, setActiveIndex] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const index = showcaseDrinks.findIndex((drink) => drink.id === DEFAULT_DRINK_ID)
+    return index === -1 ? 0 : index
+  })
   const active = showcaseDrinks[activeIndex]
   const tablistId = useId()
+  const prefersReducedMotion = useReducedMotion()
+  const stageRef = useRef<HTMLDivElement | null>(null)
+  const skipNextScroll = useRef(true)
+
+  // Below `lg` the selector, product stage and copy stack in that order (see
+  // the JSX below), so on a narrow screen the stage can land out of view —
+  // below the selector, above the copy, or both. `block: 'nearest'` moves
+  // only as far as required to bring it fully into view (a no-op if it's
+  // already visible, which is always true at `lg:`, where the stage sits
+  // beside the selector) — never centers it, never fights the sticky header
+  // (the page's own `scroll-padding-top` already accounts for that). Skipped
+  // on mount so opening the section doesn't itself trigger a scroll.
+  useEffect(() => {
+    if (skipNextScroll.current) {
+      skipNextScroll.current = false
+      return
+    }
+    stageRef.current?.scrollIntoView({
+      block: 'nearest',
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+    })
+  }, [activeIndex, prefersReducedMotion])
 
   const onKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'ArrowRight') {
@@ -72,86 +104,64 @@ export function SignatureDrinks() {
           Find Your Island Favorite
         </h2>
 
-        <div className="mt-14 grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <div>
-            {/* Selectors: restrained names with compact thumbnails, never a
-                second row of full-bleed photographs. */}
-            <div
-              role="tablist"
-              aria-label="Signature drinks"
-              onKeyDown={onKeyDown}
-              className="flex flex-col gap-1"
-            >
-              {showcaseDrinks.map((drink, index) => (
-                <button
-                  key={drink.id}
-                  id={`${tablistId}-tab-${drink.id}`}
-                  role="tab"
-                  type="button"
-                  aria-selected={index === activeIndex}
-                  aria-controls={`${tablistId}-panel-${drink.id}`}
-                  tabIndex={index === activeIndex ? 0 : -1}
-                  onClick={() => setActiveIndex(index)}
-                  className={`flex items-center gap-3 rounded-panel px-3 py-2.5 text-left font-body text-base transition-colors duration-200 ${
-                    index === activeIndex
-                      ? 'bg-sand-50/10 text-gold-400'
-                      : 'text-sand-100/70 hover:bg-sand-50/5 hover:text-sand-50'
-                  }`}
-                >
-                  <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-espresso-700">
-                    <Image
-                      src={drink.image.cutout ?? drink.image.src}
-                      alt=""
-                      fill
-                      sizes="40px"
-                      className={drink.image.cutout ? 'object-contain p-1' : 'object-cover'}
-                    />
-                  </span>
-                  {drink.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Active drink copy */}
-            <div key={active.id} className="discovery-enter mt-9">
-              <h3 className="font-display text-3xl font-light text-sand-50 sm:text-4xl">
-                {active.name}
-              </h3>
-
-              <ul className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
-                {active.descriptors.map((descriptor) => (
-                  <li
-                    key={descriptor}
-                    className="font-body text-eyebrow uppercase tracking-[0.18em] text-sand-100/60 before:mr-3 before:text-sand-100/30 before:content-['—'] first:before:hidden"
-                  >
-                    {descriptor}
-                  </li>
-                ))}
-              </ul>
-
-              <p className="mt-5 max-w-md font-body text-base leading-relaxed text-sand-100/80">
-                {active.description}
-              </p>
-
-              <p className="mt-3 font-body text-sm text-sand-100/55">
-                {active.temperature.map((t) => (t === 'hot' ? 'Hot' : 'Iced')).join(' · ')}
-              </p>
-
-              <div className="relative mt-8">
-                <OrderChooser
-                  solid={false}
-                  align="left"
-                  label="Order Ahead"
-                  triggerClassName="inline-flex min-h-14 items-center justify-center gap-2 rounded-panel bg-sand-50 px-7 py-3.5 font-body text-sm text-charcoal-900 transition-colors duration-200 hover:bg-white"
-                />
-              </div>
-            </div>
+        {/*
+          Below `lg` this is a single column and source order is visual
+          order, so it's deliberately selector → stage → copy: tap a
+          selector and the product it names is the very next thing on the
+          page, not buried under a tall list and a paragraph. At `lg:` the
+          original two-column composition returns via explicit grid
+          placement (`order-none` lets col/row-start fully decide position) —
+          selector and copy stacked in the narrow column, the stage alone in
+          the wide one, exactly as before.
+        */}
+        <div className="mt-14 grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-x-16 lg:gap-y-10">
+          {/* Selectors: a compact horizontally-scrollable row of names and
+              thumbnails on mobile — never a tall list that pushes the
+              product below the fold — reverting to the original vertical
+              list at `lg:`. */}
+          <div
+            role="tablist"
+            aria-label="Signature drinks"
+            onKeyDown={onKeyDown}
+            className="order-1 min-w-0 flex gap-2 overflow-x-auto pb-1 lg:order-none lg:col-start-1 lg:row-start-1 lg:flex-col lg:gap-1 lg:overflow-visible lg:pb-0"
+          >
+            {showcaseDrinks.map((drink, index) => (
+              <button
+                key={drink.id}
+                id={`${tablistId}-tab-${drink.id}`}
+                role="tab"
+                type="button"
+                aria-selected={index === activeIndex}
+                aria-controls={`${tablistId}-panel-${drink.id}`}
+                tabIndex={index === activeIndex ? 0 : -1}
+                onClick={() => setActiveIndex(index)}
+                className={`flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-panel px-3 py-2 text-left font-body text-sm transition-colors duration-200 lg:gap-3 lg:px-3 lg:py-2.5 lg:text-base ${
+                  index === activeIndex
+                    ? 'bg-sand-50/10 text-gold-400'
+                    : 'text-sand-100/70 hover:bg-sand-50/5 hover:text-sand-50'
+                }`}
+              >
+                <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-espresso-700 lg:h-10 lg:w-10">
+                  <Image
+                    src={drink.image.cutout ?? drink.image.src}
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className={drink.image.cutout ? 'object-contain p-1' : 'object-cover'}
+                  />
+                </span>
+                {drink.name}
+              </button>
+            ))}
           </div>
 
           {/* Product stage: one large transparent cutout over a restrained
               radial atmosphere that shifts per drink — no card, no white
               image rectangle. */}
-          <div className="relative aspect-[4/5] sm:aspect-[5/4] lg:aspect-[4/5]">
+          <div
+            ref={stageRef}
+            className="order-2 relative aspect-[4/5] scroll-mt-24 sm:aspect-[5/4] lg:order-none lg:col-start-2 lg:row-start-1 lg:row-span-2 lg:aspect-[4/5]"
+          >
             {showcaseDrinks.map((drink, index) => (
               <div
                 key={drink.id}
@@ -186,6 +196,44 @@ export function SignatureDrinks() {
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Active drink copy */}
+          <div
+            key={active.id}
+            className="discovery-enter order-3 lg:order-none lg:col-start-1 lg:row-start-2"
+          >
+            <h3 className="font-display text-3xl font-light text-sand-50 sm:text-4xl">
+              {active.name}
+            </h3>
+
+            <ul className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+              {active.descriptors.map((descriptor) => (
+                <li
+                  key={descriptor}
+                  className="font-body text-eyebrow uppercase tracking-[0.18em] text-sand-100/60 before:mr-3 before:text-sand-100/30 before:content-['—'] first:before:hidden"
+                >
+                  {descriptor}
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-5 max-w-md font-body text-base leading-relaxed text-sand-100/80">
+              {active.description}
+            </p>
+
+            <p className="mt-3 font-body text-sm text-sand-100/55">
+              {active.temperature.map((t) => (t === 'hot' ? 'Hot' : 'Iced')).join(' · ')}
+            </p>
+
+            <div className="relative mt-8">
+              <OrderChooser
+                solid={false}
+                align="left"
+                label="Order Ahead"
+                triggerClassName="inline-flex min-h-14 items-center justify-center gap-2 rounded-panel bg-sand-50 px-7 py-3.5 font-body text-sm text-charcoal-900 transition-colors duration-200 hover:bg-white"
+              />
+            </div>
           </div>
         </div>
       </div>

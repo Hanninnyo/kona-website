@@ -55,7 +55,11 @@ export interface Drink {
      */
     cutout?: string
   }
-  /** Shown in the signature-drink showcase's own selector. Kona Island Latte is optional there. */
+  /**
+   * Shown in the signature-drink showcase's own selector. Kona Island Latte
+   * is deliberately excluded: the hero above it already sells that drink,
+   * so the showcase's job is to introduce a different one.
+   */
   inShowcase: boolean
 }
 
@@ -73,7 +77,9 @@ export const drinks: Drink[] = [
       fromCommercialStill: true,
       cutout: '/images/drinks/cutouts/kona-island-latte.webp',
     },
-    inShowcase: true,
+    // Excluded from the showcase selector — see the field's own doc comment.
+    // Still a full member of `drinks`, so the quiz can still recommend it.
+    inShowcase: false,
   },
   {
     id: 'captain-cook',
@@ -150,8 +156,10 @@ export const drinks: Drink[] = [
       src: '/images/drinks/classic-latte.jpg',
       alt: 'A classic hot latte with heart latte art in a paper cup.',
     },
-    // Not part of the showcase selector — it exists so the quiz always has a
-    // real photographed drink to recommend for a "keep it classic" answer.
+    // Excluded from the homepage showcase: the source photograph's printed
+    // cup has a logo whose lettering cannot be corrected without retouching
+    // or regenerating it, which is off the table. The drink itself is still
+    // real menu data — this only withholds it from the homepage stage.
     inShowcase: false,
   },
 ]

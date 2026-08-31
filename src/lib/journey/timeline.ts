@@ -23,6 +23,19 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const seg = (t: number, a: number, b: number) => clamp((t - a) / (b - a), 0, 1)
 /** Slow in, slow out. */
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
+/**
+ * Zero velocity *and* zero acceleration at both ends (quintic smootherstep),
+ * used only for the camera's final approach into California below.
+ *
+ * The cubic `ease()` above still reaches its peak rate of change right at
+ * the segment's midpoint, at three times the segment's average rate — fine
+ * for a caption's opacity, but here that peak governs a geometric (percent-
+ * per-second) zoom across a wide span, and three times the average reads as
+ * a snap rather than an arrival. This curve's peak is under two times the
+ * average, so the same total pullback is spread more evenly across the
+ * approach instead of being spent in one abrupt burst through the middle.
+ */
+const easeSettle = (t: number) => t * t * t * (t * (t * 6 - 15) + 10)
 
 /**
  * Where the camera is pointing, in degrees.
@@ -71,15 +84,35 @@ const CAMERA_WIDE: (Camera & { t: number })[] = [
      The pullback is still one continuous decelerating move: 4.2° to 40° with
      no step and no reversal anywhere in it.
   */
-  { t: 10.0, lat: 22.1, lon: -152.7, span: 10.5 },
-  { t: 11.0, lat: 23.8, lon: -150.0, span: 18.1 },
-  { t: 12.0, lat: 25.4, lon: -147.1, span: 25.2 },
-  { t: 13.0, lat: 26.9, lon: -144.0, span: 33.3 },
-  { t: 14.5, lat: 28.68, lon: -139.21, span: 40.0 },
+  { t: 10.0, lat: 22.1, lon: -152.7, span: 11.5 },
+  { t: 11.0, lat: 23.8, lon: -150.0, span: 20.5 },
+  { t: 12.0, lat: 25.4, lon: -147.1, span: 29.5 },
+  { t: 13.0, lat: 26.9, lon: -144.0, span: 38.0 },
+  /* 47° is as wide as this camera goes — 8% shy of the Pacific image's own
+     50.99° of longitude, the same margin the island handoff above keeps.
+     Any tighter and the pullback under-delivers on a landscape screen: the
+     lat/lon path already covers the same ~17° of latitude a narrow phone's
+     camera does, but a wide aspect's shorter vertical window (`span / aspect`
+     — see `fit()`) turns that pan into a smaller fraction of the frame, and
+     a smaller peak span was compounding it by leaving the wide screen's
+     "pulled back" moment showing less than half the image's actual width.
+     47° puts it at 92%: the widest read this camera can give without asking
+     `fit()` to clamp it back down, on every one of 1440×900, 1280×800 and
+     1024×768 (checked against the actual `west`/`east` bounds below, not
+     eyeballed). */
+  { t: 14.5, lat: 28.68, lon: -139.21, span: 47.0 },
   /* Comes to rest on California a full second before the map begins to
      dissolve, so the last thing the map does is settle rather than vanish
-     mid-move. */
-  { t: 16.0, lat: 36.9, lon: -124.2, span: 15.0 },
+     mid-move. 12.5°, not the 11° a first pass tried: 47→11 over 1.5s (4.27×)
+     measured out at a peak instantaneous zoom rate concentrated right around
+     t=15.1 — recorded and confirmed abrupt, closer to a snap than an
+     arrival. 47→12.5 (3.76×) still reads as a real zoom back in — comfortably
+     more pullback than the pre-correction 40°→15° (2.67×) — while trimming
+     the peak rate at the busiest instant of the approach. Paired with
+     `easeSettle` below, which trims it further by spreading the same
+     pullback more evenly through the segment instead of bursting through
+     its midpoint. */
+  { t: 16.0, lat: 36.9, lon: -124.2, span: 12.5 },
 ]
 
 const CAMERA_NARROW: (Camera & { t: number })[] = [
@@ -225,8 +258,11 @@ export function cameraAt(t: number, narrow: boolean): Camera {
       /* Linear in time between keyframes which — with the geometric zoom
          below — makes the pullback a constant rate of magnification. Easing it
          as well would make the camera lurch away and then crawl. The one move
-         that is eased is the last, which comes to rest on California. */
-      const p = i === keys.length - 2 ? ease(seg(t, a.t, b.t)) : seg(t, a.t, b.t)
+         that is eased is the last, which comes to rest on California — with
+         `easeSettle`, not the cubic `ease()` used elsewhere in this file, so
+         its peak rate of change doesn't concentrate as sharply. See the
+         comment on `easeSettle` above. */
+      const p = i === keys.length - 2 ? easeSettle(seg(t, a.t, b.t)) : seg(t, a.t, b.t)
       return {
         lat: lerp(a.lat, b.lat, p),
         lon: lerp(a.lon, b.lon, p),
