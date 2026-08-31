@@ -78,6 +78,12 @@ export const site: SiteContent = {
     { label: 'Our Story', href: '/story' },
     { label: 'Our Kona Journey', href: '/our-kona-journey' },
     { label: 'Visit', href: '/locations', description: 'Café and coffee truck' },
+    // The only "Gift Cards" entry point in the header/mobile menu — this
+    // array backs both the desktop nav and the mobile menu panel in
+    // `site-header.tsx`, so one entry here is enough to reach both. Points
+    // to `/gift-cards`, never straight to a Square URL: see the block
+    // comment on `giftCardsUrl` below for why.
+    { label: 'Gift Cards', href: '/gift-cards' },
   ],
 
   primaryAction: {

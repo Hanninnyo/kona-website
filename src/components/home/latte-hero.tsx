@@ -78,12 +78,18 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  * 2. The mobile stage used to be an arbitrary `52svh` band, whose aspect
  *    ratio matched neither the mobile master's own 3:4 (810×1080) framing.
  *    `object-cover` inside a mismatched box crops unpredictably depending on
- *    viewport height. It is now `aspect-[3/4]` — the mobile master's exact
- *    native ratio — so the full frame (cup, garnish, logo) always fills the
- *    box with zero cropping, at any width, and the poster and video (built
- *    from the same master, same ratio) always occupy the identical box:
- *    swapping one for the other cannot change width, height, aspect ratio or
- *    object position, so it cannot shift layout.
+ *    viewport height. A later pass made it `aspect-[3/4]` instead — the
+ *    master's exact native ratio, so nothing was cropped — but on a real
+ *    phone that meant a full-width 3:4 box (up to ~575px tall on a large
+ *    phone), which read as the cup filling nearly the entire screen with the
+ *    copy pushed almost out of the first viewport. The stage is now a fixed
+ *    band, `clamp(25rem,55svh,34rem)` tall regardless of width, and the
+ *    poster/video sit inside it at `object-contain` with a `6%` inset (so
+ *    each media file scales to ~88% of the box) instead of filling it edge
+ *    to edge — the full cup stays legible without the box itself dominating
+ *    the screen. The poster and video still share one identical className,
+ *    so swapping one for the other cannot change width, height, object-fit,
+ *    object-position or scale, and still cannot shift layout.
  *
  * `autoplayBlocked` covers the remaining case a fixed box can't: a browser
  * that declines the autoplay attempt outright (some in-app/embedded
@@ -92,6 +98,25 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  * element mounts so its returned promise can be inspected; a rejection shows
  * one small centered play control over the poster — never the default
  * state, and it never appears for a browser that autoplayed successfully.
+ *
+ * One resolved `src`, not sibling `<source>` candidates. A VP9/WebM
+ * derivative sits alongside each approved H.264 master (same content, same
+ * duration, no audio, no upscale — see `public/hero/SOURCES.md`), and
+ * `canPlayType` picks whichever this browser actually supports — WebM where
+ * it can, the original MP4 (Safari, older engines) where it can't — so
+ * exactly one file is ever requested. Four sibling `<source>` elements (two
+ * codecs × two breakpoints) were tried first and measurably fired a spurious
+ * `error` on this element within ~15ms of mount specifically when React
+ * inserted them — the identical markup worked when built with plain
+ * `createElement`/`appendChild`, and dropping to two `<source>` elements
+ * also worked, isolating the failure to how many sibling sources React
+ * mounts under one `<video>` at once. `Scene` in `satellite-journey.tsx`
+ * already resolves its own video variant in JS to one `src` rather than
+ * leaning on `<source>` fallback for exactly this kind of switch; this
+ * follows that precedent instead of trusting the fragile path a second
+ * time. `key={videoSrc}` forces a clean remount on a breakpoint change
+ * (e.g. rotating a phone) instead of reusing a node still holding the other
+ * master.
  *
  * The play attempt is keyed off the mounted DOM node itself, not off
  * `showVideo`. A `ref` callback (rather than a plain `useRef`) turns "the
@@ -129,6 +154,12 @@ export function LatteHero() {
   const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
     setVideoNode(node)
   }, [])
+  // Same breakpoint the poster's `<picture>` and the layout below switch on
+  // (639px, matching Tailwind's `sm:`), read the same way `satellite-
+  // journey.tsx` reads its own narrow breakpoint: `matchMedia` plus a
+  // `change` listener, not a resize listener re-measuring width on every
+  // pixel.
+  const [narrow, setNarrow] = useState(false)
 
   useEffect(() => {
     // Deliberate: React's own documented pattern for rendering something
@@ -139,7 +170,25 @@ export function LatteHero() {
     setCanMountVideo(true)
   }, [])
 
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setNarrow(mq.matches)
+    const onChange = () => setNarrow(mq.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
   const showVideo = canMountVideo && !prefersReducedMotion && !videoFailed
+  // Never touches the DOM during SSR — `document` doesn't exist there, and
+  // `showVideo` is false on every server render anyway (see above), so the
+  // fallback value here is never actually rendered into a `<video>`.
+  const videoExt =
+    typeof document !== 'undefined' &&
+    document.createElement('video').canPlayType('video/webm; codecs="vp9"')
+      ? 'webm'
+      : 'mp4'
+  const videoSrc = `/hero/latte-hero-${narrow ? 'mobile' : 'desktop'}.${videoExt}`
 
   // Depends on the mounted node itself (see the block comment above), not on
   // `showVideo` alone — this cannot run until React has actually handed the
@@ -219,15 +268,17 @@ export function LatteHero() {
           alt=""
           aria-hidden="true"
           fetchPriority="high"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-contain p-[6%] sm:object-cover sm:p-0"
         />
       </picture>
 
       {showVideo && (
         <video
+          key={videoSrc}
           ref={setVideoRef}
           data-hero-video
-          className="absolute inset-0 h-full w-full object-cover"
+          src={videoSrc}
+          className="absolute inset-0 h-full w-full object-contain p-[6%] sm:object-cover sm:p-0"
           autoPlay
           muted
           loop
@@ -235,10 +286,7 @@ export function LatteHero() {
           preload="auto"
           poster="/hero/latte-hero-desktop.jpg"
           onError={() => setVideoFailed(true)}
-        >
-          <source media="(max-width: 639px)" src="/hero/latte-hero-mobile.mp4" type="video/mp4" />
-          <source src="/hero/latte-hero-desktop.mp4" type="video/mp4" />
-        </video>
+        />
       )}
 
       {showVideo && autoplayBlocked && (
@@ -319,12 +367,13 @@ export function LatteHero() {
     // ratio so `object-cover` never has to crop the left/right edges — see
     // the block comment above for why that matters to the copy's safe zone.
     <section aria-labelledby="hero-heading" className="relative bg-charcoal-900 sm:aspect-video">
-      {/* `aspect-[3/4]` matches the mobile master's own 810×1080 framing
-          exactly, so `object-cover` never has anything to crop below `sm` —
-          the full cup, garnish and logo always fill the box. At `sm:` and up
-          the section's own `aspect-video` takes over and this box just
-          fills it. */}
-      <div className="relative aspect-[3/4] overflow-hidden sm:absolute sm:inset-0 sm:aspect-auto sm:h-full">
+      {/* A fixed band below `sm`, not an aspect ratio — see the block
+          comment above for why a full-width 3:4 box read as too large on a
+          real phone. `bg-charcoal-900` matches the section's own ground so
+          the `object-contain` letterboxing this stage now needs is never a
+          visible seam. At `sm:` and up the section's own `aspect-video`
+          takes over and this box just fills it, unchanged from before. */}
+      <div className="relative h-[clamp(25rem,55svh,34rem)] overflow-hidden bg-charcoal-900 sm:absolute sm:inset-0 sm:h-full">
         {media}
         {/* Only overlaid on desktop, where the master's own negative space
             supports it. Mobile's copy sits below the media instead. Stops
