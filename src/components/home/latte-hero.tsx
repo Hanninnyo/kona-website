@@ -75,28 +75,37 @@ import { useReducedMotion } from '@/hooks/useReducedMotion'
  *    below is now 639px, exactly matching `sm:`, so the two switches can
  *    never straddle different sources again.
  *
- * 2. The mobile stage used to be an arbitrary `52svh` band, whose aspect
- *    ratio matched neither the mobile master's own 3:4 (810×1080) framing.
- *    `object-cover` inside a mismatched box crops unpredictably depending on
- *    viewport height. A later pass made it `aspect-[3/4]` instead — the
- *    master's exact native ratio, so nothing was cropped — but on a real
- *    phone that meant a full-width 3:4 box (up to ~575px tall on a large
- *    phone), which read as the cup filling nearly the entire screen. A pass
- *    after that shrank the *band* to `clamp(25rem,55svh,34rem)` but still let
- *    the media fill it edge to edge via percentage padding, which still read
- *    as too large and too close to the phone's own edges. The band is now
- *    `clamp(26.875rem,53svh,28.75rem)` — 430–460px, not 400–544px — and the
- *    poster/video are centered inside it at a fixed `clamp(17.5rem,74vw,
- *    21rem)` width (≈289px at 390px, well short of the 390px viewport) with
- *    `aspect-[3/4]` deriving the height from that width, so the drink reads
- *    as a centered product shot with real espresso-black margin on every
- *    side, the way the desktop composition already frames it, rather than a
- *    photo stretched to the glass. The poster and video still share one
- *    identical className, so swapping one for the other cannot change
- *    width, height, object-fit, object-position or scale, and still cannot
- *    shift layout. None of this touches the `sm:` and up rules, which stay
- *    exactly the absolute/inset-0/h-full/w-full/object-cover box the
- *    approved desktop composition already used.
+ * 2. The mobile composition went through several shapes — a `52svh` band,
+ *    then a full-width `aspect-[3/4]` box (up to ~575px tall, reading as the
+ *    cup filling nearly the whole screen), then a centered, deliberately
+ *    small `object-contain` product shot with wide dark margins on every
+ *    side — before landing here: a full-bleed, one-viewport-tall (`100svh`)
+ *    hero with the copy overlaid over its lower portion, which is what the
+ *    desktop composition already does and what "cinematic hero" actually
+ *    means. The margined `object-contain` version read as a product photo
+ *    stacked above a separate text block, not one scene. The media element
+ *    now shares one identical, breakpoint-independent className with the
+ *    poster (`absolute inset-0 h-full w-full object-cover`) — mobile and
+ *    desktop no longer need different object-fit rules at all, since both
+ *    are the same "fill the box, crop to it" shot; only the *box* differs
+ *    (`100svh` full-bleed below `sm:`, the master's own `aspect-video` at
+ *    `sm:` and up, untouched). Default center `object-position` was checked
+ *    against the mobile master's own geometry rather than assumed: the
+ *    stage below `sm:` (390–430px wide, 667–932px tall) is always narrower,
+ *    relative to its height, than the mobile master's native 3:4 (810×1080)
+ *    ratio, so `object-cover` always scales to match the box's *height* and
+ *    only ever trims the left/right edges — the full vertical frame (pour,
+ *    cup, logo) is preserved at every one of the four tested sizes; only
+ *    the sides, which are the master's own negative space around the cup,
+ *    are ever cropped. A `to-bottom` gradient (transparent through the
+ *    upper ~45%, opaque by the bottom) sits behind the copy so it reads
+ *    against the video at every scroll position, mirroring the desktop
+ *    `to-right` scrim's same "opaque only where text sits" logic. The
+ *    poster and video still share one identical className, so swapping one
+ *    for the other cannot change width, height, object-fit, object-position
+ *    or scale, and still cannot shift layout. None of this touches the
+ *    `sm:` and up rules, which stay exactly what the approved desktop
+ *    composition already used.
  *
  * `autoplayBlocked` covers the remaining case a fixed box can't: a browser
  * that declines the autoplay attempt outright (some in-app/embedded
@@ -275,7 +284,7 @@ export function LatteHero() {
           alt=""
           aria-hidden="true"
           fetchPriority="high"
-          className="absolute left-1/2 top-1/2 aspect-[3/4] w-[clamp(17.5rem,74vw,21rem)] -translate-x-1/2 -translate-y-1/2 object-contain sm:inset-0 sm:aspect-auto sm:h-full sm:w-full sm:translate-x-0 sm:translate-y-0 sm:object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       </picture>
 
@@ -285,7 +294,7 @@ export function LatteHero() {
           ref={setVideoRef}
           data-hero-video
           src={videoSrc}
-          className="absolute left-1/2 top-1/2 aspect-[3/4] w-[clamp(17.5rem,74vw,21rem)] -translate-x-1/2 -translate-y-1/2 object-contain sm:inset-0 sm:aspect-auto sm:h-full sm:w-full sm:translate-x-0 sm:translate-y-0 sm:object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
           autoPlay
           muted
           loop
@@ -373,20 +382,30 @@ export function LatteHero() {
     // `sm:aspect-video` locks the container to the source master's own 16:9
     // ratio so `object-cover` never has to crop the left/right edges — see
     // the block comment above for why that matters to the copy's safe zone.
-    <section aria-labelledby="hero-heading" className="relative bg-charcoal-900 sm:aspect-video">
-      {/* A fixed band below `sm`, not an aspect ratio — see the block
-          comment above for why a full-width 3:4 box read as too large on a
-          real phone. `bg-charcoal-900` matches the section's own ground so
-          the centered, `object-contain`ed media below reads as espresso-
-          black negative space around the drink, never a visible seam. At
-          `sm:` and up the section's own `aspect-video` takes over and this
-          box just fills it, unchanged from before. */}
-      <div className="relative h-[clamp(26.875rem,53svh,28.75rem)] overflow-hidden bg-charcoal-900 sm:absolute sm:inset-0 sm:h-full">
+    <section
+      aria-labelledby="hero-heading"
+      className="relative h-[100svh] bg-charcoal-900 sm:h-auto sm:aspect-video"
+    >
+      {/* One full-bleed box below `sm` — `100svh` on the section above
+          already makes it one mobile viewport tall — instead of a shorter
+          band with the copy in normal flow underneath it. At `sm:` and up
+          the section's own `aspect-video` takes over and this box just
+          fills it, unchanged from before. */}
+      <div className="absolute inset-0 overflow-hidden bg-charcoal-900 sm:h-full">
         {media}
-        {/* Only overlaid on desktop, where the master's own negative space
-            supports it. Mobile's copy sits below the media instead. Stops
-            at 42% of the frame width — just past the cup's own left edge at
-            40% — so the scrim never dims the drink itself. */}
+        {/* Below `sm`, the copy overlays the lower part of the frame, so it
+            needs its own scrim: transparent through the upper frame where
+            the pour and logo sit, opaque by the bottom where the copy is.
+            At `sm:` and up this is still the original left-to-right scrim,
+            unchanged — the two never apply at the same width. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 sm:hidden"
+          style={{
+            background:
+              'linear-gradient(to bottom, transparent 0%, transparent 30%, rgba(27,25,23,0.55) 50%, rgba(27,25,23,0.9) 68%, rgba(27,25,23,0.98) 100%)',
+          }}
+        />
         <div
           aria-hidden="true"
           className="absolute inset-0 hidden sm:block"
@@ -397,9 +416,9 @@ export function LatteHero() {
         />
       </div>
 
-      <div className="relative px-5 pb-14 pt-10 sm:absolute sm:inset-0 sm:flex sm:flex-col sm:justify-between sm:px-8 sm:pb-[clamp(1.5rem,4vw,2.5rem)] sm:pt-[clamp(4.5rem,9vw,7rem)] lg:pl-12">
+      <div className="absolute inset-x-0 bottom-0 px-5 pb-[max(1.75rem,env(safe-area-inset-bottom))] sm:absolute sm:inset-0 sm:flex sm:flex-col sm:justify-between sm:px-8 sm:pb-[clamp(1.5rem,4vw,2.5rem)] sm:pt-[clamp(4.5rem,9vw,7rem)] lg:pl-12">
         <div className="sm:max-w-[min(28rem,34vw)]">{actions}</div>
-        <p className="mt-8 sm:mt-0 sm:max-w-[min(28rem,34vw)]">{journeyLink}</p>
+        <p className="mt-6 sm:mt-0 sm:max-w-[min(28rem,34vw)]">{journeyLink}</p>
       </div>
     </section>
   )
