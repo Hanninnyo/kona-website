@@ -30,6 +30,10 @@ export const metadata: Metadata = {
   description:
     'A Mountain View café serving 100% authentic Kona coffee, handcrafted drinks, chimney cakes and bakery items, plus a Bay Area coffee truck.',
   applicationName: site.brand.name,
+  icons: {
+    icon: [{ url: '/images/logo-mark.png', type: 'image/png' }],
+    apple: [{ url: '/images/logo-mark.png', type: 'image/png' }],
+  },
   openGraph: {
     title: 'Kona Island Coffee — 100% Kona Coffee in Mountain View',
     description:
