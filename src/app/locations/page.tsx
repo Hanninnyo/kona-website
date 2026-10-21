@@ -8,7 +8,9 @@ import { site } from "@/content/site";
 /* Hours are read from the verified location records rather than written here,
    so there is exactly one place in the codebase a time can be wrong. */
 const cafeHours = site.locations.find((l) => l.id === "mountain-view")!.hours;
-const truckSchedule = site.locations.find((l) => l.id === "coffee-truck")!.schedule!;
+const truck = site.locations.find((l) => l.id === "coffee-truck")!;
+const truckSchedule = truck.schedule!;
+const truckDirectionsUrl = truck.directionsUrl;
 
 export default function Locations() {
   return (
@@ -62,20 +64,18 @@ export default function Locations() {
           </div>
         </section>
 
-        {/* ── Valley Medical Center — Coffee Truck ── */}
+        {/* ── SPARK Social San José — Coffee Truck ── */}
         <section className="rounded-2xl ring-1 ring-neutral-700/60 bg-black/10 p-6 shadow-kona-soft">
           <h2 className="text-2xl font-semibold text-kona-taupe">
-            Valley Medical Center — Coffee Truck
+            SPARK Social San José — Coffee Truck
           </h2>
           <p className="text-sm text-kona-white/85 mt-1">
-            751 S Bascom Ave, San Jose, CA
+            140 S Montgomery Blvd, San José, CA 95110
           </p>
           {/*
-            Three blocks, deliberately not one list of days. The truck is at
-            this address on weekdays only; Saturday is a different place
-            entirely, and Sunday is nowhere. Presenting them together as a
-            week would tell a visitor the hospital forecourt is open on a
-            Saturday, which it is not.
+            One fixed address, seven days a week, so the blocks split the week
+            by day rather than by place. Hours still come from the verified
+            location record above.
           */}
           <dl className="mt-4 space-y-3">
             {truckSchedule.map((block) => (
@@ -90,7 +90,15 @@ export default function Locations() {
               </div>
             ))}
           </dl>
-          <div className="mt-4">
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <a
+              href={truckDirectionsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-lg bg-kona-teal px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-kona-teal/90 transition-colors"
+            >
+              Get Directions →
+            </a>
             <a
               href="https://kona-island-coffee.square.site/"
               target="_blank"
@@ -102,26 +110,12 @@ export default function Locations() {
           </div>
         </section>
 
-        {/* ── Saturday Bay Area Route ── */}
-        <section className="rounded-2xl ring-1 ring-neutral-700/60 bg-black/10 p-6 shadow-kona-soft">
-          <h2 className="text-2xl font-semibold text-kona-taupe">
-            Saturday Bay Area Route
-          </h2>
-          <p className="text-sm text-kona-white/85 mt-1">
-            Rotating Community Locations
-          </p>
-          <p className="mt-2 text-sm text-kona-white/85 leading-relaxed">
-            On Saturdays, our coffee truck rotates between our regular Bay Area
-            communities: Elan at River Oaks Apartments (San Jose), Turing at The
-            Fields (Milpitas), The Dean (Mountain View), and Communications
-            Hill.
-          </p>
-          {/*
-            The Saturday time is not repeated here. It lives in the schedule
-            above, beside the two other blocks it has to be read against; this
-            section says where the truck goes, not when.
-          */}
-        </section>
+        {/*
+          The Saturday Bay Area Route section was removed when the truck moved
+          to a single fixed address at SPARK Social San José. It previously
+          listed a rotating set of community stops; that schedule is no longer
+          current and must not be shown.
+        */}
 
       </div>
 

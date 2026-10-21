@@ -121,8 +121,8 @@ export default function AboutPage() {
                 </h2>
                 <p className="text-lg text-kona-espresso/80 leading-relaxed">
                   We started with a mobile coffee truck, bringing Hawaiian coffee and fresh crêpes directly
-                  to neighborhoods across the Bay Area. Our truck has become a familiar sight at Valley Medical
-                  Center, apartment communities, and weekend pop-ups.
+                  to neighborhoods across the Bay Area. That truck is still serving today, and it is where
+                  the business began.
                 </p>
                 <p className="text-lg text-kona-espresso/80 leading-relaxed">
                   Every stop we make becomes part of our ʻohana. Whether you&apos;re grabbing a quick latte

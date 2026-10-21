@@ -146,8 +146,18 @@ export function DestinationCanvas() {
             <p className="font-body text-eyebrow uppercase tracking-[0.18em] text-gold-400">
               Kona Coffee Truck
             </p>
+            {/* Venue then street, matching the café panel above. Both read
+                from the verified location record, so the truck's address
+                lives in one place in the codebase. */}
+            <p className="mt-3 font-body text-base text-sand-50">
+              {coffeeTruck.address.unit}
+            </p>
+            <p className="font-body text-base text-sand-50">
+              {coffeeTruck.address.street}, {coffeeTruck.address.city},{' '}
+              {coffeeTruck.address.region} {coffeeTruck.address.postalCode}
+            </p>
 
-            <dl className="mt-3 flex flex-col gap-3 font-body text-sm leading-relaxed text-sand-100/80">
+            <dl className="mt-4 flex flex-col gap-3 font-body text-sm leading-relaxed text-sand-100/80">
               {coffeeTruck.schedule?.map((block) => (
                 <div key={block.label}>
                   <dt className="text-sand-50">{block.label}</dt>
@@ -164,7 +174,7 @@ export function DestinationCanvas() {
                 rel="noopener noreferrer"
                 className="inline-flex min-h-14 items-center justify-center rounded-panel bg-sand-50 px-6 py-3.5 font-body text-sm text-charcoal-900 transition-colors duration-200 hover:bg-white"
               >
-                Directions to VMC
+                {truck.primary.label}
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
               <a

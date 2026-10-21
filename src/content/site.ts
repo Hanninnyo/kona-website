@@ -3,20 +3,21 @@ import type { ScheduleBlock, SiteContent } from './types'
 /**
  * The truck's week, as owner-confirmed.
  *
- * Three blocks, not a merged list of days, and the split is the whole point:
- * Monday to Friday the truck is at Valley Medical Center, on Saturday it is on
- * a rotating community route somewhere else, and on Sunday it is nowhere. A
- * visitor who reads the weekday hours as covering Saturday drives to a
- * hospital forecourt and finds nothing there.
+ * The truck now serves a single fixed address — SPARK Social San José — seven
+ * days a week, so the schedule is a plain pair of day ranges. The blocks no
+ * longer name a place each, because there is only one.
+ *
+ * Superseded (not rendered anywhere): the truck previously ran Monday–Friday
+ * at Valley Medical Center, 7:00 AM–2:00 PM, with a rotating Saturday
+ * community route 8:30 AM–1:30 PM and Sunday closed.
  */
 const TRUCK_SCHEDULE: ScheduleBlock[] = [
-  { label: 'Valley Medical Center', when: 'Monday–Friday · 7:00 AM–2:00 PM' },
+  { label: 'Monday–Thursday', when: '8:00 AM–5:00 PM' },
   {
-    label: 'Saturday community route',
-    when: 'Saturday · 8:30 AM–1:30 PM',
-    note: 'Location rotates — check the current schedule before visiting.',
+    label: 'Friday–Sunday',
+    when: '8:00 AM–8:00 PM',
+    note: 'Hours may vary during special events.',
   },
-  { label: 'Sunday', when: 'Closed' },
 ]
 
 /**
@@ -106,7 +107,7 @@ export const site: SiteContent = {
       label: 'Kona Coffee Truck',
       href: COFFEE_TRUCK_ORDERING,
       external: true,
-      description: 'Valley Medical Center and community stops',
+      description: 'SPARK Social San José',
     },
   ],
 
@@ -137,21 +138,22 @@ export const site: SiteContent = {
     },
     {
       id: 'coffee-truck',
-      name: 'Coffee Truck',
+      name: 'Kona Coffee Truck',
       kind: 'mobile',
       summary:
-        'A separate Kona location with its own ordering, currently serving Valley Medical Center.',
+        'A separate Kona location with its own ordering, serving SPARK Social San José.',
       address: {
-        street: '751 S. Bascom Ave',
-        unit: 'Sobrato Pavilion',
-        city: 'San Jose',
+        street: '140 S Montgomery Blvd',
+        unit: 'SPARK Social San José',
+        city: 'San José',
         region: 'CA',
-        postalCode: '',
+        postalCode: '95110',
         country: 'USA',
       },
-      directionsUrl: googleMapsSearch(
-        '751 S Bascom Ave Sobrato Pavilion San Jose CA'
-      ),
+      // The owner-supplied link, used verbatim rather than rebuilt from the
+      // address so it resolves to exactly the venue they confirmed.
+      directionsUrl:
+        'https://www.google.com/maps/search/?api=1&query=SPARK+Social+San+Jose+140+S+Montgomery+Blvd+San+Jose+CA+95110',
       ordering: { label: 'Order from the Coffee Truck', url: COFFEE_TRUCK_ORDERING },
       /* Flattened from the blocks above rather than written twice, so a time
          cannot drift between the two shapes. Each line carries its own place,

@@ -188,8 +188,8 @@ export const journey: JourneyContent = {
     {
       id: 'coffee-truck',
       label: 'KONA COFFEE TRUCK',
-      place: 'Sobrato Pavilion, San Jose',
-      directionsLabel: 'Directions to VMC',
+      place: 'SPARK Social San José',
+      directionsLabel: 'Directions to the Truck',
       orderLabel: 'Order from the Truck',
       directionsHref: coffeeTruck.directionsUrl,
       orderHref: coffeeTruck.ordering.url,

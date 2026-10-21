@@ -198,7 +198,7 @@ const StoryPage: React.FC = () => {
               </p>
 
               <p className="text-kona-espresso/80 text-lg leading-relaxed">
-                Every cup we serve is our way of saying &quot;e komo mai&quot; — welcome. From our weekday spot at Valley Medical Center to weekend events and future storefront in Mountain View, our goal is to bring a moment of island calm into your busy day.
+                Every cup we serve is our way of saying &quot;e komo mai&quot; — welcome. From our coffee truck to our Mountain View café, our goal is to bring a moment of island calm into your busy day.
               </p>
 
               <p className="text-kona-espresso/80 text-lg leading-relaxed">

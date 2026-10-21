@@ -39,11 +39,9 @@ export interface OrderingDestination {
  * One block of a schedule: a place, when it is served, and anything a visitor
  * needs to know before setting out.
  *
- * The shape exists because the truck does not serve one place. Flattening a
- * weekday hospital stop and a Saturday route that moves into a single list of
- * days is how someone drives to Valley Medical Center on a Saturday. Each
- * block names its own place, and no block's hours may be read as applying to
- * another block's place.
+ * The shape carries a day range, its hours, and an optional note. It was
+ * built when the truck served several places in one week; it now serves one
+ * fixed address, so the blocks split the week by day rather than by place.
  */
 export interface ScheduleBlock {
   label: string

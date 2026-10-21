@@ -136,18 +136,15 @@ export const homepage: HomepageContent = {
         id: coffeeTruck.id,
         label: 'Kona Coffee Truck',
         description:
-          'Find our original mobile coffee experience at Valley Medical Center and selected community stops.',
-        place: `${coffeeTruck.address.street}, ${coffeeTruck.address.unit} · ${coffeeTruck.address.city}`,
+          'Find our original mobile coffee experience at SPARK Social San José.',
+        place: `${coffeeTruck.address.unit} · ${coffeeTruck.address.street}, ${coffeeTruck.address.city}`,
         primary: {
-          // Named for exactly where this URL goes — Valley Medical Center,
-          // the weekday stop — not a generic "find the truck" that would
-          // mislead a visitor on Saturday, when the truck is on a separate,
-          // rotating community route with no verified URL of its own (see
-          // the truck panel in `destination-canvas.tsx`).
-          label: 'Directions to VMC',
+          // The truck now serves one fixed address every day, so a single
+          // directions link is unambiguous.
+          label: 'Directions to the Truck',
           href: coffeeTruck.directionsUrl,
           external: true,
-          description: 'Directions to the truck at Valley Medical Center',
+          description: 'Directions to the truck at SPARK Social San José',
         },
         secondary: {
           label: 'Order from the Truck',
